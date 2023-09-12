@@ -1,19 +1,3 @@
-//
-// Copyright 2011-2015 Jeff Bush
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-
 `include "defines.svh"
 
 import defines::*;
@@ -31,42 +15,42 @@ import defines::*;
 //
 
 module trace_logger(
-    input clk,
-    input reset,
+  input clk,
+  input reset,
 
     // From writeback stage
-    input wb_writeback_en,
-    input wb_writeback_vector,
-    input local_thread_idx_t wb_writeback_thread_idx,
-    input register_idx_t wb_writeback_reg,
-    input vector_t wb_writeback_value,
-    input vector_mask_t wb_writeback_mask,
-    input local_thread_idx_t wb_rollback_thread_idx,
-    input scalar_t wb_trap_pc,
+  input wb_writeback_en,
+  input wb_writeback_vector,
+  input local_thread_idx_t wb_writeback_thread_idx,
+  input register_idx_t wb_writeback_reg,
+  input vector_t wb_writeback_value,
+  input vector_mask_t wb_writeback_mask,
+  input local_thread_idx_t wb_rollback_thread_idx,
+  input scalar_t wb_trap_pc,
 
     // From floating point pipeline
-    input scalar_t fx5_instruction_pc,
+  input scalar_t fx5_instruction_pc,
 
     // From integer pipeline
-    input ix_instruction_valid,
-    input scalar_t ix_instruction_pc,
-    input ix_instruction_has_trap,
-    input trap_cause_t ix_instruction_trap_cause,
+  input ix_instruction_valid,
+  input scalar_t ix_instruction_pc,
+  input ix_instruction_has_trap,
+  input trap_cause_t ix_instruction_trap_cause,
 
 
     // From memory pipeline
-    input dd_instruction_valid,
-    input scalar_t dd_instruction_pc,
-    input dd_store_en,
-    input [CACHE_LINE_BYTES - 1:0]   dd_store_mask,
-    input vector_t dd_store_data,
-    input dd_instruction_load,
-    input memory_op_t dd_instruction_memory_access_type,
-    input scalar_t dt_instruction_pc,
-    input local_thread_idx_t dt_thread_idx,
-    input scalar_t dt_request_virt_addr,
-    input sq_rollback_en,
-    input sq_store_sync_success);
+  input dd_instruction_valid,
+  input scalar_t dd_instruction_pc,
+  input dd_store_en,
+  input [CACHE_LINE_BYTES - 1:0]   dd_store_mask,
+  input vector_t dd_store_data,
+  input dd_instruction_load,
+  input memory_op_t dd_instruction_memory_access_type,
+  input scalar_t dt_instruction_pc,
+  input local_thread_idx_t dt_thread_idx,
+  input scalar_t dt_request_virt_addr,
+  input sq_rollback_en,
+  input sq_store_sync_success);
 
     localparam TRACE_REORDER_QUEUE_LEN = 7;
 

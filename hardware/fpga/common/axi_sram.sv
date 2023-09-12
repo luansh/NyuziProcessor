@@ -1,19 +1,3 @@
-//
-// Copyright 2011-2015 Jeff Bush
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-
 `include "defines.svh"
 
 import defines::*;
@@ -25,16 +9,16 @@ module axi_sram
     #(parameter MEM_SIZE = 'h40000) // Number of 32-bit words
 
     (input clk,
-    input reset,
+  input reset,
 
     // AXI interface
     axi4_interface.slave        axi_bus,
 
     // External loader interface. It is valid to access these when the
     // part is in reset; the reset signal only applies to the AXI state machine.
-    input loader_we,
-    input[31:0]                 loader_addr,
-    input[31:0]                 loader_data);
+  input loader_we,
+  input[31:0]                 loader_addr,
+  input[31:0]                 loader_data);
 
     typedef enum {
         STATE_IDLE,

@@ -32,7 +32,7 @@ module test_scoreboard(input clk, input reset);
     scoreboard scoreboard(.*);
 
     task enqueue_ss(input register_idx_t dest, input register_idx_t src1,
-            input register_idx_t src2);
+        input register_idx_t src2);
         next_instruction.has_dest <= 1;
         next_instruction.dest_vector <= 0;
         next_instruction.dest_reg <= dest;
@@ -43,7 +43,7 @@ module test_scoreboard(input clk, input reset);
     endtask
 
     task enqueue_vv(input register_idx_t dest, input register_idx_t src1,
-            input register_idx_t src2);
+        input register_idx_t src2);
         next_instruction.has_dest <= 1;
         next_instruction.dest_vector <= 1;
         next_instruction.dest_reg <= dest;
@@ -54,7 +54,7 @@ module test_scoreboard(input clk, input reset);
     endtask
 
     task enqueue_store(input register_idx_t src1,
-            input register_idx_t src2);
+        input register_idx_t src2);
         next_instruction.has_scalar1 <= 1;
         next_instruction.scalar_sel1 <= src1;
         next_instruction.has_scalar2 <= 1;

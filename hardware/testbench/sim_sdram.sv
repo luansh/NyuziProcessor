@@ -1,20 +1,4 @@
 //
-// Copyright 2011-2015 Jeff Bush
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-
-//
 // Simulates single data rate SDRAM. The size of this memory is
 // the num rows * num columns * 4 banks * 4 bytes (bus width)
 //
@@ -28,13 +12,13 @@ module sim_sdram
     parameter MAX_REFRESH_INTERVAL = 800)
 
     (input dram_clk,
-    input dram_cke,
-    input dram_cs_n,
-    input dram_ras_n,
-    input dram_cas_n,
-    input dram_we_n,      // Write enable
-    input[1:0]                  dram_ba,        // Bank select
-    input[12:0]                 dram_addr,
+  input dram_cke,
+  input dram_cs_n,
+  input dram_ras_n,
+  input dram_cas_n,
+  input dram_we_n,      // Write enable
+  input[1:0]                  dram_ba,        // Bank select
+  input[12:0]                 dram_addr,
     inout[DATA_WIDTH - 1:0]     dram_dq);
 
     localparam NUM_BANKS = 4;

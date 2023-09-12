@@ -101,7 +101,7 @@ module test_control_registers(input clk, input reset);
     endtask
 
     task raise_trap(input trap_type_t trap_type, input int pc, input subcycle_t subcycle,
-            input scalar_t access_addr);
+        input scalar_t access_addr);
         wb_trap <= 1;
         wb_trap_cause <= 6'(trap_type);
         wb_trap_pc <= pc;

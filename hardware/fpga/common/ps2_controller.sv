@@ -26,13 +26,13 @@ module ps2_controller
     #(parameter BASE_ADDRESS = 0)
 
     (input clk,
-    input reset,
+  input reset,
     io_bus_interface.slave      io_bus,
     output logic rx_interrupt,
 
     // PS/2 Interface
-    input ps2_clk,
-    input ps2_data);
+  input ps2_clk,
+  input ps2_data);
 
     localparam STATUS_REG = BASE_ADDRESS;
     localparam DATA_REG = BASE_ADDRESS + 4;

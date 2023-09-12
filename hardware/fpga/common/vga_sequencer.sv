@@ -1,20 +1,4 @@
 //
-// Copyright 2011-2015 Jeff Bush
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-
-//
 // This generates timing signals for the VGA interface.
 // Software uploads a small microcode program that this runs. It
 // contains two counters and supports two instructions:
@@ -28,16 +12,16 @@
 // using pixel_en to clock gate for each pixel).
 //
 module vga_sequencer(
-    input clk,
-    input reset,
+  input clk,
+  input reset,
     output logic vga_vs,
     output logic vga_hs,
     output logic start_frame,
     output logic in_visible_region,
     output logic pixel_en,
-    input sequencer_en,
-    input prog_write_en,
-    input[31:0]                 prog_data);
+  input sequencer_en,
+  input prog_write_en,
+  input[31:0]                 prog_data);
 
     localparam MAX_INSTRUCTIONS = 48;
 

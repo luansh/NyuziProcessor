@@ -1,20 +1,4 @@
 //
-// Copyright 2011-2015 Jeff Bush
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-
-//
 // Asynchronous AXI->AXI bridge. This safely transfers AXI requests and
 // responses between two clock domains.
 //
@@ -26,11 +10,11 @@ module axi_async_bridge
     (input reset,
 
     // Slave Interface (from a master)
-    input clk_s,
+  input clk_s,
     axi4_interface.slave        axi_bus_s,
 
     // Master Interface (to a slave)
-    input clk_m,
+  input clk_m,
     axi4_interface.master       axi_bus_m);
 
     localparam CONTROL_FIFO_LENGTH = 2;    // requirement of async_fifo

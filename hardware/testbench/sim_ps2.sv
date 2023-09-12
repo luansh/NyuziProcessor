@@ -21,8 +21,8 @@
 //
 
 module sim_ps2(
-    input clk,
-    input reset,
+  input clk,
+  input reset,
     output logic ps2_clk,
     output logic ps2_data);
 

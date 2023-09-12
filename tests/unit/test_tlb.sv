@@ -66,7 +66,7 @@ module test_tlb(input clk, input reset);
     endtask
 
     task update_page(input page_index_t vpageidx, input page_index_t ppageidx,
-        input logic [ASID_WIDTH - 1:0] asid, logic present, logic global, logic writable,
+    input logic [ASID_WIDTH - 1:0] asid, logic present, logic global, logic writable,
         logic supervisor);
 
         update_en <= 1;

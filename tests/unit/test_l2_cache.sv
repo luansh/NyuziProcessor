@@ -69,9 +69,9 @@ module test_l2_cache(input clk, input reset);
     assign axi_bus.s_wready = 1;
 
     task send_l2_request(input l2req_packet_type_t packet_type,
-        input l2_addr_t address,
-        input logic[CACHE_LINE_BYTES - 1:0] store_mask = 0,
-        input cache_line_data_t data = 0);
+    input l2_addr_t address,
+    input logic[CACHE_LINE_BYTES - 1:0] store_mask = 0,
+    input cache_line_data_t data = 0);
 
         l2i_request_valid <= 1;
         l2i_request[0].id <= last_id + 1;   // Change ID every cycle

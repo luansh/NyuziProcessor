@@ -1,19 +1,3 @@
-//
-// Copyright 2011-2015 Jeff Bush
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-
 `include "defines.svh"
 
 import defines::*;
@@ -25,8 +9,8 @@ import defines::*;
 //
 
 module soc_tb(
-    input clk,
-    input reset);
+  input clk,
+  input reset);
 
     localparam MEM_SIZE = 'h1000000;
     localparam NUM_PERIPHERALS = 6;
@@ -367,9 +351,9 @@ module soc_tb(
         .*);
 
     task flush_l2_line;
-        input l2_tag_t tag;
-        input l2_set_idx_t set;
-        input l2_way_idx_t way;
+    input l2_tag_t tag;
+    input l2_set_idx_t set;
+    input l2_way_idx_t way;
     begin
         for (int line_offset = 0; line_offset < CACHE_LINE_WORDS; line_offset++)
         begin

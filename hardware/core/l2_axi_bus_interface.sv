@@ -1,19 +1,3 @@
-//
-// Copyright 2011-2015 Jeff Bush
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-
 `include "defines.svh"
 
 import defines::*;
@@ -40,8 +24,8 @@ import defines::*;
 //
 
 module l2_axi_bus_interface(
-    input clk,
-    input reset,
+  input clk,
+  input reset,
 
     axi4_interface.master                  axi_bus,
 
@@ -53,14 +37,14 @@ module l2_axi_bus_interface(
     output logic l2bi_collided_miss,
 
     // From l2_cache_read_stage
-    input l2r_needs_writeback,
-    input l2_tag_t l2r_writeback_tag,
-    input cache_line_data_t l2r_data,
-    input l2r_l2_fill,
-    input l2r_restarted_flush,
-    input l2r_cache_hit,
-    input l2r_request_valid,
-    input l2req_packet_t l2r_request,
+  input l2r_needs_writeback,
+  input l2_tag_t l2r_writeback_tag,
+  input cache_line_data_t l2r_data,
+  input l2r_l2_fill,
+  input l2r_restarted_flush,
+  input l2r_cache_hit,
+  input l2r_request_valid,
+  input l2req_packet_t l2r_request,
 
     // To performance_counters
     output logic l2bi_perf_l2_writeback);

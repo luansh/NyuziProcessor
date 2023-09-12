@@ -83,7 +83,7 @@ module test_l1_store_queue(input clk, input reset);
     l1_store_queue l1_store_queue(.*);
 
     task store_request(input cache_line_index_t address, input logic[CACHE_LINE_BYTES - 1:0] mask,
-        input cache_line_data_t data);
+    input cache_line_data_t data);
         dd_store_en <= 1;
         dd_store_addr <= address;
         dd_store_mask <= mask;

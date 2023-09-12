@@ -1,19 +1,3 @@
-//
-// Copyright 2011-2015 Jeff Bush
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-//
-
 `include "defines.svh"
 
 import defines::*;
@@ -29,21 +13,21 @@ import defines::*;
 //
 
 module int_execute_stage(
-    input clk,
-    input reset,
+  input clk,
+  input reset,
 
     // From operand_fetch_stage
-    input vector_t of_operand1,
-    input vector_t of_operand2,
-    input vector_mask_t of_mask_value,
-    input of_instruction_valid,
-    input decoded_instruction_t of_instruction,
-    input local_thread_idx_t of_thread_idx,
-    input subcycle_t of_subcycle,
+  input vector_t of_operand1,
+  input vector_t of_operand2,
+  input vector_mask_t of_mask_value,
+  input of_instruction_valid,
+  input decoded_instruction_t of_instruction,
+  input local_thread_idx_t of_thread_idx,
+  input subcycle_t of_subcycle,
 
     // From writeback_stage
-    input logic wb_rollback_en,
-    input local_thread_idx_t wb_rollback_thread_idx,
+  input logic wb_rollback_en,
+  input local_thread_idx_t wb_rollback_thread_idx,
 
     // To writeback_stage
     output logic ix_instruction_valid,
@@ -57,8 +41,8 @@ module int_execute_stage(
     output logic ix_privileged_op_fault,
 
     // From control_registers
-    input scalar_t cr_eret_address[`THREADS_PER_CORE],
-    input cr_supervisor_en[`THREADS_PER_CORE],
+  input scalar_t cr_eret_address[`THREADS_PER_CORE],
+  input cr_supervisor_en[`THREADS_PER_CORE],
 
     // To performance_counters
     output logic ix_perf_uncond_branch,
