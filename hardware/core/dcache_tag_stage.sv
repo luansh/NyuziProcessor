@@ -38,73 +38,73 @@ import defines::*;
 //
 
 module dcache_tag_stage
-  (input                    clk,
-  input                     reset,
+  (input clk,
+  input reset,
 
   // From operand_fetch_stage
-  input vector_t                of_operand1,
-  input vector_mask_t             of_mask_value,
-  input vector_t                of_store_value,
-  input                     of_instruction_valid,
-  input decoded_instruction_t         of_instruction,
-  input local_thread_idx_t          of_thread_idx,
-  input subcycle_t              of_subcycle,
+  input vector_t of_operand1,
+  input vector_mask_t of_mask_value,
+  input vector_t of_store_value,
+  input of_instruction_valid,
+  input decoded_instruction_t of_instruction,
+  input local_thread_idx_t of_thread_idx,
+  input subcycle_t of_subcycle,
 
   // From dcache_data_stage
-  input                     dd_update_lru_en,
-  input l1d_way_idx_t             dd_update_lru_way,
+  input dd_update_lru_en,
+  input l1d_way_idx_t dd_update_lru_way,
 
   // To dcache_data_stage
-  output logic                dt_instruction_valid,
-  output decoded_instruction_t        dt_instruction,
-  output vector_mask_t            dt_mask_value,
-  output local_thread_idx_t           dt_thread_idx,
-  output l1d_addr_t               dt_request_vaddr,
-  output l1d_addr_t               dt_request_paddr,
-  output logic                dt_tlb_hit,
-  output logic                dt_tlb_writable,
-  output vector_t               dt_store_value,
-  output subcycle_t               dt_subcycle,
-  output logic                dt_valid[`L1D_WAYS],
-  output l1d_tag_t              dt_tag[`L1D_WAYS],
-  output logic                dt_tlb_supervisor,
-  output logic                dt_tlb_present,
+  output logic dt_instruction_valid,
+  output decoded_instruction_t dt_instruction,
+  output vector_mask_t dt_mask_value,
+  output local_thread_idx_t dt_thread_idx,
+  output l1d_addr_t dt_request_vaddr,
+  output l1d_addr_t dt_request_paddr,
+  output logic dt_tlb_hit,
+  output logic dt_tlb_writable,
+  output vector_t dt_store_value,
+  output subcycle_t dt_subcycle,
+  output logic dt_valid[`L1D_WAYS],
+  output l1d_tag_t dt_tag[`L1D_WAYS],
+  output logic dt_tlb_supervisor,
+  output logic dt_tlb_present,
 
   // To ifetch_tag_stage
-  output logic                dt_invalidate_tlb_en,
-  output logic                dt_invalidate_tlb_all_en,
-  output logic                dt_update_itlb_en,
+  output logic dt_invalidate_tlb_en,
+  output logic dt_invalidate_tlb_all_en,
+  output logic dt_update_itlb_en,
   output [ASID_WIDTH - 1:0]           dt_update_itlb_asid,
-  output page_index_t             dt_update_itlb_vpage_idx,
-  output page_index_t             dt_update_itlb_ppage_idx,
-  output logic                dt_update_itlb_present,
-  output logic                dt_update_itlb_supervisor,
-  output logic                dt_update_itlb_global,
-  output logic                dt_update_itlb_executable,
+  output page_index_t dt_update_itlb_vpage_idx,
+  output page_index_t dt_update_itlb_ppage_idx,
+  output logic dt_update_itlb_present,
+  output logic dt_update_itlb_supervisor,
+  output logic dt_update_itlb_global,
+  output logic dt_update_itlb_executable,
 
   // From l1_l2_interface
-  input                     l2i_dcache_lru_fill_en,
-  input l1d_set_idx_t             l2i_dcache_lru_fill_set,
+  input l2i_dcache_lru_fill_en,
+  input l1d_set_idx_t l2i_dcache_lru_fill_set,
   input [`L1D_WAYS - 1:0]           l2i_dtag_update_en_oh,
-  input l1d_set_idx_t             l2i_dtag_update_set,
-  input l1d_tag_t               l2i_dtag_update_tag,
-  input                     l2i_dtag_update_valid,
-  input                     l2i_snoop_en,
-  input l1d_set_idx_t             l2i_snoop_set,
+  input l1d_set_idx_t l2i_dtag_update_set,
+  input l1d_tag_t l2i_dtag_update_tag,
+  input l2i_dtag_update_valid,
+  input l2i_snoop_en,
+  input l1d_set_idx_t l2i_snoop_set,
 
   // To l1_l2_interface
-  output logic                dt_snoop_valid[`L1D_WAYS],
-  output l1d_tag_t              dt_snoop_tag[`L1D_WAYS],
-  output l1d_way_idx_t            dt_fill_lru,
+  output logic dt_snoop_valid[`L1D_WAYS],
+  output l1d_tag_t dt_snoop_tag[`L1D_WAYS],
+  output l1d_way_idx_t dt_fill_lru,
 
   // From control_registers
-  input                     cr_mmu_en[`THREADS_PER_CORE],
-  input logic                 cr_supervisor_en[`THREADS_PER_CORE],
+  input cr_mmu_en[`THREADS_PER_CORE],
+  input logic cr_supervisor_en[`THREADS_PER_CORE],
   input [ASID_WIDTH - 1:0]          cr_current_asid[`THREADS_PER_CORE],
 
   // From writeback_stage
-  input logic                 wb_rollback_en,
-  input local_thread_idx_t          wb_rollback_thread_idx);
+  input logic wb_rollback_en,
+  input local_thread_idx_t wb_rollback_thread_idx);
 
   l1d_addr_t request_addr_nxt;
   logic cache_load_en;

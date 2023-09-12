@@ -55,22 +55,22 @@ import defines::*;
 //
 
 module on_chip_debugger
-  (input              clk,
-  input               reset,
+  (input clk,
+  input reset,
 
   jtag_interface.target       jtag,
 
   // To/From Cores
-  output logic          ocd_halt,
-  output local_thread_idx_t     ocd_thread,
-  output core_id_t        ocd_core,
-  output scalar_t         ocd_inject_inst,
-  output logic          ocd_inject_en,
-  output scalar_t         ocd_data_from_host,
-  output logic          ocd_data_update,
-  input scalar_t          data_to_host,
-  input               injected_complete,
-  input               injected_rollback);
+  output logic ocd_halt,
+  output local_thread_idx_t ocd_thread,
+  output core_id_t ocd_core,
+  output scalar_t ocd_inject_inst,
+  output logic ocd_inject_en,
+  output scalar_t ocd_data_from_host,
+  output logic ocd_data_update,
+  input scalar_t data_to_host,
+  input injected_complete,
+  input injected_rollback);
 
   // JEDEC Standard Manufacturer's Identification Code standard, JEP-106
   // These constants are specified in config.sv
@@ -110,11 +110,11 @@ module on_chip_debugger
   machine_inst_status_t machine_inst_status;
   /*AUTOLOGIC*/
   // Beginning of automatic wires (for undeclared instantiated-module outputs)
-  logic         capture_dr;       // From jtag_tap_controller of jtag_tap_controller.v
+  logic capture_dr;       // From jtag_tap_controller of jtag_tap_controller.v
   logic [3:0]     jtag_instruction;     // From jtag_tap_controller of jtag_tap_controller.v
-  logic         shift_dr;         // From jtag_tap_controller of jtag_tap_controller.v
-  logic         update_dr;        // From jtag_tap_controller of jtag_tap_controller.v
-  logic         update_ir;        // From jtag_tap_controller of jtag_tap_controller.v
+  logic shift_dr;         // From jtag_tap_controller of jtag_tap_controller.v
+  logic update_dr;        // From jtag_tap_controller of jtag_tap_controller.v
+  logic update_ir;        // From jtag_tap_controller of jtag_tap_controller.v
   // End of automatics
 
   assign ocd_halt = control.halt;

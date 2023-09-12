@@ -29,18 +29,18 @@ module async_fifo
     #(parameter WIDTH = 32,
     parameter NUM_ENTRIES = 8)
 
-    (input                  reset,
+    (input reset,
 
     // Read.
-    input                   read_clk,
-    input                   read_en,
+    input read_clk,
+    input read_en,
     output [WIDTH - 1:0]    read_data,
-    output logic            empty,
+    output logic empty,
 
     // Write
-    input                   write_clk,
-    input                   write_en,
-    output logic            full,
+    input write_clk,
+    input write_en,
+    output logic full,
     input [WIDTH - 1:0]     write_data);
 
     localparam ADDR_WIDTH = $clog2(NUM_ENTRIES);

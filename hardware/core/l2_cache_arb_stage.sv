@@ -28,27 +28,27 @@ import defines::*;
 //
 
 module l2_cache_arb_stage(
-  input                 clk,
-  input                 reset,
+  input clk,
+  input reset,
 
   // From cores
   input [`NUM_CORES - 1:0]        l2i_request_valid,
-  input l2req_packet_t          l2i_request[`NUM_CORES],
-  output logic              l2_ready[`NUM_CORES],
+  input l2req_packet_t l2i_request[`NUM_CORES],
+  output logic l2_ready[`NUM_CORES],
 
   // To l2_cache_tag_stage
-  output logic              l2a_request_valid,
-  output l2req_packet_t         l2a_request,
-  output cache_line_data_t        l2a_data_from_memory,
-  output logic              l2a_l2_fill,
-  output logic              l2a_restarted_flush,
+  output logic l2a_request_valid,
+  output l2req_packet_t l2a_request,
+  output cache_line_data_t l2a_data_from_memory,
+  output logic l2a_l2_fill,
+  output logic l2a_restarted_flush,
 
   // From l2_axi_bus_interface
-  input                 l2bi_request_valid,
-  input l2req_packet_t          l2bi_request,
-  input cache_line_data_t         l2bi_data_from_memory,
-  input                 l2bi_stall,
-  input                 l2bi_collided_miss);
+  input l2bi_request_valid,
+  input l2req_packet_t l2bi_request,
+  input cache_line_data_t l2bi_data_from_memory,
+  input l2bi_stall,
+  input l2bi_collided_miss);
 
   logic can_accept_request;
   l2req_packet_t grant_request;

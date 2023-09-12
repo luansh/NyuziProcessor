@@ -35,19 +35,19 @@ import defines::*;
 module jtag_tap_controller
   #(parameter INSTRUCTION_WIDTH = 1)
 
-  (input                  clk,
-  input                   reset,
+  (input clk,
+  input reset,
 
   jtag_interface.target           jtag,
 
   // data_shift_val is the value to be sent out TDO when
   // shifting a data register.
-  input                   data_shift_val,
-  output logic              capture_dr,
-  output logic              shift_dr,
-  output logic              update_dr,
+  input data_shift_val,
+  output logic capture_dr,
+  output logic shift_dr,
+  output logic update_dr,
   output logic[INSTRUCTION_WIDTH - 1:0]   jtag_instruction,
-  output logic              update_ir);
+  output logic update_ir);
 
   typedef enum int {
     JTAG_RESET,

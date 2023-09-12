@@ -31,15 +31,15 @@ import defines::*;
 //
 
 module fp_execute_stage3(
-  input                     clk,
-  input                     reset,
+  input clk,
+  input reset,
 
   // From fp_execute_stage2
-  input vector_mask_t             fx2_mask_value,
-  input                     fx2_instruction_valid,
-  input decoded_instruction_t         fx2_instruction,
-  input local_thread_idx_t          fx2_thread_idx,
-  input subcycle_t              fx2_subcycle,
+  input vector_mask_t fx2_mask_value,
+  input fx2_instruction_valid,
+  input decoded_instruction_t fx2_instruction,
+  input local_thread_idx_t fx2_thread_idx,
+  input subcycle_t fx2_subcycle,
   input [NUM_VECTOR_LANES - 1:0]        fx2_result_inf,
   input [NUM_VECTOR_LANES - 1:0]        fx2_result_nan,
   input [NUM_VECTOR_LANES - 1:0]        fx2_equal,
@@ -62,11 +62,11 @@ module fp_execute_stage3(
   input [NUM_VECTOR_LANES - 1:0]        fx2_mul_sign,
 
   // To fp_execute_stage4
-  output logic                fx3_instruction_valid,
-  output decoded_instruction_t        fx3_instruction,
-  output vector_mask_t            fx3_mask_value,
-  output local_thread_idx_t           fx3_thread_idx,
-  output subcycle_t               fx3_subcycle,
+  output logic fx3_instruction_valid,
+  output decoded_instruction_t fx3_instruction,
+  output vector_mask_t fx3_mask_value,
+  output local_thread_idx_t fx3_thread_idx,
+  output subcycle_t fx3_subcycle,
   output logic[NUM_VECTOR_LANES - 1:0]    fx3_result_inf,
   output logic[NUM_VECTOR_LANES - 1:0]    fx3_result_nan,
   output logic[NUM_VECTOR_LANES - 1:0]    fx3_equal,

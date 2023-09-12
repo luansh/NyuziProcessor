@@ -23,8 +23,8 @@ module synchronizer
   #(parameter WIDTH = 1,
   parameter RESET_STATE = 0)
 
-  (input            clk,
-  input             reset,
+  (input clk,
+  input reset,
   output logic[WIDTH - 1:0]   data_o,
   input [WIDTH - 1:0]     data_i);
 

@@ -41,16 +41,16 @@ module sdram_controller
     parameter T_REFRESH = 750,
     parameter T_CAS_LATENCY = 1)
 
-    (input                                  clk,
-    input                                   reset,
+    (input clk,
+    input reset,
 
     // Interface to SDRAM
-    output logic                            dram_clk,
-    output logic                            dram_cke,
-    output logic                            dram_cs_n,
-    output logic                            dram_ras_n,
-    output logic                            dram_cas_n,
-    output logic                            dram_we_n,
+    output logic dram_clk,
+    output logic dram_cke,
+    output logic dram_cs_n,
+    output logic dram_ras_n,
+    output logic dram_cas_n,
+    output logic dram_we_n,
     output logic[1:0]                       dram_ba,
     output logic[12:0]                      dram_addr,
     inout [DATA_WIDTH - 1:0]                dram_dq,
@@ -59,8 +59,8 @@ module sdram_controller
     axi4_interface.slave                    axi_bus,
 
     // Performance counter events
-    output logic                            perf_dram_page_miss,
-    output logic                            perf_dram_page_hit);
+    output logic perf_dram_page_miss,
+    output logic perf_dram_page_hit);
 
     localparam SDRAM_BURST_LENGTH = 8;
     localparam SDRAM_BURST_IDX_WIDTH = $clog2(SDRAM_BURST_LENGTH);

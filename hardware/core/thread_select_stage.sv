@@ -32,44 +32,44 @@ import defines::*;
 //
 
 module thread_select_stage(
-  input                clk,
-  input                reset,
+  input clk,
+  input reset,
 
   // From instruction_decode_stage
-  input decoded_instruction_t    id_instruction,
-  input                id_instruction_valid,
-  input local_thread_idx_t       id_thread_idx,
+  input decoded_instruction_t id_instruction,
+  input id_instruction_valid,
+  input local_thread_idx_t id_thread_idx,
 
   // To ifetch_tag_stage
-  output local_thread_bitmap_t     ts_fetch_en,
+  output local_thread_bitmap_t ts_fetch_en,
 
   // To operand_fetch_stage
-  output logic             ts_instruction_valid,
-  output decoded_instruction_t     ts_instruction,
-  output local_thread_idx_t      ts_thread_idx,
-  output subcycle_t          ts_subcycle,
+  output logic ts_instruction_valid,
+  output decoded_instruction_t ts_instruction,
+  output local_thread_idx_t ts_thread_idx,
+  output subcycle_t ts_subcycle,
 
   // From writeback_stage
-  input                wb_writeback_en,
-  input local_thread_idx_t       wb_writeback_thread_idx,
-  input                wb_writeback_vector,
-  input register_idx_t         wb_writeback_reg,
-  input                wb_writeback_last_subcycle,
-  input local_thread_idx_t       wb_rollback_thread_idx,
-  input                wb_rollback_en,
-  input pipeline_sel_t         wb_rollback_pipeline,
-  input subcycle_t           wb_rollback_subcycle,
+  input wb_writeback_en,
+  input local_thread_idx_t wb_writeback_thread_idx,
+  input wb_writeback_vector,
+  input register_idx_t wb_writeback_reg,
+  input wb_writeback_last_subcycle,
+  input local_thread_idx_t wb_rollback_thread_idx,
+  input wb_rollback_en,
+  input pipeline_sel_t wb_rollback_pipeline,
+  input subcycle_t wb_rollback_subcycle,
 
   // From nyuzi
-  input local_thread_bitmap_t    thread_en,
+  input local_thread_bitmap_t thread_en,
 
   // From dcache_data_stage
-  input local_thread_bitmap_t    wb_suspend_thread_oh,
-  input local_thread_bitmap_t    l2i_dcache_wake_bitmap,
-  input local_thread_bitmap_t    ior_wake_bitmap,
+  input local_thread_bitmap_t wb_suspend_thread_oh,
+  input local_thread_bitmap_t l2i_dcache_wake_bitmap,
+  input local_thread_bitmap_t ior_wake_bitmap,
 
   // To performance_counters
-  output logic             ts_perf_instruction_issue);
+  output logic ts_perf_instruction_issue);
 
   localparam THREAD_FIFO_SIZE = 8;
 

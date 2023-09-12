@@ -27,8 +27,8 @@ module gpio_controller
     parameter NUM_PINS = 8,
     parameter ENABLE_SYNCHRONIZER = 0)
 
-    (input                      clk,
-    input                      reset,
+    (input clk,
+    input reset,
     io_bus_interface.slave    io_bus,
 
     // To/from SD card

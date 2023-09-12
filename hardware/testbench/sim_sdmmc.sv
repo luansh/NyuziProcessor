@@ -21,10 +21,10 @@
 //
 
 module sim_sdmmc(
-    input            sd_sclk,
-    input            sd_cs_n,
-    input            sd_di,
-    output logic     sd_do);
+    input sd_sclk,
+    input sd_cs_n,
+    input sd_di,
+    output logic sd_do);
 
     localparam INIT_CLOCKS = 72;
     localparam DATA_TOKEN = 8'hfe;

@@ -29,15 +29,15 @@ module control_registers
   parameter NUM_INTERRUPTS = 16,
   parameter NUM_PERF_EVENTS = 8,
   parameter EVENT_IDX_WIDTH = $clog2(NUM_PERF_EVENTS))
-  (input                  clk,
-  input                   reset,
+  (input clk,
+  input reset,
 
   input [NUM_INTERRUPTS - 1:0]      interrupt_req,
 
   // To multiple stages
-  output scalar_t             cr_eret_address[`THREADS_PER_CORE],
-  output logic              cr_mmu_en[`THREADS_PER_CORE],
-  output logic              cr_supervisor_en[`THREADS_PER_CORE],
+  output scalar_t cr_eret_address[`THREADS_PER_CORE],
+  output logic cr_mmu_en[`THREADS_PER_CORE],
+  output logic cr_supervisor_en[`THREADS_PER_CORE],
   output logic[ASID_WIDTH - 1:0]      cr_current_asid[`THREADS_PER_CORE],
 
   // To nyuzi
@@ -46,32 +46,32 @@ module control_registers
 
   // To instruction_decode_stage
   output logic[`THREADS_PER_CORE - 1:0]   cr_interrupt_pending,
-  output local_thread_bitmap_t      cr_interrupt_en,
+  output local_thread_bitmap_t cr_interrupt_en,
 
   // From dcache_data_stage
   // dd_xxx signals are unregistered. dt_thread_idx represents thread going into
   // dcache_data_stage)
-  input local_thread_idx_t        dt_thread_idx,
-  input                   dd_creg_write_en,
-  input                   dd_creg_read_en,
-  input control_register_t        dd_creg_index,
-  input scalar_t              dd_creg_write_val,
+  input local_thread_idx_t dt_thread_idx,
+  input dd_creg_write_en,
+  input dd_creg_read_en,
+  input control_register_t dd_creg_index,
+  input scalar_t dd_creg_write_val,
 
   // From writeback_stage
-  input                   wb_trap,
-  input                   wb_eret,
-  input trap_cause_t            wb_trap_cause,
-  input scalar_t              wb_trap_pc,
-  input scalar_t              wb_trap_access_vaddr,
-  input local_thread_idx_t        wb_rollback_thread_idx,
-  input subcycle_t            wb_trap_subcycle,
-  input syscall_index_t           wb_syscall_index,
+  input wb_trap,
+  input wb_eret,
+  input trap_cause_t wb_trap_cause,
+  input scalar_t wb_trap_pc,
+  input scalar_t wb_trap_access_vaddr,
+  input local_thread_idx_t wb_rollback_thread_idx,
+  input subcycle_t wb_trap_subcycle,
+  input syscall_index_t wb_syscall_index,
 
   // To writeback_stage
-  output scalar_t             cr_creg_read_val,
-  output subcycle_t             cr_eret_subcycle[`THREADS_PER_CORE],
-  output scalar_t             cr_trap_handler,
-  output scalar_t             cr_tlb_miss_handler,
+  output scalar_t cr_creg_read_val,
+  output subcycle_t cr_eret_subcycle[`THREADS_PER_CORE],
+  output scalar_t cr_trap_handler,
+  output scalar_t cr_tlb_miss_handler,
 
   // To/from performance_counters
   output logic[EVENT_IDX_WIDTH - 1:0]   cr_perf_event_select0,
@@ -80,9 +80,9 @@ module control_registers
   input[63:0]               perf_event_count1,
 
   // To/from on_chip_debugger
-  input scalar_t              ocd_data_from_host,
-  input                   ocd_data_update,
-  output scalar_t             cr_data_to_host);
+  input scalar_t ocd_data_from_host,
+  input ocd_data_update,
+  output scalar_t cr_data_to_host);
 
   // One is for current state. Maximum nested traps is TRAP_LEVELS - 1.
   localparam TRAP_LEVELS = 3;

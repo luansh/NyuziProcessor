@@ -27,74 +27,74 @@ import defines::*;
 //
 
 module ifetch_data_stage(
-  input              clk,
-  input              reset,
+  input clk,
+  input reset,
 
   // From ifetch_tag_stage.
   // If ift_instruction_requested is low, the other signals in this group are
   // undefined.
-  input              ift_instruction_requested,
-  input l1i_addr_t         ift_pc_paddr,
-  input scalar_t           ift_pc_vaddr,
-  input local_thread_idx_t     ift_thread_idx,
-  input              ift_tlb_hit,
-  input              ift_tlb_present,
-  input              ift_tlb_executable,
-  input              ift_tlb_supervisor,
-  input l1i_tag_t          ift_tag[`L1I_WAYS],
-  input              ift_valid[`L1I_WAYS],
+  input ift_instruction_requested,
+  input l1i_addr_t ift_pc_paddr,
+  input scalar_t ift_pc_vaddr,
+  input local_thread_idx_t ift_thread_idx,
+  input ift_tlb_hit,
+  input ift_tlb_present,
+  input ift_tlb_executable,
+  input ift_tlb_supervisor,
+  input l1i_tag_t ift_tag[`L1I_WAYS],
+  input ift_valid[`L1I_WAYS],
 
   // To ifetch_tag_stage
-  output logic           ifd_update_lru_en,
-  output l1i_way_idx_t       ifd_update_lru_way,
-  output logic           ifd_near_miss,
+  output logic ifd_update_lru_en,
+  output l1i_way_idx_t ifd_update_lru_way,
+  output logic ifd_near_miss,
 
   // From l1_l2_interface
-  input              l2i_idata_update_en,
-  input l1i_way_idx_t        l2i_idata_update_way,
-  input l1i_set_idx_t        l2i_idata_update_set,
-  input cache_line_data_t      l2i_idata_update_data,
+  input l2i_idata_update_en,
+  input l1i_way_idx_t l2i_idata_update_way,
+  input l1i_set_idx_t l2i_idata_update_set,
+  input cache_line_data_t l2i_idata_update_data,
   input [`L1I_WAYS - 1:0]      l2i_itag_update_en,
-  input l1i_set_idx_t        l2i_itag_update_set,
-  input l1i_tag_t          l2i_itag_update_tag,
+  input l1i_set_idx_t l2i_itag_update_set,
+  input l1i_tag_t l2i_itag_update_tag,
 
   // To l1_l2_interface
-  output logic           ifd_cache_miss,
-  output cache_line_index_t    ifd_cache_miss_paddr,
-  output local_thread_idx_t    ifd_cache_miss_thread_idx,  // also to ifetch_tag
+  output logic ifd_cache_miss,
+  output cache_line_index_t ifd_cache_miss_paddr,
+  output local_thread_idx_t ifd_cache_miss_thread_idx,  // also to ifetch_tag
 
   // From control registers
-  input logic            cr_supervisor_en[`THREADS_PER_CORE],
+  input logic cr_supervisor_en[`THREADS_PER_CORE],
 
   // To instruction_decode_stage
-  output scalar_t          ifd_instruction,
-  output logic           ifd_instruction_valid,
-  output scalar_t          ifd_pc,
-  output local_thread_idx_t    ifd_thread_idx,
-  output logic           ifd_alignment_fault,
-  output logic           ifd_tlb_miss,
-  output logic           ifd_supervisor_fault,
-  output logic           ifd_page_fault,
-  output logic           ifd_executable_fault,
-  output logic           ifd_inst_injected,
+  output scalar_t ifd_instruction,
+  output logic ifd_instruction_valid,
+  output scalar_t ifd_pc,
+  output local_thread_idx_t ifd_thread_idx,
+  output logic ifd_alignment_fault,
+  output logic ifd_tlb_miss,
+  output logic ifd_supervisor_fault,
+  output logic ifd_page_fault,
+  output logic ifd_executable_fault,
+  output logic ifd_inst_injected,
 
   // From writeback_stage
-  input              wb_rollback_en,
-  input local_thread_idx_t     wb_rollback_thread_idx,
+  input wb_rollback_en,
+  input local_thread_idx_t wb_rollback_thread_idx,
 
   // To performance_counters
-  output logic           ifd_perf_icache_hit,
-  output logic           ifd_perf_icache_miss,
-  output logic           ifd_perf_itlb_miss,
+  output logic ifd_perf_icache_hit,
+  output logic ifd_perf_icache_miss,
+  output logic ifd_perf_itlb_miss,
 
   // from core
-  input              core_selected_debug,
+  input core_selected_debug,
 
   // From on_chip_debugger
-  input              ocd_halt,
-  input scalar_t           ocd_inject_inst,
-  input logic            ocd_inject_en,
-  input local_thread_idx_t     ocd_thread);
+  input ocd_halt,
+  input scalar_t ocd_inject_inst,
+  input logic ocd_inject_en,
+  input local_thread_idx_t ocd_thread);
 
   logic cache_hit;
   logic[`L1I_WAYS - 1:0] way_hit_oh;

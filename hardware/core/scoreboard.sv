@@ -35,16 +35,16 @@ import defines::*;
 //
 
 module scoreboard(
-  input               clk,
-  input               reset,
-  input decoded_instruction_t   next_instruction,
-  output logic          scoreboard_can_issue,
-  input               will_issue,
-  input               writeback_en,
-  input               wb_writeback_vector,
-  input register_idx_t      wb_writeback_reg,
-  input               rollback_en,
-  input pipeline_sel_t      wb_rollback_pipeline);
+  input clk,
+  input reset,
+  input decoded_instruction_t next_instruction,
+  output logic scoreboard_can_issue,
+  input will_issue,
+  input writeback_en,
+  input wb_writeback_vector,
+  input register_idx_t wb_writeback_reg,
+  input rollback_en,
+  input pipeline_sel_t wb_rollback_pipeline);
 
   localparam SCOREBOARD_ENTRIES = NUM_REGISTERS * 2;
 

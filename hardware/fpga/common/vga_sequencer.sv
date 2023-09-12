@@ -28,15 +28,15 @@
 // using pixel_en to clock gate for each pixel).
 //
 module vga_sequencer(
-    input                       clk,
-    input                       reset,
-    output logic                vga_vs,
-    output logic                vga_hs,
-    output logic                start_frame,
-    output logic                in_visible_region,
-    output logic                pixel_en,
-    input                       sequencer_en,
-    input                       prog_write_en,
+    input clk,
+    input reset,
+    output logic vga_vs,
+    output logic vga_hs,
+    output logic start_frame,
+    output logic in_visible_region,
+    output logic pixel_en,
+    input sequencer_en,
+    input prog_write_en,
     input[31:0]                 prog_data);
 
     localparam MAX_INSTRUCTIONS = 48;

@@ -24,26 +24,26 @@ import defines::*;
 //
 
 module l1_load_miss_queue(
-  input                   clk,
-  input                   reset,
+  input clk,
+  input reset,
 
   // Enqueue request
-  input                   cache_miss,
-  input cache_line_index_t        cache_miss_addr,
-  input local_thread_idx_t        cache_miss_thread_idx,
-  input                   cache_miss_sync,
+  input cache_miss,
+  input cache_line_index_t cache_miss_addr,
+  input local_thread_idx_t cache_miss_thread_idx,
+  input cache_miss_sync,
 
   // Dequeue request
-  output logic              dequeue_ready,
-  input                   dequeue_ack,
-  output cache_line_index_t         dequeue_addr,
-  output l1_miss_entry_idx_t        dequeue_idx,
-  output logic              dequeue_sync,
+  output logic dequeue_ready,
+  input dequeue_ack,
+  output cache_line_index_t dequeue_addr,
+  output l1_miss_entry_idx_t dequeue_idx,
+  output logic dequeue_sync,
 
   // Wake
-  input                   l2_response_valid,
-  input l1_miss_entry_idx_t         l2_response_idx,
-  output local_thread_bitmap_t      wake_bitmap);
+  input l2_response_valid,
+  input l1_miss_entry_idx_t l2_response_idx,
+  output local_thread_bitmap_t wake_bitmap);
 
   struct packed {
     logic valid;

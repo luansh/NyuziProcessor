@@ -20,13 +20,13 @@
 
 module uart_receive
     #(parameter DIVISOR_WIDTH = 16)
-    (input                        clk,
-    input                         reset,
+    (input clk,
+    input reset,
     input[DIVISOR_WIDTH - 1:0]    clocks_per_bit,
-    input                         uart_rx,
+    input uart_rx,
     output[7:0]                   rx_char,
-    output logic                  rx_char_valid,
-    output logic                  rx_frame_error);
+    output logic rx_char_valid,
+    output logic rx_frame_error);
 
     typedef enum {
         STATE_WAIT_START,

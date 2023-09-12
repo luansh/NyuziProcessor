@@ -40,30 +40,30 @@ import defines::*;
 //
 
 module l2_axi_bus_interface(
-    input                                  clk,
-    input                                  reset,
+    input clk,
+    input reset,
 
     axi4_interface.master                  axi_bus,
 
     // To l2_cache_arb_stage
-    output logic                           l2bi_request_valid,
-    output l2req_packet_t                  l2bi_request,
-    output cache_line_data_t               l2bi_data_from_memory,
-    output logic                           l2bi_stall,
-    output logic                           l2bi_collided_miss,
+    output logic l2bi_request_valid,
+    output l2req_packet_t l2bi_request,
+    output cache_line_data_t l2bi_data_from_memory,
+    output logic l2bi_stall,
+    output logic l2bi_collided_miss,
 
     // From l2_cache_read_stage
-    input                                  l2r_needs_writeback,
-    input l2_tag_t                         l2r_writeback_tag,
-    input cache_line_data_t                l2r_data,
-    input                                  l2r_l2_fill,
-    input                                  l2r_restarted_flush,
-    input                                  l2r_cache_hit,
-    input                                  l2r_request_valid,
-    input l2req_packet_t                   l2r_request,
+    input l2r_needs_writeback,
+    input l2_tag_t l2r_writeback_tag,
+    input cache_line_data_t l2r_data,
+    input l2r_l2_fill,
+    input l2r_restarted_flush,
+    input l2r_cache_hit,
+    input l2r_request_valid,
+    input l2req_packet_t l2r_request,
 
     // To performance_counters
-    output logic                           l2bi_perf_l2_writeback);
+    output logic l2bi_perf_l2_writeback);
 
     typedef enum {
         STATE_IDLE,

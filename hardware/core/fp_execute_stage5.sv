@@ -27,15 +27,15 @@ import defines::*;
 //
 
 module fp_execute_stage5(
-  input                   clk,
-  input                   reset,
+  input clk,
+  input reset,
 
   // From fp_execute_stage4
-  input vector_mask_t           fx4_mask_value,
-  input                   fx4_instruction_valid,
-  input decoded_instruction_t       fx4_instruction,
-  input local_thread_idx_t        fx4_thread_idx,
-  input subcycle_t            fx4_subcycle,
+  input vector_mask_t fx4_mask_value,
+  input fx4_instruction_valid,
+  input decoded_instruction_t fx4_instruction,
+  input local_thread_idx_t fx4_thread_idx,
+  input subcycle_t fx4_subcycle,
   input [NUM_VECTOR_LANES - 1:0]      fx4_result_inf,
   input [NUM_VECTOR_LANES - 1:0]      fx4_result_nan,
   input [NUM_VECTOR_LANES - 1:0]      fx4_equal,
@@ -54,12 +54,12 @@ module fp_execute_stage5(
   input [NUM_VECTOR_LANES - 1:0]      fx4_mul_sign,
 
   // To writeback_stage
-  output logic              fx5_instruction_valid,
-  output decoded_instruction_t      fx5_instruction,
-  output vector_mask_t          fx5_mask_value,
-  output local_thread_idx_t         fx5_thread_idx,
-  output subcycle_t             fx5_subcycle,
-  output vector_t             fx5_result);
+  output logic fx5_instruction_valid,
+  output decoded_instruction_t fx5_instruction,
+  output vector_mask_t fx5_mask_value,
+  output local_thread_idx_t fx5_thread_idx,
+  output subcycle_t fx5_subcycle,
+  output vector_t fx5_result);
 
   logic fmul;
   logic imull;

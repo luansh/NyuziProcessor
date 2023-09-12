@@ -32,65 +32,65 @@ import defines::*;
 module ifetch_tag_stage
   #(parameter RESET_PC = 0)
 
-  (input                clk,
-  input                 reset,
+  (input clk,
+  input reset,
 
   // From ifetch_data_stage
-  input                 ifd_update_lru_en,
-  input l1i_way_idx_t         ifd_update_lru_way,
-  input                 ifd_cache_miss,
-  input                 ifd_near_miss,
-  input local_thread_idx_t      ifd_cache_miss_thread_idx,
+  input ifd_update_lru_en,
+  input l1i_way_idx_t ifd_update_lru_way,
+  input ifd_cache_miss,
+  input ifd_near_miss,
+  input local_thread_idx_t ifd_cache_miss_thread_idx,
 
   // To ifetch_data_stage
-  output logic            ift_instruction_requested,
-  output l1i_addr_t           ift_pc_paddr,
-  output scalar_t           ift_pc_vaddr,
-  output local_thread_idx_t       ift_thread_idx,
-  output logic            ift_tlb_hit,
-  output logic            ift_tlb_present,
-  output logic            ift_tlb_executable,
-  output logic            ift_tlb_supervisor,
-  output l1i_tag_t          ift_tag[`L1I_WAYS],
-  output logic            ift_valid[`L1I_WAYS],
+  output logic ift_instruction_requested,
+  output l1i_addr_t ift_pc_paddr,
+  output scalar_t ift_pc_vaddr,
+  output local_thread_idx_t ift_thread_idx,
+  output logic ift_tlb_hit,
+  output logic ift_tlb_present,
+  output logic ift_tlb_executable,
+  output logic ift_tlb_supervisor,
+  output l1i_tag_t ift_tag[`L1I_WAYS],
+  output logic ift_valid[`L1I_WAYS],
 
   // From l1_l2_interface
-  input                 l2i_icache_lru_fill_en,
-  input l1i_set_idx_t         l2i_icache_lru_fill_set,
+  input l2i_icache_lru_fill_en,
+  input l1i_set_idx_t l2i_icache_lru_fill_set,
   input [`L1I_WAYS - 1:0]       l2i_itag_update_en,
-  input l1i_set_idx_t         l2i_itag_update_set,
-  input l1i_tag_t           l2i_itag_update_tag,
-  input                 l2i_itag_update_valid,
-  input local_thread_bitmap_t     l2i_icache_wake_bitmap,
-  output l1i_way_idx_t        ift_fill_lru,
+  input l1i_set_idx_t l2i_itag_update_set,
+  input l1i_tag_t l2i_itag_update_tag,
+  input l2i_itag_update_valid,
+  input local_thread_bitmap_t l2i_icache_wake_bitmap,
+  output l1i_way_idx_t ift_fill_lru,
 
   // From control_registers
-  input                 cr_mmu_en[`THREADS_PER_CORE],
+  input cr_mmu_en[`THREADS_PER_CORE],
   input [ASID_WIDTH - 1:0]      cr_current_asid[`THREADS_PER_CORE],
 
   // From dcache_tag_stage
-  input                 dt_invalidate_tlb_en,
-  input                 dt_invalidate_tlb_all_en,
+  input dt_invalidate_tlb_en,
+  input dt_invalidate_tlb_all_en,
   input [ASID_WIDTH - 1:0]      dt_update_itlb_asid,
-  input page_index_t          dt_update_itlb_vpage_idx,
-  input                 dt_update_itlb_en,
-  input                 dt_update_itlb_supervisor,
-  input                 dt_update_itlb_global,
-  input                 dt_update_itlb_present,
-  input                 dt_update_itlb_executable,
-  input page_index_t          dt_update_itlb_ppage_idx,
+  input page_index_t dt_update_itlb_vpage_idx,
+  input dt_update_itlb_en,
+  input dt_update_itlb_supervisor,
+  input dt_update_itlb_global,
+  input dt_update_itlb_present,
+  input dt_update_itlb_executable,
+  input page_index_t dt_update_itlb_ppage_idx,
 
   // From writeback_stage
-  input                 wb_rollback_en,
-  input local_thread_idx_t      wb_rollback_thread_idx,
-  input scalar_t            wb_rollback_pc,
+  input wb_rollback_en,
+  input local_thread_idx_t wb_rollback_thread_idx,
+  input scalar_t wb_rollback_pc,
 
   // From thread_select_stage
-  input local_thread_bitmap_t     ts_fetch_en,
+  input local_thread_bitmap_t ts_fetch_en,
 
   // From on_chip_debugger
-  input                 ocd_halt,
-  input local_thread_idx_t      ocd_thread);
+  input ocd_halt,
+  input local_thread_idx_t ocd_thread);
 
   scalar_t next_program_counter[`THREADS_PER_CORE];
   local_thread_idx_t selected_thread_idx;

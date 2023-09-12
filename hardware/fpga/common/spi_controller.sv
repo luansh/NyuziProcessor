@@ -27,15 +27,15 @@ import defines::*;
 module spi_controller
     #(parameter BASE_ADDRESS = 0)
 
-    (input                      clk,
-    input                       reset,
+    (input clk,
+    input reset,
     io_bus_interface.slave      io_bus,
 
     // SPI interface
-    output logic                spi_clk,
-    output logic                spi_cs_n,
-    input                       spi_miso,
-    output logic                spi_mosi);
+    output logic spi_clk,
+    output logic spi_cs_n,
+    input spi_miso,
+    output logic spi_mosi);
 
     localparam TX_REG = BASE_ADDRESS;
     localparam RX_REG = BASE_ADDRESS + 4;

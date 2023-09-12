@@ -25,8 +25,8 @@ import defines::*;
 //
 
 module soc_tb(
-    input       clk,
-    input       reset);
+    input clk,
+    input reset);
 
     localparam MEM_SIZE = 'h1000000;
     localparam NUM_PERIPHERALS = 6;
@@ -91,26 +91,26 @@ module soc_tb(
     // Beginning of automatic wires (for undeclared instantiated-module outputs)
     logic [12:0]        dram_addr;              // From sdram_controller of sdram_controller.v
     logic [1:0]         dram_ba;                // From sdram_controller of sdram_controller.v
-    logic               dram_cas_n;             // From sdram_controller of sdram_controller.v
-    logic               dram_cke;               // From sdram_controller of sdram_controller.v
-    logic               dram_clk;               // From sdram_controller of sdram_controller.v
-    logic               dram_cs_n;              // From sdram_controller of sdram_controller.v
-    logic               dram_ras_n;             // From sdram_controller of sdram_controller.v
-    logic               dram_we_n;              // From sdram_controller of sdram_controller.v
-    logic               perf_dram_page_hit;     // From sdram_controller of sdram_controller.v
-    logic               perf_dram_page_miss;    // From sdram_controller of sdram_controller.v
-    logic               ps2_clk;                // From sim_ps2 of sim_ps2.v
-    logic               ps2_data;               // From sim_ps2 of sim_ps2.v
-    logic               sd_do;                  // From sim_sdmmc of sim_sdmmc.v
-    logic               timer_interrupt;        // From timer of timer.v
+    logic dram_cas_n;             // From sdram_controller of sdram_controller.v
+    logic dram_cke;               // From sdram_controller of sdram_controller.v
+    logic dram_clk;               // From sdram_controller of sdram_controller.v
+    logic dram_cs_n;              // From sdram_controller of sdram_controller.v
+    logic dram_ras_n;             // From sdram_controller of sdram_controller.v
+    logic dram_we_n;              // From sdram_controller of sdram_controller.v
+    logic perf_dram_page_hit;     // From sdram_controller of sdram_controller.v
+    logic perf_dram_page_miss;    // From sdram_controller of sdram_controller.v
+    logic ps2_clk;                // From sim_ps2 of sim_ps2.v
+    logic ps2_data;               // From sim_ps2 of sim_ps2.v
+    logic sd_do;                  // From sim_sdmmc of sim_sdmmc.v
+    logic timer_interrupt;        // From timer of timer.v
     logic [7:0]         vga_b;                  // From vga_controller of vga_controller.v
-    logic               vga_blank_n;            // From vga_controller of vga_controller.v
-    logic               vga_clk;                // From vga_controller of vga_controller.v
+    logic vga_blank_n;            // From vga_controller of vga_controller.v
+    logic vga_clk;                // From vga_controller of vga_controller.v
     logic [7:0]         vga_g;                  // From vga_controller of vga_controller.v
-    logic               vga_hs;                 // From vga_controller of vga_controller.v
+    logic vga_hs;                 // From vga_controller of vga_controller.v
     logic [7:0]         vga_r;                  // From vga_controller of vga_controller.v
-    logic               vga_sync_n;             // From vga_controller of vga_controller.v
-    logic               vga_vs;                 // From vga_controller of vga_controller.v
+    logic vga_sync_n;             // From vga_controller of vga_controller.v
+    logic vga_vs;                 // From vga_controller of vga_controller.v
     // End of automatics
 
     `define CORE0 nyuzi.core_gen[0].core

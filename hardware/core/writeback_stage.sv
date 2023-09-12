@@ -40,94 +40,94 @@ import defines::*;
 //
 
 module writeback_stage(
-  input                 clk,
-  input                 reset,
+  input clk,
+  input reset,
 
   // From fp_execute_stage5 (floating point pipline)
-  input                 fx5_instruction_valid,
-  input decoded_instruction_t       fx5_instruction,
-  input vector_t            fx5_result,
-  input vector_mask_t           fx5_mask_value,
-  input local_thread_idx_t        fx5_thread_idx,
-  input subcycle_t            fx5_subcycle,
+  input fx5_instruction_valid,
+  input decoded_instruction_t fx5_instruction,
+  input vector_t fx5_result,
+  input vector_mask_t fx5_mask_value,
+  input local_thread_idx_t fx5_thread_idx,
+  input subcycle_t fx5_subcycle,
 
   // From int_execute_stage (integer pipeline)
-  input                 ix_instruction_valid,
-  input decoded_instruction_t       ix_instruction,
-  input vector_t            ix_result,
-  input local_thread_idx_t        ix_thread_idx,
-  input vector_mask_t           ix_mask_value,
-  input logic               ix_rollback_en,
-  input scalar_t            ix_rollback_pc,
-  input subcycle_t            ix_subcycle,
-  input                 ix_privileged_op_fault,
+  input ix_instruction_valid,
+  input decoded_instruction_t ix_instruction,
+  input vector_t ix_result,
+  input local_thread_idx_t ix_thread_idx,
+  input vector_mask_t ix_mask_value,
+  input logic ix_rollback_en,
+  input scalar_t ix_rollback_pc,
+  input subcycle_t ix_subcycle,
+  input ix_privileged_op_fault,
 
   // From dcache_data_stage (memory pipeline)
-  input                 dd_instruction_valid,
-  input decoded_instruction_t       dd_instruction,
-  input vector_mask_t           dd_lane_mask,
-  input local_thread_idx_t        dd_thread_idx,
-  input l1d_addr_t            dd_request_vaddr,
-  input subcycle_t            dd_subcycle,
-  input                 dd_rollback_en,
-  input scalar_t            dd_rollback_pc,
-  input cache_line_data_t         dd_load_data,
-  input                 dd_suspend_thread,
-  input                 dd_io_access,
-  input logic               dd_trap,
-  input trap_cause_t          dd_trap_cause,
+  input dd_instruction_valid,
+  input decoded_instruction_t dd_instruction,
+  input vector_mask_t dd_lane_mask,
+  input local_thread_idx_t dd_thread_idx,
+  input l1d_addr_t dd_request_vaddr,
+  input subcycle_t dd_subcycle,
+  input dd_rollback_en,
+  input scalar_t dd_rollback_pc,
+  input cache_line_data_t dd_load_data,
+  input dd_suspend_thread,
+  input dd_io_access,
+  input logic dd_trap,
+  input trap_cause_t dd_trap_cause,
 
   // From l1_store_queue
   input [CACHE_LINE_BYTES - 1:0]    sq_store_bypass_mask,
-  input cache_line_data_t         sq_store_bypass_data,
-  input                 sq_store_sync_success,
-  input                 sq_rollback_en,
+  input cache_line_data_t sq_store_bypass_data,
+  input sq_store_sync_success,
+  input sq_rollback_en,
 
   // From io_request_queue
-  input scalar_t            ior_read_value,
-  input logic               ior_rollback_en,
+  input scalar_t ior_read_value,
+  input logic ior_rollback_en,
 
   // From control_registers
-  input scalar_t            cr_creg_read_val,
-  input scalar_t            cr_trap_handler,
-  input scalar_t            cr_tlb_miss_handler,
-  input subcycle_t            cr_eret_subcycle[`THREADS_PER_CORE],
+  input scalar_t cr_creg_read_val,
+  input scalar_t cr_trap_handler,
+  input scalar_t cr_tlb_miss_handler,
+  input subcycle_t cr_eret_subcycle[`THREADS_PER_CORE],
 
   // To control_registers
-  output logic              wb_trap,
-  output trap_cause_t           wb_trap_cause,
-  output scalar_t             wb_trap_pc,
-  output scalar_t             wb_trap_access_vaddr,
-  output subcycle_t           wb_trap_subcycle,
-  output syscall_index_t        wb_syscall_index,
-  output logic              wb_eret,
+  output logic wb_trap,
+  output trap_cause_t wb_trap_cause,
+  output scalar_t wb_trap_pc,
+  output scalar_t wb_trap_access_vaddr,
+  output subcycle_t wb_trap_subcycle,
+  output syscall_index_t wb_syscall_index,
+  output logic wb_eret,
 
   // Rollback signals to all stages
-  output logic              wb_rollback_en,
-  output local_thread_idx_t       wb_rollback_thread_idx,
-  output scalar_t             wb_rollback_pc,
-  output pipeline_sel_t         wb_rollback_pipeline,
-  output subcycle_t           wb_rollback_subcycle,
+  output logic wb_rollback_en,
+  output local_thread_idx_t wb_rollback_thread_idx,
+  output scalar_t wb_rollback_pc,
+  output pipeline_sel_t wb_rollback_pipeline,
+  output subcycle_t wb_rollback_subcycle,
 
   // To operand_fetch_stage/thread_select_stage
-  output logic              wb_writeback_en,
-  output local_thread_idx_t       wb_writeback_thread_idx,
-  output logic              wb_writeback_vector,
-  output vector_t             wb_writeback_value,
-  output vector_mask_t          wb_writeback_mask,
-  output register_idx_t         wb_writeback_reg,
-  output logic              wb_writeback_last_subcycle,
+  output logic wb_writeback_en,
+  output local_thread_idx_t wb_writeback_thread_idx,
+  output logic wb_writeback_vector,
+  output vector_t wb_writeback_value,
+  output vector_mask_t wb_writeback_mask,
+  output register_idx_t wb_writeback_reg,
+  output logic wb_writeback_last_subcycle,
 
   // To thread_select_stage
-  output local_thread_bitmap_t      wb_suspend_thread_oh,
+  output local_thread_bitmap_t wb_suspend_thread_oh,
 
   // to on_chip_debugger
-  output logic              wb_inst_injected,
+  output logic wb_inst_injected,
 
   // To performance_counters
-  output logic              wb_perf_instruction_retire,
-  output logic              wb_perf_store_rollback,
-  output logic              wb_perf_interrupt);
+  output logic wb_perf_instruction_retire,
+  output logic wb_perf_store_rollback,
+  output logic wb_perf_interrupt);
 
   scalar_t mem_load_lane;
   logic[$clog2(CACHE_LINE_WORDS) - 1:0] mem_load_lane_idx;

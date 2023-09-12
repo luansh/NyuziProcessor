@@ -37,11 +37,11 @@ module sram_1r1w
   parameter READ_DURING_WRITE = "NEW_DATA",
   parameter ADDR_WIDTH = $clog2(SIZE))
 
-  (input             clk,
-  input              read_en,
+  (input clk,
+  input read_en,
   input [ADDR_WIDTH - 1:0]     read_addr,
   output logic[DATA_WIDTH - 1:0] read_data,
-  input              write_en,
+  input write_en,
   input [ADDR_WIDTH - 1:0]     write_addr,
   input [DATA_WIDTH - 1:0]     write_data);
 

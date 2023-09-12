@@ -27,29 +27,29 @@ module tlb
   #(parameter NUM_ENTRIES = 64,
   parameter NUM_WAYS = 4)
 
-  (input          clk,
-  input           reset,
+  (input clk,
+  input reset,
 
   // Command
   // (exe_writable means executable for icache, writable for dcache)
-  input           lookup_en,
-  input           update_en,
-  input           invalidate_en,
-  input           invalidate_all_en,
-  input page_index_t    request_vpage_idx,
+  input lookup_en,
+  input update_en,
+  input invalidate_en,
+  input invalidate_all_en,
+  input page_index_t request_vpage_idx,
   input [ASID_WIDTH - 1:0]  request_asid,
-  input page_index_t    update_ppage_idx,
-  input           update_present,
-  input           update_exe_writable,
-  input           update_supervisor,
-  input           update_global,
+  input page_index_t update_ppage_idx,
+  input update_present,
+  input update_exe_writable,
+  input update_supervisor,
+  input update_global,
 
   // Response
-  output page_index_t     lookup_ppage_idx,
-  output logic        lookup_hit,
-  output logic        lookup_present,
-  output logic        lookup_exe_writable,
-  output logic        lookup_supervisor);
+  output page_index_t lookup_ppage_idx,
+  output logic lookup_hit,
+  output logic lookup_present,
+  output logic lookup_exe_writable,
+  output logic lookup_supervisor);
 
   localparam NUM_SETS = NUM_ENTRIES / NUM_WAYS;
   localparam SET_INDEX_WIDTH = $clog2(NUM_SETS);

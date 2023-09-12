@@ -26,12 +26,12 @@ import defines::*;
 
 module vga_controller
     #(parameter BASE_ADDRESS = 0)
-    (input                      clk,
-    input                       reset,
+    (input clk,
+    input reset,
 
     // I/O bus control register access
     io_bus_interface.slave      io_bus,
-    output logic                frame_interrupt,
+    output logic frame_interrupt,
 
     // DMA access to memory
     axi4_interface.master       axi_bus,
@@ -40,11 +40,11 @@ module vga_controller
     output [7:0]                vga_r,
     output [7:0]                vga_g,
     output [7:0]                vga_b,
-    output logic                vga_clk,
-    output logic                vga_blank_n,
-    output logic                vga_hs,
-    output logic                vga_vs,
-    output logic                vga_sync_n);
+    output logic vga_clk,
+    output logic vga_blank_n,
+    output logic vga_hs,
+    output logic vga_vs,
+    output logic vga_sync_n);
 
     // The burst length is twice that of a CPU cache line fill to ensure
     // sufficient memory bandwidth even when ping-ponging.
@@ -60,9 +60,9 @@ module vga_controller
 
     /*AUTOLOGIC*/
     // Beginning of automatic wires (for undeclared instantiated-module outputs)
-    logic               in_visible_region;      // From vga_sequencer of vga_sequencer.v
-    logic               pixel_en;               // From vga_sequencer of vga_sequencer.v
-    logic               start_frame;            // From vga_sequencer of vga_sequencer.v
+    logic in_visible_region;      // From vga_sequencer of vga_sequencer.v
+    logic pixel_en;               // From vga_sequencer of vga_sequencer.v
+    logic start_frame;            // From vga_sequencer of vga_sequencer.v
     // End of automatics
     logic[31:0] vram_addr;
     logic[7:0] _ignore_alpha;

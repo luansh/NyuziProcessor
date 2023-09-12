@@ -50,19 +50,19 @@ module cache_lru
   parameter NUM_WAYS = 4,  // Must be 1, 2, 4, or 8
   parameter SET_INDEX_WIDTH = $clog2(NUM_SETS),
   parameter WAY_INDEX_WIDTH = $clog2(NUM_WAYS))
-  (input                clk,
-  input                 reset,
+  (input clk,
+  input reset,
 
   // Fill interface. Used to request LRU to replace when filling.
-  input                 fill_en,
+  input fill_en,
   input [SET_INDEX_WIDTH - 1:0]     fill_set,
   output logic[WAY_INDEX_WIDTH - 1:0]   fill_way,
 
   // Access interface. Used to move a way to the MRU position when
   // it has been accessed.
-  input                 access_en,
+  input access_en,
   input [SET_INDEX_WIDTH - 1:0]     access_set,
-  input                 update_en,
+  input update_en,
   input [WAY_INDEX_WIDTH - 1:0]     update_way);
 
   localparam LRU_FLAG_BITS =

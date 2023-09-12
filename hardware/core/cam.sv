@@ -31,19 +31,19 @@ module cam
   parameter KEY_WIDTH = 32,
   parameter INDEX_WIDTH = $clog2(NUM_ENTRIES))
 
-  (input               clk,
-  input              reset,
+  (input clk,
+  input reset,
 
   // Lookup interface
   input [KEY_WIDTH - 1:0]      lookup_key,
   output logic[INDEX_WIDTH - 1:0]  lookup_idx,
-  output logic           lookup_hit,
+  output logic lookup_hit,
 
   // Update interface
-  input              update_en,
+  input update_en,
   input [KEY_WIDTH - 1:0]      update_key,
   input [INDEX_WIDTH - 1:0]    update_idx,
-  input              update_valid);
+  input update_valid);
 
   logic[KEY_WIDTH - 1:0] lookup_table[NUM_ENTRIES];
   logic[NUM_ENTRIES - 1:0] entry_valid;

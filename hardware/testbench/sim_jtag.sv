@@ -27,7 +27,7 @@ import "DPI-C" function void send_jtag_response(input bit[31:0] instruction, inp
 //
 
 module sim_jtag
-    (input                     clk,
+    (input clk,
     jtag_interface.host        jtag);
 
     typedef enum int {

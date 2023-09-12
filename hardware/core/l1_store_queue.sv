@@ -28,49 +28,49 @@ import defines::*;
 //
 
 module l1_store_queue(
-  input                  clk,
-  input                  reset,
+  input clk,
+  input reset,
 
   // To instruction_decode_stage
-  output local_thread_bitmap_t       sq_store_sync_pending,
+  output local_thread_bitmap_t sq_store_sync_pending,
 
   // From dache_data_stage
-  input                  dd_store_en,
-  input                  dd_flush_en,
-  input                  dd_membar_en,
-  input                  dd_iinvalidate_en,
-  input                  dd_dinvalidate_en,
-  input cache_line_index_t         dd_store_addr,
+  input dd_store_en,
+  input dd_flush_en,
+  input dd_membar_en,
+  input dd_iinvalidate_en,
+  input dd_dinvalidate_en,
+  input cache_line_index_t dd_store_addr,
   input [CACHE_LINE_BYTES - 1:0]     dd_store_mask,
-  input cache_line_data_t        dd_store_data,
-  input                  dd_store_sync,
-  input local_thread_idx_t         dd_store_thread_idx,
-  input cache_line_index_t         dd_store_bypass_addr,
-  input local_thread_idx_t         dd_store_bypass_thread_idx,
+  input cache_line_data_t dd_store_data,
+  input dd_store_sync,
+  input local_thread_idx_t dd_store_thread_idx,
+  input cache_line_index_t dd_store_bypass_addr,
+  input local_thread_idx_t dd_store_bypass_thread_idx,
 
   // To writeback_stage
   output logic [CACHE_LINE_BYTES - 1:0]  sq_store_bypass_mask,
-  output cache_line_data_t         sq_store_bypass_data,
-  output logic               sq_store_sync_success,
+  output cache_line_data_t sq_store_bypass_data,
+  output logic sq_store_sync_success,
 
   // From l1_l2_interface
-  input                  storebuf_dequeue_ack,
-  input                  storebuf_l2_response_valid,
-  input l1_miss_entry_idx_t        storebuf_l2_response_idx,
-  input                  storebuf_l2_sync_success,
+  input storebuf_dequeue_ack,
+  input storebuf_l2_response_valid,
+  input l1_miss_entry_idx_t storebuf_l2_response_idx,
+  input storebuf_l2_sync_success,
 
   // To l1_l2_interface
-  output logic               sq_dequeue_ready,
-  output cache_line_index_t        sq_dequeue_addr,
-  output l1_miss_entry_idx_t       sq_dequeue_idx,
+  output logic sq_dequeue_ready,
+  output cache_line_index_t sq_dequeue_addr,
+  output l1_miss_entry_idx_t sq_dequeue_idx,
   output logic[CACHE_LINE_BYTES - 1:0]   sq_dequeue_mask,
-  output cache_line_data_t         sq_dequeue_data,
-  output logic               sq_dequeue_sync,
-  output logic               sq_dequeue_flush,
-  output logic               sq_dequeue_iinvalidate,
-  output logic               sq_dequeue_dinvalidate,
-  output logic               sq_rollback_en,
-  output local_thread_bitmap_t       sq_wake_bitmap);
+  output cache_line_data_t sq_dequeue_data,
+  output logic sq_dequeue_sync,
+  output logic sq_dequeue_flush,
+  output logic sq_dequeue_iinvalidate,
+  output logic sq_dequeue_dinvalidate,
+  output logic sq_rollback_en,
+  output local_thread_bitmap_t sq_wake_bitmap);
 
   struct packed {
     logic sync;

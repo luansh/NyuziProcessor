@@ -27,12 +27,12 @@ module sim_sdram
     parameter COL_ADDR_WIDTH = 8, // 256 columns
     parameter MAX_REFRESH_INTERVAL = 800)
 
-    (input                      dram_clk,
-    input                       dram_cke,
-    input                       dram_cs_n,
-    input                       dram_ras_n,
-    input                       dram_cas_n,
-    input                       dram_we_n,      // Write enable
+    (input dram_clk,
+    input dram_cke,
+    input dram_cs_n,
+    input dram_ras_n,
+    input dram_cas_n,
+    input dram_we_n,      // Write enable
     input[1:0]                  dram_ba,        // Bank select
     input[12:0]                 dram_addr,
     inout[DATA_WIDTH - 1:0]     dram_dq);

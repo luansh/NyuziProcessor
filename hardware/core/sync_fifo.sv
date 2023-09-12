@@ -43,16 +43,16 @@ module sync_fifo
   parameter ALMOST_FULL_THRESHOLD = SIZE,
   parameter ALMOST_EMPTY_THRESHOLD = 1)
 
-  (input             clk,
-  input            reset,
-  input            flush_en,  // flush is synchronous, unlike reset
-  output logic         full,
-  output logic         almost_full,
-  input            enqueue_en,
+  (input clk,
+  input reset,
+  input flush_en,  // flush is synchronous, unlike reset
+  output logic full,
+  output logic almost_full,
+  input enqueue_en,
   input [WIDTH - 1:0]      enqueue_value,
-  output logic         empty,
-  output logic         almost_empty,
-  input            dequeue_en,
+  output logic empty,
+  output logic almost_empty,
+  input dequeue_en,
   output logic[WIDTH - 1:0]  dequeue_value);
 
 `ifdef VENDOR_ALTERA

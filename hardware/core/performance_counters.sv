@@ -25,8 +25,8 @@ module performance_counters
   parameter NUM_COUNTERS = 2,
   parameter COUNTER_IDX_WIDTH = $clog2(NUM_COUNTERS))
 
-  (input                        clk,
-  input                         reset,
+  (input clk,
+  input reset,
   input [NUM_EVENTS - 1:0]              perf_events,
   input [NUM_COUNTERS - 1:0][EVENT_IDX_WIDTH - 1:0]   perf_event_select,
   output logic[NUM_COUNTERS - 1:0][63:0]        perf_event_count);

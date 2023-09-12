@@ -26,29 +26,29 @@ import defines::*;
 //
 
 module l2_cache_update_stage(
-  input                      clk,
-  input                      reset,
+  input clk,
+  input reset,
 
   // From l2_cache_read_stage
-  input                      l2r_request_valid,
-  input l2req_packet_t               l2r_request,
-  input cache_line_data_t            l2r_data,
-  input                      l2r_cache_hit,
+  input l2r_request_valid,
+  input l2req_packet_t l2r_request,
+  input cache_line_data_t l2r_data,
+  input l2r_cache_hit,
   input logic[$clog2(`L2_WAYS * `L2_SETS) - 1:0] l2r_hit_cache_idx,
-  input                      l2r_l2_fill,
-  input                      l2r_restarted_flush,
-  input cache_line_data_t            l2r_data_from_memory,
-  input                      l2r_store_sync_success,
-  input                      l2r_needs_writeback,
+  input l2r_l2_fill,
+  input l2r_restarted_flush,
+  input cache_line_data_t l2r_data_from_memory,
+  input l2r_store_sync_success,
+  input l2r_needs_writeback,
 
   // To l2_cache_read_stage
-  output logic                   l2u_write_en,
+  output logic l2u_write_en,
   output logic[$clog2(`L2_WAYS * `L2_SETS) - 1:0] l2u_write_addr,
-  output cache_line_data_t             l2u_write_data,
+  output cache_line_data_t l2u_write_data,
 
   // To cores
-  output logic                   l2_response_valid,
-  output l2rsp_packet_t              l2_response);
+  output logic l2_response_valid,
+  output l2rsp_packet_t l2_response);
 
   cache_line_data_t original_data;
   logic update_data;

@@ -26,7 +26,7 @@ module test_io_request_queue(input clk, input reset);
 
     logic dd_io_write_en;
     logic dd_io_read_en;
-    local_thread_idx_t  dd_io_thread_idx;
+    local_thread_idx_t dd_io_thread_idx;
     scalar_t dd_io_addr;
     scalar_t dd_io_write_value;
     scalar_t ior_read_value;

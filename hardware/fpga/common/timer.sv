@@ -21,14 +21,14 @@
 module timer
     #(parameter BASE_ADDRESS = 0)
 
-    (input                    clk,
-    input                     reset,
+    (input clk,
+    input reset,
 
     // IO bus interface
     io_bus_interface.slave    io_bus,
 
     // Interrupt
-    output logic              timer_interrupt);
+    output logic timer_interrupt);
 
     logic[31:0] counter;
 

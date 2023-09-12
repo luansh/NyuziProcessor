@@ -44,94 +44,94 @@ import defines::*;
 
 module l1_l2_interface
   #(parameter CORE_ID = 0)
-  (input                    clk,
-  input                     reset,
+  (input clk,
+  input reset,
 
   // From l2_cache
-  input                     l2_ready,
-  input                     l2_response_valid,
-  input l2rsp_packet_t              l2_response,
+  input l2_ready,
+  input l2_response_valid,
+  input l2rsp_packet_t l2_response,
 
   // To l2_cache
-  output logic                  l2i_request_valid,
-  output l2req_packet_t             l2i_request,
+  output logic l2i_request_valid,
+  output l2req_packet_t l2i_request,
 
   // To ifetch_tag_stage
-  output logic                  l2i_icache_lru_fill_en,
-  output l1i_set_idx_t              l2i_icache_lru_fill_set,
+  output logic l2i_icache_lru_fill_en,
+  output l1i_set_idx_t l2i_icache_lru_fill_set,
   output logic[`L1I_WAYS - 1:0]         l2i_itag_update_en,
-  output l1i_set_idx_t              l2i_itag_update_set,
-  output l1i_tag_t                l2i_itag_update_tag,
-  output logic                  l2i_itag_update_valid,
+  output l1i_set_idx_t l2i_itag_update_set,
+  output l1i_tag_t l2i_itag_update_tag,
+  output logic l2i_itag_update_valid,
 
   // To instruction_decode_stage
-  output local_thread_bitmap_t          sq_store_sync_pending,
+  output local_thread_bitmap_t sq_store_sync_pending,
 
   // From ifetch_tag_stage
-  input l1i_way_idx_t               ift_fill_lru,
+  input l1i_way_idx_t ift_fill_lru,
 
   // From ifetch_data_stage
-  input logic                   ifd_cache_miss,
-  input cache_line_index_t            ifd_cache_miss_paddr,
-  input local_thread_idx_t            ifd_cache_miss_thread_idx,
+  input logic ifd_cache_miss,
+  input cache_line_index_t ifd_cache_miss_paddr,
+  input local_thread_idx_t ifd_cache_miss_thread_idx,
 
   // To ifetch_data_stage
-  output logic                  l2i_idata_update_en,
-  output l1i_way_idx_t              l2i_idata_update_way,
-  output l1i_set_idx_t              l2i_idata_update_set,
-  output cache_line_data_t            l2i_idata_update_data,
+  output logic l2i_idata_update_en,
+  output l1i_way_idx_t l2i_idata_update_way,
+  output l1i_set_idx_t l2i_idata_update_set,
+  output cache_line_data_t l2i_idata_update_data,
 
   // To thread_select_stage
-  output local_thread_bitmap_t          l2i_dcache_wake_bitmap,
-  output local_thread_bitmap_t          l2i_icache_wake_bitmap,
+  output local_thread_bitmap_t l2i_dcache_wake_bitmap,
+  output local_thread_bitmap_t l2i_icache_wake_bitmap,
 
   // From dcache_tag_stage
-  input logic                   dt_snoop_valid[`L1D_WAYS],
-  input l1d_tag_t                 dt_snoop_tag[`L1D_WAYS],
-  input l1d_way_idx_t               dt_fill_lru,
+  input logic dt_snoop_valid[`L1D_WAYS],
+  input l1d_tag_t dt_snoop_tag[`L1D_WAYS],
+  input l1d_way_idx_t dt_fill_lru,
 
   // To dcache_tag_stage
-  output logic                  l2i_snoop_en,
-  output l1d_set_idx_t              l2i_snoop_set,
+  output logic l2i_snoop_en,
+  output l1d_set_idx_t l2i_snoop_set,
   output logic[`L1D_WAYS - 1:0]         l2i_dtag_update_en_oh,
-  output l1d_set_idx_t              l2i_dtag_update_set,
-  output l1d_tag_t                l2i_dtag_update_tag,
-  output logic                  l2i_dtag_update_valid,
-  output logic                  l2i_dcache_lru_fill_en,
-  output l1d_set_idx_t              l2i_dcache_lru_fill_set,
+  output l1d_set_idx_t l2i_dtag_update_set,
+  output l1d_tag_t l2i_dtag_update_tag,
+  output logic l2i_dtag_update_valid,
+  output logic l2i_dcache_lru_fill_en,
+  output l1d_set_idx_t l2i_dcache_lru_fill_set,
 
   // From dcache_data_stage
-  input                     dd_cache_miss,
-  input cache_line_index_t            dd_cache_miss_addr,
-  input local_thread_idx_t            dd_cache_miss_thread_idx,
-  input                     dd_cache_miss_sync,
-  input                     dd_store_en,
-  input                     dd_flush_en,
-  input                     dd_membar_en,
-  input                     dd_iinvalidate_en,
-  input                     dd_dinvalidate_en,
+  input dd_cache_miss,
+  input cache_line_index_t dd_cache_miss_addr,
+  input local_thread_idx_t dd_cache_miss_thread_idx,
+  input dd_cache_miss_sync,
+  input dd_store_en,
+  input dd_flush_en,
+  input dd_membar_en,
+  input dd_iinvalidate_en,
+  input dd_dinvalidate_en,
   input [CACHE_LINE_BYTES - 1:0]        dd_store_mask,
-  input cache_line_index_t            dd_store_addr,
-  input cache_line_data_t             dd_store_data,
-  input local_thread_idx_t            dd_store_thread_idx,
-  input                     dd_store_sync,
-  input cache_line_index_t            dd_store_bypass_addr,
-  input local_thread_idx_t            dd_store_bypass_thread_idx,
+  input cache_line_index_t dd_store_addr,
+  input cache_line_data_t dd_store_data,
+  input local_thread_idx_t dd_store_thread_idx,
+  input dd_store_sync,
+  input cache_line_index_t dd_store_bypass_addr,
+  input local_thread_idx_t dd_store_bypass_thread_idx,
 
   // To dcache_data_stage
-  output logic                  l2i_ddata_update_en,
-  output l1d_way_idx_t              l2i_ddata_update_way,
-  output l1d_set_idx_t              l2i_ddata_update_set,
-  output cache_line_data_t            l2i_ddata_update_data,
+  output logic l2i_ddata_update_en,
+  output l1d_way_idx_t l2i_ddata_update_way,
+  output l1d_set_idx_t l2i_ddata_update_set,
+  output cache_line_data_t l2i_ddata_update_data,
 
   // To writeback_stage
   output logic[CACHE_LINE_BYTES - 1:0]      sq_store_bypass_mask,
-  output logic                  sq_store_sync_success,
-  output cache_line_data_t            sq_store_bypass_data,
-  output logic                  sq_rollback_en,
+  output logic sq_store_sync_success,
+  output cache_line_data_t sq_store_bypass_data,
+  output logic sq_rollback_en,
 
   // To core
-  output logic                  l2i_perf_store);
+  output logic l2i_perf_store);
 
   logic[`L1D_WAYS - 1:0] snoop_hit_way_oh;  // Only snoops dcache
   l1d_way_idx_t snoop_hit_way_idx;
@@ -172,15 +172,15 @@ module l1_l2_interface
 
   /*AUTOLOGIC*/
   // Beginning of automatic wires (for undeclared instantiated-module outputs)
-  cache_line_index_t  sq_dequeue_addr;    // From l1_store_queue of l1_store_queue.v
-  cache_line_data_t   sq_dequeue_data;    // From l1_store_queue of l1_store_queue.v
-  logic         sq_dequeue_dinvalidate; // From l1_store_queue of l1_store_queue.v
-  logic         sq_dequeue_flush;     // From l1_store_queue of l1_store_queue.v
+  cache_line_index_t sq_dequeue_addr;    // From l1_store_queue of l1_store_queue.v
+  cache_line_data_t sq_dequeue_data;    // From l1_store_queue of l1_store_queue.v
+  logic sq_dequeue_dinvalidate; // From l1_store_queue of l1_store_queue.v
+  logic sq_dequeue_flush;     // From l1_store_queue of l1_store_queue.v
   l1_miss_entry_idx_t sq_dequeue_idx;     // From l1_store_queue of l1_store_queue.v
-  logic         sq_dequeue_iinvalidate; // From l1_store_queue of l1_store_queue.v
+  logic sq_dequeue_iinvalidate; // From l1_store_queue of l1_store_queue.v
   logic [CACHE_LINE_BYTES-1:0] sq_dequeue_mask;// From l1_store_queue of l1_store_queue.v
-  logic         sq_dequeue_ready;     // From l1_store_queue of l1_store_queue.v
-  logic         sq_dequeue_sync;    // From l1_store_queue of l1_store_queue.v
+  logic sq_dequeue_ready;     // From l1_store_queue of l1_store_queue.v
+  logic sq_dequeue_sync;    // From l1_store_queue of l1_store_queue.v
   local_thread_bitmap_t sq_wake_bitmap;     // From l1_store_queue of l1_store_queue.v
   // End of automatics
 

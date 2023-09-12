@@ -25,8 +25,8 @@ import defines::*;
 module axi_rom
     #(parameter FILENAME = "")
 
-    (input                      clk,
-    input                       reset,
+    (input clk,
+    input reset,
 
     // AXI interface
     axi4_interface.slave        axi_bus);

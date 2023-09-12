@@ -38,13 +38,13 @@ import defines::*;
 module l2_cache_pending_miss_cam
   #(parameter QUEUE_SIZE = 16,
   parameter QUEUE_ADDR_WIDTH = $clog2(QUEUE_SIZE))
-  (input           clk,
-  input          reset,
-  input          request_valid,
+  (input clk,
+  input reset,
+  input request_valid,
   input cache_line_index_t request_addr,
-  input          enqueue_fill_request,
-  input          l2r_l2_fill,
-  output logic       duplicate_request);
+  input enqueue_fill_request,
+  input l2r_l2_fill,
+  output logic duplicate_request);
 
   logic[QUEUE_ADDR_WIDTH - 1:0] cam_hit_entry;
   logic cam_hit;

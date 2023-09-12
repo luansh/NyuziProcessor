@@ -21,10 +21,10 @@
 //
 
 module sim_ps2(
-    input               clk,
-    input               reset,
-    output logic        ps2_clk,
-    output logic        ps2_data);
+    input clk,
+    input reset,
+    output logic ps2_clk,
+    output logic ps2_data);
 
     // This is much faster than the PS/2 controller would run normally,
     // but it makes the test take less time.

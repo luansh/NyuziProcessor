@@ -21,16 +21,16 @@
 module uart
     #(parameter BASE_ADDRESS = 0)
 
-    (input                    clk,
-    input                     reset,
+    (input clk,
+    input reset,
 
     // IO bus interface
     io_bus_interface.slave    io_bus,
-    output logic              rx_interrupt,
+    output logic rx_interrupt,
 
     // UART interface
-    output logic              uart_tx,
-    input                     uart_rx);
+    output logic uart_tx,
+    input uart_rx);
 
     localparam STATUS_REG = BASE_ADDRESS;
     localparam RX_REG = BASE_ADDRESS + 4;
@@ -41,8 +41,8 @@ module uart
 
     /*AUTOLOGIC*/
     // Beginning of automatic wires (for undeclared instantiated-module outputs)
-    logic               rx_char_valid;          // From uart_receive of uart_receive.v
-    logic               tx_ready;               // From uart_transmit of uart_transmit.v
+    logic rx_char_valid;          // From uart_receive of uart_receive.v
+    logic tx_ready;               // From uart_transmit of uart_transmit.v
     // End of automatics
     logic[7:0] rx_fifo_char;
     logic rx_fifo_empty;

@@ -27,10 +27,10 @@
 module rr_arbiter
   #(parameter NUM_REQUESTERS = 4)
 
-  (input                clk,
-  input                 reset,
+  (input clk,
+  input reset,
   input[NUM_REQUESTERS - 1:0]     request,
-  input                 update_lru,
+  input update_lru,
   output logic[NUM_REQUESTERS - 1:0]  grant_oh);
 
   logic[NUM_REQUESTERS - 1:0] priority_oh_nxt;

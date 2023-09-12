@@ -37,55 +37,55 @@ import defines::*;
 //
 
 module l2_cache_read_stage(
-  input                   clk,
-  input                   reset,
+  input clk,
+  input reset,
 
   // From l2_cache_tag_stage
-  input                   l2t_request_valid,
-  input l2req_packet_t            l2t_request,
-  input                   l2t_valid[`L2_WAYS],
-  input l2_tag_t              l2t_tag[`L2_WAYS],
-  input                   l2t_dirty[`L2_WAYS],
-  input                   l2t_l2_fill,
-  input                   l2t_restarted_flush,
-  input l2_way_idx_t            l2t_fill_way,
-  input cache_line_data_t           l2t_data_from_memory,
+  input l2t_request_valid,
+  input l2req_packet_t l2t_request,
+  input l2t_valid[`L2_WAYS],
+  input l2_tag_t l2t_tag[`L2_WAYS],
+  input l2t_dirty[`L2_WAYS],
+  input l2t_l2_fill,
+  input l2t_restarted_flush,
+  input l2_way_idx_t l2t_fill_way,
+  input cache_line_data_t l2t_data_from_memory,
 
   // To l2_cache_tag_stage
   // Update metadata.
   output logic[`L2_WAYS - 1:0]        l2r_update_dirty_en,
-  output l2_set_idx_t             l2r_update_dirty_set,
-  output logic                l2r_update_dirty_value,
+  output l2_set_idx_t l2r_update_dirty_set,
+  output logic l2r_update_dirty_value,
   output logic[`L2_WAYS - 1:0]        l2r_update_tag_en,
-  output l2_set_idx_t             l2r_update_tag_set,
-  output logic                l2r_update_tag_valid,
-  output l2_tag_t               l2r_update_tag_value,
-  output logic                l2r_update_lru_en,
-  output l2_way_idx_t             l2r_update_lru_hit_way,
+  output l2_set_idx_t l2r_update_tag_set,
+  output logic l2r_update_tag_valid,
+  output l2_tag_t l2r_update_tag_value,
+  output logic l2r_update_lru_en,
+  output l2_way_idx_t l2r_update_lru_hit_way,
 
   // From l2_cache_update_stage
-  input                   l2u_write_en,
+  input l2u_write_en,
   input [$clog2(`L2_WAYS * `L2_SETS) - 1:0] l2u_write_addr,
-  input cache_line_data_t           l2u_write_data,
+  input cache_line_data_t l2u_write_data,
 
   // To l2_cache_update_stage
-  output logic                l2r_request_valid,
-  output l2req_packet_t           l2r_request,
-  output cache_line_data_t          l2r_data,  // Also to bus interface unit
-  output logic                l2r_cache_hit,
+  output logic l2r_request_valid,
+  output l2req_packet_t l2r_request,
+  output cache_line_data_t l2r_data,  // Also to bus interface unit
+  output logic l2r_cache_hit,
   output logic[$clog2(`L2_WAYS * `L2_SETS) - 1:0] l2r_hit_cache_idx,
-  output logic                l2r_l2_fill,
-  output logic                l2r_restarted_flush,
-  output cache_line_data_t          l2r_data_from_memory,
-  output logic                l2r_store_sync_success,
+  output logic l2r_l2_fill,
+  output logic l2r_restarted_flush,
+  output cache_line_data_t l2r_data_from_memory,
+  output logic l2r_store_sync_success,
 
   // To l2_axi_bus_interface
-  output l2_tag_t               l2r_writeback_tag,
-  output logic                l2r_needs_writeback,
+  output l2_tag_t l2r_writeback_tag,
+  output logic l2r_needs_writeback,
 
   // To performance_counters
-  output logic                l2r_perf_l2_miss,
-  output logic                l2r_perf_l2_hit);
+  output logic l2r_perf_l2_miss,
+  output logic l2r_perf_l2_hit);
 
   localparam GLOBAL_THREAD_IDX_WIDTH = $clog2(TOTAL_THREADS);
 

@@ -53,45 +53,45 @@ import defines::*;
 //
 
 module instruction_decode_stage(
-  input             clk,
-  input             reset,
+  input clk,
+  input reset,
 
   // From ifetch_data_stage
-  input             ifd_instruction_valid,
-  input scalar_t        ifd_instruction,
-  input             ifd_inst_injected,
-  input scalar_t        ifd_pc,
-  input local_thread_idx_t    ifd_thread_idx,
-  input             ifd_alignment_fault,
-  input             ifd_supervisor_fault,
-  input             ifd_page_fault,
-  input             ifd_executable_fault,
-  input             ifd_tlb_miss,
+  input ifd_instruction_valid,
+  input scalar_t ifd_instruction,
+  input ifd_inst_injected,
+  input scalar_t ifd_pc,
+  input local_thread_idx_t ifd_thread_idx,
+  input ifd_alignment_fault,
+  input ifd_supervisor_fault,
+  input ifd_page_fault,
+  input ifd_executable_fault,
+  input ifd_tlb_miss,
 
   // From dcache_data_stage
-  input local_thread_bitmap_t   dd_load_sync_pending,
+  input local_thread_bitmap_t dd_load_sync_pending,
 
   // From l1_l2_interface
-  input local_thread_bitmap_t   sq_store_sync_pending,
+  input local_thread_bitmap_t sq_store_sync_pending,
 
   // To thread_select_stage
-  output decoded_instruction_t  id_instruction,
-  output logic          id_instruction_valid,
-  output local_thread_idx_t   id_thread_idx,
+  output decoded_instruction_t id_instruction,
+  output logic id_instruction_valid,
+  output local_thread_idx_t id_thread_idx,
 
   // From io_request_queue
-  input local_thread_bitmap_t   ior_pending,
+  input local_thread_bitmap_t ior_pending,
 
   // From control_registers
-  input local_thread_bitmap_t   cr_interrupt_en,
-  input local_thread_bitmap_t   cr_interrupt_pending,
+  input local_thread_bitmap_t cr_interrupt_en,
+  input local_thread_bitmap_t cr_interrupt_pending,
 
   // From on_chip_debugger
-  input             ocd_halt,
+  input ocd_halt,
 
   // From writeback_stage
-  input             wb_rollback_en,
-  input local_thread_idx_t    wb_rollback_thread_idx);
+  input wb_rollback_en,
+  input local_thread_idx_t wb_rollback_thread_idx);
 
   localparam T = 1'b1;
   localparam F = 1'b0;

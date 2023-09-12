@@ -23,14 +23,14 @@ module axi_async_bridge
     #(parameter ADDR_WIDTH = 32,
     parameter DATA_WIDTH = 32)
 
-    (input                      reset,
+    (input reset,
 
     // Slave Interface (from a master)
-    input                       clk_s,
+    input clk_s,
     axi4_interface.slave        axi_bus_s,
 
     // Master Interface (to a slave)
-    input                       clk_m,
+    input clk_m,
     axi4_interface.master       axi_bus_m);
 
     localparam CONTROL_FIFO_LENGTH = 2;    // requirement of async_fifo

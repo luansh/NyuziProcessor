@@ -30,12 +30,12 @@ module logic_analyzer
     parameter CAPTURE_SIZE = 64,
     parameter BAUD_DIVIDE = 1)
 
-    (input                          clk,
-    input                           reset,
+    (input clk,
+    input reset,
     input[CAPTURE_WIDTH_BITS - 1:0] capture_data,
-    input                           capture_enable,
-    input                           trigger,
-    output logic                    uart_tx);
+    input capture_enable,
+    input trigger,
+    output logic uart_tx);
 
     localparam CAPTURE_INDEX_WIDTH = $clog2(CAPTURE_SIZE);
     localparam CAPTURE_WIDTH_BYTES = (CAPTURE_WIDTH_BITS + 7) / 8;
@@ -57,7 +57,7 @@ module logic_analyzer
 
     /*AUTOLOGIC*/
     // Beginning of automatic wires (for undeclared instantiated-module outputs)
-    logic               tx_ready;               // From uart_transmit of uart_transmit.v
+    logic tx_ready;               // From uart_transmit of uart_transmit.v
     // End of automatics
 
     sram_1r1w #(.DATA_WIDTH(CAPTURE_WIDTH_BITS), .SIZE(CAPTURE_SIZE)) capture_mem(

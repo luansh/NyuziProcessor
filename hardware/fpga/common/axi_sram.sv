@@ -24,15 +24,15 @@ import defines::*;
 module axi_sram
     #(parameter MEM_SIZE = 'h40000) // Number of 32-bit words
 
-    (input                      clk,
-    input                       reset,
+    (input clk,
+    input reset,
 
     // AXI interface
     axi4_interface.slave        axi_bus,
 
     // External loader interface. It is valid to access these when the
     // part is in reset; the reset signal only applies to the AXI state machine.
-    input                       loader_we,
+    input loader_we,
     input[31:0]                 loader_addr,
     input[31:0]                 loader_data);
 

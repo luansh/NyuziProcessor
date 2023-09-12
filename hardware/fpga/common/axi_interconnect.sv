@@ -28,8 +28,8 @@ import defines::*;
 module axi_interconnect
     #(parameter M1_BASE_ADDRESS = 32'hffffeee0)
 
-    (input                      clk,
-    input                       reset,
+    (input clk,
+    input reset,
 
     // These interface control externally connected slaves
     // Slave Interface 0 (address 0x00000000 - M1_BASE_ADDRESS)

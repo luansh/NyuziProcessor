@@ -20,13 +20,13 @@
 
 module uart_transmit
     #(parameter DIVISOR_WIDTH = 16)
-    (input                        clk,
-    input                         reset,
+    (input clk,
+    input reset,
     input[DIVISOR_WIDTH - 1:0]    clocks_per_bit,
-    input                         tx_en,
-    output logic                  tx_ready,
+    input tx_en,
+    output logic tx_ready,
     input[7:0]                    tx_char,
-    output logic                  uart_tx);
+    output logic uart_tx);
 
     localparam START_BIT = 1'b0;
     localparam STOP_BIT = 1'b1;

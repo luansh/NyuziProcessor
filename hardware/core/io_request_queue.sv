@@ -26,34 +26,34 @@ import defines::*;
 module io_request_queue
   #(parameter CORE_ID = 0)
 
-  (input                 clk,
-  input                  reset,
+  (input clk,
+  input reset,
 
   // From dcache_data_stage
-  input                  dd_io_write_en,
-  input                  dd_io_read_en,
-  input local_thread_idx_t         dd_io_thread_idx,
-  input scalar_t             dd_io_addr,
-  input scalar_t             dd_io_write_value,
+  input dd_io_write_en,
+  input dd_io_read_en,
+  input local_thread_idx_t dd_io_thread_idx,
+  input scalar_t dd_io_addr,
+  input scalar_t dd_io_write_value,
 
   // To writeback_stage
-  output scalar_t            ior_read_value,
-  output logic               ior_rollback_en,
+  output scalar_t ior_read_value,
+  output logic ior_rollback_en,
 
   // To instruction_decode_stage
-  output local_thread_bitmap_t       ior_pending,
+  output local_thread_bitmap_t ior_pending,
 
   // To thread_select_stage
-  output local_thread_bitmap_t       ior_wake_bitmap,
+  output local_thread_bitmap_t ior_wake_bitmap,
 
   // From io_interconnect
-  input                  ii_ready,
-  input                  ii_response_valid,
-  input iorsp_packet_t           ii_response,
+  input ii_ready,
+  input ii_response_valid,
+  input iorsp_packet_t ii_response,
 
   // To io_interconnect
-  output logic               ior_request_valid,
-  output ioreq_packet_t          ior_request);
+  output logic ior_request_valid,
+  output ioreq_packet_t ior_request);
 
   struct packed {
     logic valid;

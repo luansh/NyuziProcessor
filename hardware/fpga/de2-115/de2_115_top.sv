@@ -19,10 +19,10 @@
 import defines::*;
 
 module de2_115_top(
-    input                       clk50,
+    input clk50,
 
     // Buttons
-    input                       reset_btn,    // KEY[0]
+    input reset_btn,    // KEY[0]
 
     // Der blinkenlights
     output logic[17:0]          red_led,
@@ -34,7 +34,7 @@ module de2_115_top(
 
     // UART
     output                      uart_tx,
-    input                       uart_rx,
+    input uart_rx,
 
     // SDRAM
     output                      dram_clk,
@@ -60,13 +60,13 @@ module de2_115_top(
 
     // SD card
     output                      sd_clk,
-    input                       sd_do,
+    input sd_do,
     output                      sd_di,
     output                      sd_cs,
 
     // PS/2
-    input                       ps2_clk,
-    input                       ps2_data);
+    input ps2_clk,
+    input ps2_data);
 
     parameter  bootrom = "../../../software/bootrom/boot.hex";
 
@@ -75,10 +75,10 @@ module de2_115_top(
 
     /*AUTOLOGIC*/
     // Beginning of automatic wires (for undeclared instantiated-module outputs)
-    logic               frame_interrupt;        // From vga_controller of vga_controller.v
-    logic               perf_dram_page_hit;     // From sdram_controller of sdram_controller.v
-    logic               perf_dram_page_miss;    // From sdram_controller of sdram_controller.v
-    logic               timer_interrupt;        // From timer of timer.v
+    logic frame_interrupt;        // From vga_controller of vga_controller.v
+    logic perf_dram_page_hit;     // From sdram_controller of sdram_controller.v
+    logic perf_dram_page_miss;    // From sdram_controller of sdram_controller.v
+    logic timer_interrupt;        // From timer of timer.v
     // End of automatics
 
     axi4_interface axi_bus_s[1:0]();
