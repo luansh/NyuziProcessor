@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//   http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,55 +36,55 @@ import defines::*;
 //
 
 module l2_cache_pending_miss_cam
-    #(parameter QUEUE_SIZE = 16,
-    parameter QUEUE_ADDR_WIDTH = $clog2(QUEUE_SIZE))
-    (input                   clk,
-    input                    reset,
-    input                    request_valid,
-    input cache_line_index_t request_addr,
-    input                    enqueue_fill_request,
-    input                    l2r_l2_fill,
-    output logic             duplicate_request);
+  #(parameter QUEUE_SIZE = 16,
+  parameter QUEUE_ADDR_WIDTH = $clog2(QUEUE_SIZE))
+  (input           clk,
+  input          reset,
+  input          request_valid,
+  input cache_line_index_t request_addr,
+  input          enqueue_fill_request,
+  input          l2r_l2_fill,
+  output logic       duplicate_request);
 
-    logic[QUEUE_ADDR_WIDTH - 1:0] cam_hit_entry;
-    logic cam_hit;
-    logic[QUEUE_SIZE - 1:0] empty_entries;    // 1 if entry is empty
-    logic[QUEUE_SIZE - 1:0] next_empty_oh;
-    logic[QUEUE_ADDR_WIDTH - 1:0] next_empty;
+  logic[QUEUE_ADDR_WIDTH - 1:0] cam_hit_entry;
+  logic cam_hit;
+  logic[QUEUE_SIZE - 1:0] empty_entries;  // 1 if entry is empty
+  logic[QUEUE_SIZE - 1:0] next_empty_oh;
+  logic[QUEUE_ADDR_WIDTH - 1:0] next_empty;
 
-    assign next_empty_oh = empty_entries & ~(empty_entries - QUEUE_SIZE'(1));
+  assign next_empty_oh = empty_entries & ~(empty_entries - QUEUE_SIZE'(1));
 
-    oh_to_idx #(.NUM_SIGNALS(QUEUE_SIZE)) oh_to_idx_next_empty(
-        .one_hot(next_empty_oh),
-        .index(next_empty));
+  oh_to_idx #(.NUM_SIGNALS(QUEUE_SIZE)) oh_to_idx_next_empty(
+    .one_hot(next_empty_oh),
+    .index(next_empty));
 
-    assign duplicate_request = cam_hit && !l2r_l2_fill;
+  assign duplicate_request = cam_hit && !l2r_l2_fill;
 
-    cam #(
-        .NUM_ENTRIES(QUEUE_SIZE),
-        .KEY_WIDTH($bits(cache_line_index_t))
-    ) cam_pending_miss(
-        .clk(clk),
-        .reset(reset),
-        .lookup_key(request_addr),
-        .lookup_idx(cam_hit_entry),
-        .lookup_hit(cam_hit),
-        .update_en(request_valid && (cam_hit ? l2r_l2_fill
-            : enqueue_fill_request)),
-        .update_key(request_addr),
-        .update_idx(cam_hit ? cam_hit_entry : next_empty),
-        .update_valid(cam_hit ? !l2r_l2_fill : enqueue_fill_request));
+  cam #(
+    .NUM_ENTRIES(QUEUE_SIZE),
+    .KEY_WIDTH($bits(cache_line_index_t))
+  ) cam_pending_miss(
+    .clk(clk),
+    .reset(reset),
+    .lookup_key(request_addr),
+    .lookup_idx(cam_hit_entry),
+    .lookup_hit(cam_hit),
+    .update_en(request_valid && (cam_hit ? l2r_l2_fill
+      : enqueue_fill_request)),
+    .update_key(request_addr),
+    .update_idx(cam_hit ? cam_hit_entry : next_empty),
+    .update_valid(cam_hit ? !l2r_l2_fill : enqueue_fill_request));
 
-    always_ff @(posedge clk, posedge reset)
-    begin
-        // Make sure the queue isn't full
-        assert(reset || empty_entries != 0);
+  always_ff @(posedge clk, posedge reset)
+  begin
+    // Make sure the queue isn't full
+    assert(reset || empty_entries != 0);
 
-        if (reset)
-            empty_entries <= {QUEUE_SIZE{1'b1}};
-        else if (cam_hit & l2r_l2_fill)
-            empty_entries[cam_hit_entry] <= 1'b1;
-        else if (!cam_hit && enqueue_fill_request)
-            empty_entries[next_empty] <= 1'b0;
-    end
+    if (reset)
+      empty_entries <= {QUEUE_SIZE{1'b1}};
+    else if (cam_hit & l2r_l2_fill)
+      empty_entries[cam_hit_entry] <= 1'b1;
+    else if (!cam_hit && enqueue_fill_request)
+      empty_entries[next_empty] <= 1'b0;
+  end
 endmodule

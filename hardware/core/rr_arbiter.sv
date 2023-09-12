@@ -5,7 +5,7 @@
 // you may not use this file except in compliance with the License.
 // You may obtain a copy of the License at
 //
-//     http://www.apache.org/licenses/LICENSE-2.0
+//   http://www.apache.org/licenses/LICENSE-2.0
 //
 // Unless required by applicable law or agreed to in writing, software
 // distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,52 +25,52 @@
 //
 
 module rr_arbiter
-    #(parameter NUM_REQUESTERS = 4)
+  #(parameter NUM_REQUESTERS = 4)
 
-    (input                              clk,
-    input                               reset,
-    input[NUM_REQUESTERS - 1:0]         request,
-    input                               update_lru,
-    output logic[NUM_REQUESTERS - 1:0]  grant_oh);
+  (input                clk,
+  input                 reset,
+  input[NUM_REQUESTERS - 1:0]     request,
+  input                 update_lru,
+  output logic[NUM_REQUESTERS - 1:0]  grant_oh);
 
-    logic[NUM_REQUESTERS - 1:0] priority_oh_nxt;
-    logic[NUM_REQUESTERS - 1:0] priority_oh;
+  logic[NUM_REQUESTERS - 1:0] priority_oh_nxt;
+  logic[NUM_REQUESTERS - 1:0] priority_oh;
 
-    localparam BIT_IDX_WIDTH = $clog2(NUM_REQUESTERS);
+  localparam BIT_IDX_WIDTH = $clog2(NUM_REQUESTERS);
 
-    always_comb
+  always_comb
+  begin
+    for (int grant_idx = 0; grant_idx < NUM_REQUESTERS; grant_idx++)
     begin
-        for (int grant_idx = 0; grant_idx < NUM_REQUESTERS; grant_idx++)
+      grant_oh[grant_idx] = 0;
+      for (int priority_idx = 0; priority_idx < NUM_REQUESTERS; priority_idx++)
+      begin
+        logic granted;
+
+        granted = request[grant_idx] & priority_oh[priority_idx];
+        for (logic[BIT_IDX_WIDTH - 1:0] bit_idx = priority_idx[BIT_IDX_WIDTH - 1:0];
+          bit_idx != grant_idx[BIT_IDX_WIDTH - 1:0]; bit_idx++)
         begin
-            grant_oh[grant_idx] = 0;
-            for (int priority_idx = 0; priority_idx < NUM_REQUESTERS; priority_idx++)
-            begin
-                logic granted;
-
-                granted = request[grant_idx] & priority_oh[priority_idx];
-                for (logic[BIT_IDX_WIDTH - 1:0] bit_idx = priority_idx[BIT_IDX_WIDTH - 1:0];
-                    bit_idx != grant_idx[BIT_IDX_WIDTH - 1:0]; bit_idx++)
-                begin
-                    granted &= !request[bit_idx];
-                end
-
-                grant_oh[grant_idx] |= granted;
-            end
+          granted &= !request[bit_idx];
         end
+
+        grant_oh[grant_idx] |= granted;
+      end
     end
+  end
 
-    // rotate left
-    assign priority_oh_nxt = {grant_oh[NUM_REQUESTERS - 2:0],
-        grant_oh[NUM_REQUESTERS - 1]};
+  // rotate left
+  assign priority_oh_nxt = {grant_oh[NUM_REQUESTERS - 2:0],
+    grant_oh[NUM_REQUESTERS - 1]};
 
-    always_ff @(posedge clk, posedge reset)
+  always_ff @(posedge clk, posedge reset)
+  begin
+    if (reset)
+      priority_oh <= 1;
+    else if (request != 0 && update_lru)
     begin
-        if (reset)
-            priority_oh <= 1;
-        else if (request != 0 && update_lru)
-        begin
-            assert($onehot0(priority_oh_nxt));
-            priority_oh <= priority_oh_nxt;
-        end
+      assert($onehot0(priority_oh_nxt));
+      priority_oh <= priority_oh_nxt;
     end
+  end
 endmodule
