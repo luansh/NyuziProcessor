@@ -24,12 +24,12 @@ module test_cam(input clk, input reset);
     localparam KEY3 = 32'h72c2b435;
     localparam KEY4 = 32'h5774490b;
 
-    logic [KEY_WIDTH - 1:0] lookup_key;
-    logic[INDEX_WIDTH - 1:0] lookup_idx;
+    logic [KEY_WIDTH-1:0] lookup_key;
+    logic[INDEX_WIDTH-1:0] lookup_idx;
     logic lookup_hit;
     logic update_en;
-    logic [KEY_WIDTH - 1:0] update_key;
-    logic [INDEX_WIDTH - 1:0] update_idx;
+    logic [KEY_WIDTH-1:0] update_key;
+    logic [INDEX_WIDTH-1:0] update_idx;
     logic update_valid;
     int cycle;
 

@@ -9,11 +9,11 @@ module synchronizer
 
   (input clk,
   input reset,
-  output logic[WIDTH - 1:0]   data_o,
-  input [WIDTH - 1:0]     data_i);
+  output logic[WIDTH-1:0] data_o,
+  input [WIDTH-1:0] data_i);
 
-  logic[WIDTH - 1:0] sync0;
-  logic[WIDTH - 1:0] sync1;
+  logic[WIDTH-1:0] sync0;
+  logic[WIDTH-1:0] sync1;
 
   always_ff @(posedge clk, posedge reset)
   begin

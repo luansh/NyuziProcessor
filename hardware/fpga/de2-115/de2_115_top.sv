@@ -9,12 +9,12 @@ module de2_115_top(
   input reset_btn,    // KEY[0]
 
     // Der blinkenlights
-    output logic[17:0]          red_led,
-    output logic[8:0]           green_led,
-    output logic[6:0]           hex0,
-    output logic[6:0]           hex1,
-    output logic[6:0]           hex2,
-    output logic[6:0]           hex3,
+    output logic[17:0] red_led,
+    output logic[8:0] green_led,
+    output logic[6:0] hex0,
+    output logic[6:0] hex1,
+    output logic[6:0] hex2,
+    output logic[6:0] hex3,
 
     // UART
     output                      uart_tx,
@@ -27,15 +27,15 @@ module de2_115_top(
     output                      dram_ras_n,
     output                      dram_cas_n,
     output                      dram_we_n,
-    output [1:0]                dram_ba,
-    output [12:0]               dram_addr,
-    output [3:0]                dram_dqm,
-    inout [31:0]                dram_dq,
+    output [1:0] dram_ba,
+    output [12:0] dram_adr,
+    output [3:0] dram_dqm,
+    inout [31:0] dram_dq,
 
     // VGA
-    output [7:0]                vga_r,
-    output [7:0]                vga_g,
-    output [7:0]                vga_b,
+    output [7:0] vga_r,
+    output [7:0] vga_g,
+    output [7:0] vga_b,
     output                      vga_clk,
     output                      vga_blank_n,
     output                      vga_hs,
@@ -70,10 +70,10 @@ module de2_115_top(
     logic reset;
     logic clk;
     scalar_t peripheral_read_data[NUM_PERIPHERALS];
-    io_bus_interface peripheral_io_bus[NUM_PERIPHERALS - 1:0]();
+    io_bus_interface peripheral_io_bus[NUM_PERIPHERALS-1:0]();
     io_bus_interface nyuzi_io_bus();
     jtag_interface jtag();
-    enum logic[$clog2(NUM_PERIPHERALS) - 1:0] {
+    enum logic[$clog2(NUM_PERIPHERALS)-1:0] {
         IO_UART,
         IO_SDCARD,
         IO_PS2,
@@ -210,7 +210,7 @@ module de2_115_top(
         begin
             if (nyuzi_io_bus.write_en)
             begin
-                case (nyuzi_io_bus.address)
+                case (nyuzi_io_bus.adress)
                     'h00: red_led <= nyuzi_io_bus.write_data[17:0];
                     'h04: green_led <= nyuzi_io_bus.write_data[8:0];
                     'h08: hex0 <= nyuzi_io_bus.write_data[6:0];
@@ -220,7 +220,7 @@ module de2_115_top(
                 endcase
             end
 
-            casez (nyuzi_io_bus.address)
+            casez (nyuzi_io_bus.adress)
                 'h4?: io_bus_source <= IO_UART;
                 'hc?: io_bus_source <= IO_SDCARD;
                 'h8?: io_bus_source <= IO_PS2;
@@ -237,7 +237,7 @@ module de2_115_top(
         begin : io_gen
             assign peripheral_io_bus[io_idx].write_en = nyuzi_io_bus.write_en;
             assign peripheral_io_bus[io_idx].read_en = nyuzi_io_bus.read_en;
-            assign peripheral_io_bus[io_idx].address = nyuzi_io_bus.address;
+            assign peripheral_io_bus[io_idx].adress = nyuzi_io_bus.adress;
             assign peripheral_io_bus[io_idx].write_data = nyuzi_io_bus.write_data;
             assign peripheral_read_data[io_idx] = peripheral_io_bus[io_idx].read_data;
         end

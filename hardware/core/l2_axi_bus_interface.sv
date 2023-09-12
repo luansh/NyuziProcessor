@@ -18,7 +18,7 @@ import defines::*;
 // I've tried to keep all bus logic consolidated in this module to make it
 // easier to swap this out for other bus implementations (eg Wishbone).
 //
-// Todo: This should issue the address for the next bus transaction before it
+// Todo: This should issue the adress for the next bus transaction before it
 // has finished the previous data transfer to improve utilization, especially
 // in systems with larger memory latency.
 //
@@ -59,7 +59,7 @@ module l2_axi_bus_interface(
     } bus_interface_state_t;
 
     typedef struct packed {
-        cache_line_index_t address;
+        cache_line_index_t adress;
         cache_line_data_t data;
         logic flush;
         core_id_t core;
@@ -75,13 +75,13 @@ module l2_axi_bus_interface(
     localparam BURST_BEATS = CACHE_LINE_BITS / `AXI_DATA_WIDTH;
     localparam BURST_OFFSET_WIDTH = $clog2(BURST_BEATS);
 
-    l2_addr_t miss_addr;
-    cache_line_index_t writeback_address;
+    l2_adr_t miss_adr;
+    cache_line_index_t writeback_adress;
     logic enqueue_writeback_request;
     logic enqueue_fill_request;
     logic duplicate_request;
     cache_line_data_t writeback_data;
-    logic[`AXI_DATA_WIDTH - 1:0] writeback_lanes[BURST_BEATS];
+    logic[`AXI_DATA_WIDTH-1:0] writeback_lanes[BURST_BEATS];
     logic writeback_fifo_empty;
     logic fill_queue_empty;
     logic fill_request_pending;
@@ -91,16 +91,16 @@ module l2_axi_bus_interface(
     logic fill_queue_almost_full;
     bus_interface_state_t state_ff;
     bus_interface_state_t state_nxt;
-    logic[BURST_OFFSET_WIDTH - 1:0] burst_offset_ff;
-    logic[BURST_OFFSET_WIDTH - 1:0] burst_offset_nxt;
-    logic[`AXI_DATA_WIDTH - 1:0] fill_buffer[0:BURST_BEATS - 1];
+    logic[BURST_OFFSET_WIDTH-1:0] burst_offset_ff;
+    logic[BURST_OFFSET_WIDTH-1:0] burst_offset_nxt;
+    logic[`AXI_DATA_WIDTH-1:0] fill_buffer[0:BURST_BEATS - 1];
     logic restart_flush_request;
     logic fill_dequeue_en;
     l2req_packet_t lmq_out_request;
     writeback_fifo_entry_t writeback_fifo_in;
     writeback_fifo_entry_t writeback_fifo_out;
 
-    assign miss_addr = l2r_request.address;
+    assign miss_adr = l2r_request.adress;
     assign enqueue_writeback_request = l2r_request_valid && l2r_needs_writeback
         && ((l2r_request.packet_type == L2REQ_FLUSH && l2r_cache_hit && !l2r_restarted_flush)
         || l2r_l2_fill);
@@ -114,10 +114,10 @@ module l2_axi_bus_interface(
 
     l2_cache_pending_miss_cam l2_cache_pending_miss_cam(
         .request_valid(l2r_request_valid),
-        .request_addr({miss_addr.tag, miss_addr.set_idx}),
+        .request_adr({miss_adr.tag, miss_adr.set_idx}),
         .*);
 
-    assign writeback_fifo_in.address = {l2r_writeback_tag, miss_addr.set_idx}; // Old address
+    assign writeback_fifo_in.adress = {l2r_writeback_tag, miss_adr.set_idx}; // Old adress
     assign writeback_fifo_in.data = l2r_data; // Old line to writeback
     assign writeback_fifo_in.flush = l2r_request.packet_type == L2REQ_FLUSH;
     assign writeback_fifo_in.core = l2r_request.core;
@@ -140,7 +140,7 @@ module l2_axi_bus_interface(
         .dequeue_value(writeback_fifo_out),
         .full(/* ignore */));
 
-    assign writeback_address = writeback_fifo_out.address;
+    assign writeback_adress = writeback_fifo_out.adress;
     assign writeback_data = writeback_fifo_out.data;
 
     sync_fifo #(
@@ -179,7 +179,7 @@ module l2_axi_bus_interface(
         for (fill_buffer_idx = 0; fill_buffer_idx < BURST_BEATS; fill_buffer_idx++)
         begin : mem_lane_gen
             assign l2bi_data_from_memory[fill_buffer_idx * `AXI_DATA_WIDTH+:`AXI_DATA_WIDTH]
-                = fill_buffer[BURST_BEATS - fill_buffer_idx - 1];
+ = fill_buffer[BURST_BEATS - fill_buffer_idx - 1];
         end
     endgenerate
 
@@ -351,8 +351,8 @@ module l2_axi_bus_interface(
         if (state_ff == STATE_READ_TRANSFER && axi_bus.s_rvalid)
             fill_buffer[burst_offset_ff] <= axi_bus.s_rdata;
 
-        axi_bus.m_araddr <= {l2bi_request.address, {CACHE_LINE_OFFSET_WIDTH{1'b0}}};
-        axi_bus.m_awaddr <= {writeback_address, {CACHE_LINE_OFFSET_WIDTH{1'b0}}};
+        axi_bus.m_aradr <= {l2bi_request.adress, {CACHE_LINE_OFFSET_WIDTH{1'b0}}};
+        axi_bus.m_awadr <= {writeback_adress, {CACHE_LINE_OFFSET_WIDTH{1'b0}}};
         axi_bus.m_wdata <= writeback_lanes[~burst_offset_nxt];
     end
 endmodule

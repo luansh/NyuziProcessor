@@ -25,16 +25,16 @@ module l2_cache_pending_miss_cam
   (input clk,
   input reset,
   input request_valid,
-  input cache_line_index_t request_addr,
+  input cache_line_index_t request_adr,
   input enqueue_fill_request,
   input l2r_l2_fill,
   output logic duplicate_request);
 
-  logic[QUEUE_ADDR_WIDTH - 1:0] cam_hit_entry;
+  logic[QUEUE_ADDR_WIDTH-1:0] cam_hit_entry;
   logic cam_hit;
-  logic[QUEUE_SIZE - 1:0] empty_entries;  // 1 if entry is empty
-  logic[QUEUE_SIZE - 1:0] next_empty_oh;
-  logic[QUEUE_ADDR_WIDTH - 1:0] next_empty;
+  logic[QUEUE_SIZE-1:0] empty_entries;  // 1 if entry is empty
+  logic[QUEUE_SIZE-1:0] next_empty_oh;
+  logic[QUEUE_ADDR_WIDTH-1:0] next_empty;
 
   assign next_empty_oh = empty_entries & ~(empty_entries - QUEUE_SIZE'(1));
 
@@ -50,12 +50,12 @@ module l2_cache_pending_miss_cam
   ) cam_pending_miss(
     .clk(clk),
     .reset(reset),
-    .lookup_key(request_addr),
+    .lookup_key(request_adr),
     .lookup_idx(cam_hit_entry),
     .lookup_hit(cam_hit),
     .update_en(request_valid && (cam_hit ? l2r_l2_fill
       : enqueue_fill_request)),
-    .update_key(request_addr),
+    .update_key(request_adr),
     .update_idx(cam_hit ? cam_hit_entry : next_empty),
     .update_valid(cam_hit ? !l2r_l2_fill : enqueue_fill_request));
 

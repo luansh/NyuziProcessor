@@ -31,11 +31,11 @@ module test_sync_fifo(input clk, input reset);
     logic full;
     logic almost_full;
     logic enqueue_en;
-    logic [WIDTH - 1:0] enqueue_value;
+    logic [WIDTH-1:0] enqueue_value;
     logic empty;
     logic almost_empty;
     logic dequeue_en;
-    logic[WIDTH - 1:0] dequeue_value;
+    logic[WIDTH-1:0] dequeue_value;
     enum {
         FILL1,
         EMPTY1,
@@ -49,9 +49,9 @@ module test_sync_fifo(input clk, input reset);
     } state = FILL1;
     int enqueue_index;
     int dequeue_index;
-    logic[WIDTH - 1:0] values[TOTAL_VALUES];
+    logic[WIDTH-1:0] values[TOTAL_VALUES];
     int expected_fifo_count;
-    logic[WIDTH - 1:0] expected_dequeue_value;
+    logic[WIDTH-1:0] expected_dequeue_value;
 
     sync_fifo #(
         .WIDTH(32),

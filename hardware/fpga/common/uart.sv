@@ -38,11 +38,11 @@ module uart
     logic[7:0] rx_char;
     logic rx_frame_error;
     logic tx_en;
-    logic[DIVISOR_WIDTH - 1:0] clocks_per_bit;
+    logic[DIVISOR_WIDTH-1:0] clocks_per_bit;
 
     assign rx_interrupt = !rx_fifo_empty;
 
-    assign tx_en = io_bus.write_en && io_bus.address == TX_REG;
+    assign tx_en = io_bus.write_en && io_bus.adress == TX_REG;
 
     uart_transmit #(.DIVISOR_WIDTH(DIVISOR_WIDTH)) uart_transmit(
         .tx_char(io_bus.write_data[7:0]),
@@ -50,7 +50,7 @@ module uart
 
     uart_receive #(.DIVISOR_WIDTH(DIVISOR_WIDTH)) uart_receive(.*);
 
-    assign rx_fifo_read = io_bus.address == RX_REG && io_bus.read_en;
+    assign rx_fifo_read = io_bus.adress == RX_REG && io_bus.read_en;
 
     // Logic for Overrun Error (OE) bit
     always_ff @(posedge clk, posedge reset)
@@ -62,10 +62,10 @@ module uart
         end
         else
         begin
-            if (io_bus.address == DIVISOR_REG && io_bus.write_en)
-                clocks_per_bit <= io_bus.write_data[DIVISOR_WIDTH - 1:0];
+            if (io_bus.adress == DIVISOR_REG && io_bus.write_en)
+                clocks_per_bit <= io_bus.write_data[DIVISOR_WIDTH-1:0];
 
-            case (io_bus.address)
+            case (io_bus.adress)
                 STATUS_REG:
                 begin
                     io_bus.read_data[31:4] <= 0;

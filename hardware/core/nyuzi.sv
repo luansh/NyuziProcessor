@@ -16,21 +16,21 @@ module nyuzi
   axi4_interface.master       axi_bus,
   io_bus_interface.master     io_bus,
   jtag_interface.target       jtag,
-  input [NUM_INTERRUPTS - 1:0]  interrupt_req);
+  input [NUM_INTERRUPTS-1:0] interrupt_req);
 
   l2req_packet_t l2i_request[`NUM_CORES];
-  logic[`NUM_CORES - 1:0] l2i_request_valid;
+  logic[`NUM_CORES-1:0] l2i_request_valid;
   ioreq_packet_t ior_request[`NUM_CORES];
-  logic[`NUM_CORES - 1:0] ior_request_valid;
-  logic[TOTAL_THREADS - 1:0] thread_en;
+  logic[`NUM_CORES-1:0] ior_request_valid;
+  logic[TOTAL_THREADS-1:0] thread_en;
   scalar_t cr_data_to_host[`NUM_CORES];
   scalar_t data_to_host;
-  logic[`NUM_CORES - 1:0] core_injected_complete;
-  logic[`NUM_CORES - 1:0] core_injected_rollback;
-  logic[`NUM_CORES - 1:0][TOTAL_THREADS - 1:0] core_suspend_thread;
-  logic[`NUM_CORES - 1:0][TOTAL_THREADS - 1:0] core_resume_thread;
-  logic[TOTAL_THREADS - 1:0] thread_suspend_mask;
-  logic[TOTAL_THREADS - 1:0] thread_resume_mask;
+  logic[`NUM_CORES-1:0] core_injected_complete;
+  logic[`NUM_CORES-1:0] core_injected_rollback;
+  logic[`NUM_CORES-1:0][TOTAL_THREADS-1:0] core_suspend_thread;
+  logic[`NUM_CORES-1:0][TOTAL_THREADS-1:0] core_resume_thread;
+  logic[TOTAL_THREADS-1:0] thread_suspend_mask;
+  logic[TOTAL_THREADS-1:0] thread_resume_mask;
 
   /*AUTOLOGIC*/
   // Beginning of automatic wires (for undeclared instantiated-module outputs)

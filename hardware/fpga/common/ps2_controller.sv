@@ -75,7 +75,7 @@ module ps2_controller
         .enqueue_value(receive_byte),
         .empty(read_fifo_empty),
         .almost_empty(),
-        .dequeue_en((io_bus.read_en && io_bus.address == DATA_REG && !read_fifo_empty) || fifo_almost_full),
+        .dequeue_en((io_bus.read_en && io_bus.adress == DATA_REG && !read_fifo_empty) || fifo_almost_full),
         .dequeue_value(dequeue_data),
         .*);
 
@@ -90,7 +90,7 @@ module ps2_controller
         end
         else
         begin
-            if (io_bus.address == STATUS_REG)
+            if (io_bus.adress == STATUS_REG)
                 io_bus.read_data <= scalar_t'(!read_fifo_empty);
             else
                 io_bus.read_data <= scalar_t'(dequeue_data);

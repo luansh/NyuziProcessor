@@ -48,12 +48,12 @@ module test_control_registers(input clk, input reset);
     localparam EVENT_IDX_WIDTH = $clog2(CORE_PERF_EVENTS);
     localparam NUM_PERF_COUNTERS = 2;
 
-    logic [NUM_INTERRUPTS - 1:0] interrupt_req;
-    scalar_t cr_eret_address[`THREADS_PER_CORE];
+    logic [NUM_INTERRUPTS-1:0] interrupt_req;
+    scalar_t cr_eret_adress[`THREADS_PER_CORE];
     logic cr_mmu_en[`THREADS_PER_CORE];
     logic cr_supervisor_en[`THREADS_PER_CORE];
-    logic[ASID_WIDTH - 1:0] cr_current_asid[`THREADS_PER_CORE];
-    logic[`THREADS_PER_CORE - 1:0] cr_interrupt_pending;
+    logic[ASID_WIDTH-1:0] cr_current_asid[`THREADS_PER_CORE];
+    logic[`THREADS_PER_CORE-1:0] cr_interrupt_pending;
     local_thread_idx_t dt_thread_idx;
     logic dd_creg_write_en;
     logic dd_creg_read_en;
@@ -63,7 +63,7 @@ module test_control_registers(input clk, input reset);
     logic wb_eret;
     trap_cause_t wb_trap_cause;
     scalar_t wb_trap_pc;
-    scalar_t wb_trap_access_vaddr;
+    scalar_t wb_trap_access_vadr;
     local_thread_idx_t wb_rollback_thread_idx;
     subcycle_t wb_trap_subcycle;
     scalar_t cr_creg_read_val;
@@ -75,10 +75,10 @@ module test_control_registers(input clk, input reset);
     logic ocd_data_update;
     scalar_t cr_data_to_host;
     syscall_index_t wb_syscall_index;
-    logic[TOTAL_THREADS - 1:0] cr_suspend_thread;
-    logic[TOTAL_THREADS - 1:0] cr_resume_thread;
-    logic[EVENT_IDX_WIDTH - 1:0] cr_perf_event_select0;
-    logic[EVENT_IDX_WIDTH - 1:0] cr_perf_event_select1;
+    logic[TOTAL_THREADS-1:0] cr_suspend_thread;
+    logic[TOTAL_THREADS-1:0] cr_resume_thread;
+    logic[EVENT_IDX_WIDTH-1:0] cr_perf_event_select0;
+    logic[EVENT_IDX_WIDTH-1:0] cr_perf_event_select1;
     logic[63:0] perf_event_count0;
     logic[63:0] perf_event_count1;
     int cycle;
@@ -101,13 +101,13 @@ module test_control_registers(input clk, input reset);
     endtask
 
     task raise_trap(input trap_type_t trap_type, input int pc, input subcycle_t subcycle,
-        input scalar_t access_addr);
+        input scalar_t access_adr);
         wb_trap <= 1;
         wb_trap_cause <= 6'(trap_type);
         wb_trap_pc <= pc;
         wb_rollback_thread_idx <= 0;
         wb_trap_subcycle <= subcycle;
-        wb_trap_access_vaddr <= access_addr;
+        wb_trap_access_vadr <= access_adr;
     endtask
 
     always_ff @(posedge clk, posedge reset)

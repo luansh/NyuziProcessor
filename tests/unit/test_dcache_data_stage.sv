@@ -27,8 +27,8 @@ module test_dcache_data_stage(input clk, input reset);
     decoded_instruction_t dt_instruction;
     vector_mask_t dt_mask_value;
     local_thread_idx_t dt_thread_idx;
-    l1d_addr_t dt_request_vaddr;
-    l1d_addr_t dt_request_paddr;
+    l1d_adr_t dt_request_vadr;
+    l1d_adr_t dt_request_padr;
     logic dt_tlb_hit;
     logic dt_tlb_present;
     logic dt_tlb_supervisor;
@@ -42,13 +42,13 @@ module test_dcache_data_stage(input clk, input reset);
     logic dd_io_write_en;
     logic dd_io_read_en;
     local_thread_idx_t dd_io_thread_idx;
-    scalar_t dd_io_addr;
+    scalar_t dd_io_adr;
     scalar_t dd_io_write_value;
     logic dd_instruction_valid;
     decoded_instruction_t dd_instruction;
     vector_mask_t dd_lane_mask;
     local_thread_idx_t dd_thread_idx;
-    l1d_addr_t dd_request_vaddr;
+    l1d_adr_t dd_request_vadr;
     subcycle_t dd_subcycle;
     logic dd_rollback_en;
     scalar_t dd_rollback_pc;
@@ -66,11 +66,11 @@ module test_dcache_data_stage(input clk, input reset);
     l1d_way_idx_t l2i_ddata_update_way;
     l1d_set_idx_t l2i_ddata_update_set;
     cache_line_data_t l2i_ddata_update_data;
-    logic[`L1D_WAYS - 1:0] l2i_dtag_update_en_oh;
+    logic[`L1D_WAYS-1:0] l2i_dtag_update_en_oh;
     l1d_set_idx_t l2i_dtag_update_set;
     l1d_tag_t l2i_dtag_update_tag;
     logic dd_cache_miss;
-    cache_line_index_t dd_cache_miss_addr;
+    cache_line_index_t dd_cache_miss_adr;
     local_thread_idx_t dd_cache_miss_thread_idx;
     logic dd_cache_miss_sync;
     logic dd_store_en;
@@ -78,12 +78,12 @@ module test_dcache_data_stage(input clk, input reset);
     logic dd_membar_en;
     logic dd_iinvalidate_en;
     logic dd_dinvalidate_en;
-    logic[CACHE_LINE_BYTES - 1:0] dd_store_mask;
-    cache_line_index_t dd_store_addr;
+    logic[CACHE_LINE_BYTES-1:0] dd_store_mask;
+    cache_line_index_t dd_store_adr;
     cache_line_data_t dd_store_data;
     local_thread_idx_t dd_store_thread_idx;
     logic dd_store_sync;
-    cache_line_index_t dd_store_bypass_addr;
+    cache_line_index_t dd_store_bypass_adr;
     local_thread_idx_t dd_store_bypass_thread_idx;
     logic wb_rollback_en;
     local_thread_idx_t wb_rollback_thread_idx;
@@ -95,13 +95,13 @@ module test_dcache_data_stage(input clk, input reset);
 
     dcache_data_stage dcache_data_stage(.*);
 
-    task cache_hit(input scalar_t address, input logic load);
+    task cache_hit(input scalar_t adress, input logic load);
         int hit_way = $random();
 
         dt_mask_value <= 16'hffff;
         dt_tlb_hit <= 1;
-        dt_request_vaddr <= address;
-        dt_request_paddr <= address;
+        dt_request_vadr <= adress;
+        dt_request_padr <= adress;
         dt_tlb_present <= 1;
         dt_tlb_writable <= 1;
         dt_instruction_valid <= 1;
@@ -109,16 +109,16 @@ module test_dcache_data_stage(input clk, input reset);
         dt_instruction.memory_access_type <= MEM_L;
         dt_instruction.load <= load;
         dt_valid[hit_way] <= 1;
-        dt_tag[hit_way] <= DCACHE_TAG_BITS'(address >> (32 - DCACHE_TAG_BITS));
+        dt_tag[hit_way] <= DCACHE_TAG_BITS'(adress >> (32 - DCACHE_TAG_BITS));
     endtask
 
-    task cache_miss(input scalar_t address, input logic load);
-        int request_tag = address >> (32 - DCACHE_TAG_BITS);
+    task cache_miss(input scalar_t adress, input logic load);
+        int request_tag = adress >> (32 - DCACHE_TAG_BITS);
 
         dt_mask_value <= 16'hffff;
         dt_tlb_hit <= 1;
-        dt_request_vaddr <= address;
-        dt_request_paddr <= address;
+        dt_request_vadr <= adress;
+        dt_request_padr <= adress;
         dt_tlb_present <= 1;
         dt_instruction_valid <= 1;
         dt_instruction.memory_access <= 1;
@@ -165,8 +165,8 @@ module test_dcache_data_stage(input clk, input reset);
             dt_tlb_present <= '0;
             dt_tlb_supervisor <= '0;
             dt_tlb_writable <= '0;
-            dt_request_vaddr <= '0;
-            dt_request_paddr <= '0;
+            dt_request_vadr <= '0;
+            dt_request_padr <= '0;
             for (int i = 0; i < `L1D_WAYS; i++)
             begin
                 dt_valid[i] <= '0;
@@ -176,7 +176,7 @@ module test_dcache_data_stage(input clk, input reset);
             cycle <= cycle + 1;
             unique0 case (cycle)
                 ////////////////////////////////////////////////////////////
-                // Cache hit, normal (non I/O) address, load
+                // Cache hit, normal (non I/O) adress, load
                 ////////////////////////////////////////////////////////////
 
                 0:  cache_hit(NORMAL_ADDR, 1);
@@ -256,7 +256,7 @@ module test_dcache_data_stage(input clk, input reset);
                 end
 
                 ////////////////////////////////////////////////////////////
-                // I/O address load
+                // I/O adress load
                 ////////////////////////////////////////////////////////////
 
                 // We call cache_hit() for convenience, but the I/O transaction
@@ -296,7 +296,7 @@ module test_dcache_data_stage(input clk, input reset);
                 end
 
                 ////////////////////////////////////////////////////////////
-                // I/O address store
+                // I/O adress store
                 ////////////////////////////////////////////////////////////
 
                 9:  cache_hit(IO_ADDR, 0);
@@ -381,7 +381,7 @@ module test_dcache_data_stage(input clk, input reset);
                 // TLB miss.
                 ////////////////////////////////////////////////////////////
 
-                // load, cached address
+                // load, cached adress
                 // Set TLB bits so this would generate other faults, but
                 // ensure those are ignored, since the TLB isn't valid.
                 20:
@@ -432,7 +432,7 @@ module test_dcache_data_stage(input clk, input reset);
                     assert(dd_perf_dtlb_miss);
                 end
 
-                // Same thing, except with a store, cached address
+                // Same thing, except with a store, cached adress
                 23:
                 begin
                     cache_miss(NORMAL_ADDR, 0);
@@ -480,7 +480,7 @@ module test_dcache_data_stage(input clk, input reset);
                     assert(dd_perf_dtlb_miss);
                 end
 
-                // Load, to I/O address. Ensure it raises a trap the same way
+                // Load, to I/O adress. Ensure it raises a trap the same way
                 26:
                 begin
                     cache_hit(IO_ADDR, 1);
@@ -525,7 +525,7 @@ module test_dcache_data_stage(input clk, input reset);
                     assert(dd_perf_dtlb_miss);
                 end
 
-                // Same thing, except with a store, uncached (I/O) address
+                // Same thing, except with a store, uncached (I/O) adress
                 29:
                 begin
                     cache_hit(IO_ADDR, 0);
@@ -938,7 +938,7 @@ module test_dcache_data_stage(input clk, input reset);
                     assert(!dd_perf_dtlb_miss);
                 end
 
-                // I/O address load
+                // I/O adress load
                 66:
                 begin
                     cache_miss(IO_ADDR, 1);
@@ -967,7 +967,7 @@ module test_dcache_data_stage(input clk, input reset);
                     assert(!dd_rollback_en);
                 end
 
-                // I/O address store
+                // I/O adress store
                 69:
                 begin
                     cache_miss(IO_ADDR, 0);
@@ -1482,7 +1482,7 @@ module test_dcache_data_stage(input clk, input reset);
                     assert(!dd_perf_dtlb_miss);
                 end
 
-                // I/O address
+                // I/O adress
                 133:
                 begin
                     cache_miss(IO_ADDR, 0);

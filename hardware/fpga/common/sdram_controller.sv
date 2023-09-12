@@ -35,9 +35,9 @@ module sdram_controller
     output logic dram_ras_n,
     output logic dram_cas_n,
     output logic dram_we_n,
-    output logic[1:0]                       dram_ba,
-    output logic[12:0]                      dram_addr,
-    inout [DATA_WIDTH - 1:0]                dram_dq,
+    output logic[1:0] dram_ba,
+    output logic[12:0] dram_adr,
+    inout [DATA_WIDTH-1:0] dram_dq,
 
     // Interface to bus
     axi4_interface.slave                    axi_bus,
@@ -52,7 +52,7 @@ module sdram_controller
     localparam MEMORY_SIZE = (1 << (ROW_ADDR_WIDTH + COL_ADDR_WIDTH)) * NUM_BANKS
         * (DATA_WIDTH / 8);
     localparam INTERNAL_ADDR_WIDTH = ROW_ADDR_WIDTH + COL_ADDR_WIDTH + $clog2(NUM_BANKS);
-    localparam SDRAM_ADDR_WIDTH = $size(dram_addr);
+    localparam SDRAM_ADDR_WIDTH = $size(dram_adr);
 
     typedef enum {
         STATE_INIT0,
@@ -72,44 +72,44 @@ module sdram_controller
 
     typedef enum logic[3:0] {
         CMD_MODE_REGISTER_SET = 4'b0000,
-        CMD_AUTO_REFRESH      = 4'b0001,
-        CMD_PRECHARGE         = 4'b0010,
-        CMD_ACTIVATE          = 4'b0011,
-        CMD_WRITE             = 4'b0100,
-        CMD_READ              = 4'b0101,
-        CMD_NOP               = 4'b1000
+        CMD_AUTO_REFRESH = 4'b0001,
+        CMD_PRECHARGE = 4'b0010,
+        CMD_ACTIVATE = 4'b0011,
+        CMD_WRITE = 4'b0100,
+        CMD_READ = 4'b0101,
+        CMD_NOP = 4'b1000
     } sdram_cmd_t;
 
     localparam TIMER_WIDTH = 15;
 
-    // latched addresses and lengths are in terms of DATA_WIDTH transfers, not bytes.
-    logic[TIMER_WIDTH - 1:0] refresh_timer_ff;
-    logic[TIMER_WIDTH - 1:0] refresh_timer_nxt;
-    logic[TIMER_WIDTH - 1:0] timer_ff;
-    logic[TIMER_WIDTH - 1:0] timer_nxt;
+    // latched adresses and lengths are in terms of DATA_WIDTH transfers, not bytes.
+    logic[TIMER_WIDTH-1:0] refresh_timer_ff;
+    logic[TIMER_WIDTH-1:0] refresh_timer_nxt;
+    logic[TIMER_WIDTH-1:0] timer_ff;
+    logic[TIMER_WIDTH-1:0] timer_nxt;
     sdram_cmd_t command;
     burst_state_t state_ff;
     burst_state_t state_nxt;
-    logic[SDRAM_BURST_IDX_WIDTH - 1:0] burst_offset_ff;
-    logic[SDRAM_BURST_IDX_WIDTH - 1:0] burst_offset_nxt;
-    logic[ROW_ADDR_WIDTH - 1:0] active_row[NUM_BANKS];
+    logic[SDRAM_BURST_IDX_WIDTH-1:0] burst_offset_ff;
+    logic[SDRAM_BURST_IDX_WIDTH-1:0] burst_offset_nxt;
+    logic[ROW_ADDR_WIDTH-1:0] active_row[NUM_BANKS];
     logic bank_active[NUM_BANKS];
     logic output_enable;
-    logic[DATA_WIDTH - 1:0] write_data;
-    logic[INTERNAL_ADDR_WIDTH - 1:0] write_address;
+    logic[DATA_WIDTH-1:0] write_data;
+    logic[INTERNAL_ADDR_WIDTH-1:0] write_adress;
     logic[7:0] write_length; // Like axi_bus.m_awlen, is num transfers - 1
     logic write_pending;
-    logic[INTERNAL_ADDR_WIDTH - 1:0] read_address;
+    logic[INTERNAL_ADDR_WIDTH-1:0] read_adress;
     logic[7:0] read_length;    // Like axi_bus.m_arlen, is num_transfers - 1
     logic read_pending;
     logic lfifo_empty;
     logic sfifo_full;
-    logic[$clog2(NUM_BANKS) - 1:0] write_bank;
-    logic[COL_ADDR_WIDTH - 1:0] write_column;
-    logic[ROW_ADDR_WIDTH - 1:0] write_row;
-    logic[$clog2(NUM_BANKS) - 1:0] read_bank;
-    logic[COL_ADDR_WIDTH - 1:0] read_column;
-    logic[ROW_ADDR_WIDTH - 1:0] read_row;
+    logic[$clog2(NUM_BANKS)-1:0] write_bank;
+    logic[COL_ADDR_WIDTH-1:0] write_column;
+    logic[ROW_ADDR_WIDTH-1:0] write_row;
+    logic[$clog2(NUM_BANKS)-1:0] read_bank;
+    logic[COL_ADDR_WIDTH-1:0] read_column;
+    logic[ROW_ADDR_WIDTH-1:0] read_row;
     logic lfifo_enqueue;
     logic access_is_read_ff;
     logic access_is_read_nxt;
@@ -152,8 +152,8 @@ module sdram_controller
     assign {dram_cs_n, dram_ras_n, dram_cas_n, dram_we_n} = command;
     assign dram_cke = 1;
     assign dram_clk = clk;
-    assign {write_row, write_bank, write_column} = write_address;
-    assign {read_row, read_bank, read_column} = read_address;
+    assign {write_row, write_bank, write_column} = write_adress;
+    assign {read_row, read_bank, read_column} = read_adress;
 
     assign dram_dq = output_enable ? write_data : {DATA_WIDTH{1'hZ}};
 
@@ -176,7 +176,7 @@ module sdram_controller
         burst_offset_nxt = 0;
         state_nxt = state_ff;
         dram_ba = 0;
-        dram_addr = 0;
+        dram_adr = 0;
         perf_dram_page_miss = 0;
         perf_dram_page_hit = 0;
         access_is_read_nxt = access_is_read_ff;
@@ -202,7 +202,7 @@ module sdram_controller
                 STATE_INIT0:
                 begin
                     // Step 1: send precharge all command
-                    dram_addr = {SDRAM_ADDR_WIDTH{1'b1}};
+                    dram_adr = {SDRAM_ADDR_WIDTH{1'b1}};
                     command = CMD_PRECHARGE;
                     timer_nxt = TIMER_WIDTH'(T_ROW_PRECHARGE);
                     state_nxt = STATE_INIT1;
@@ -211,7 +211,7 @@ module sdram_controller
                 STATE_INIT1:
                 begin
                     // Step 2: send two auto refresh commands
-                    dram_addr = {SDRAM_ADDR_WIDTH{1'b1}};
+                    dram_adr = {SDRAM_ADDR_WIDTH{1'b1}};
                     command = CMD_AUTO_REFRESH;
                     timer_nxt = TIMER_WIDTH'(T_AUTO_REFRESH_CYCLE);
                     state_nxt = STATE_INIT2;
@@ -219,7 +219,7 @@ module sdram_controller
 
                 STATE_INIT2:
                 begin
-                    dram_addr = {SDRAM_ADDR_WIDTH{1'b1}};
+                    dram_adr = {SDRAM_ADDR_WIDTH{1'b1}};
                     command = CMD_AUTO_REFRESH;
                     timer_nxt = TIMER_WIDTH'(T_AUTO_REFRESH_CYCLE);
                     state_nxt = STATE_INIT3;
@@ -230,7 +230,7 @@ module sdram_controller
                     // Step 3: set the mode register
                     // CAS latency is hardcoded to 2 clocks
                     command = CMD_MODE_REGISTER_SET;
-                    dram_addr = SDRAM_ADDR_WIDTH'('b000_0_00_010_0_011);
+                    dram_adr = SDRAM_ADDR_WIDTH'('b000_0_00_010_0_011);
                     dram_ba = 2'b00;
                     state_nxt = STATE_IDLE;
                 end
@@ -248,11 +248,11 @@ module sdram_controller
                             state_nxt = STATE_AUTO_REFRESH1;
                     end
                     else if (lfifo_empty && read_pending
-                        && (!write_pending || write_address != read_address))
+                        && (!write_pending || write_adress != read_adress))
                     begin
                         // Start a read burst. Reads have priority to avoid starving
                         // the VGA controller, but we check above to ensure there isn't
-                        // a write already pending for this address (otherwise we will
+                        // a write already pending for this adress (otherwise we will
                         // get stale data).
                         access_is_read_nxt = 1;
                         if (!bank_active[read_bank])
@@ -274,13 +274,13 @@ module sdram_controller
                         end
                     end
                     else if (write_pending && sfifo_full
-                        && (!read_pending || write_address == read_address))
+                        && (!read_pending || write_adress == read_adress))
                     begin
                         // Start a write burst.
                         // Don't start the burst if a read is pending and the FIFO is full.
                         // This is a hack to avoid starving the VGA controller.  However, do
                         // start the write if the read is for data we are about to write
-                        // (write_address == read_address above), which avoids a nasty race
+                        // (write_adress == read_adress above), which avoids a nasty race
                         // condition that corrrupts data.
                         access_is_read_nxt = 0;
                         if (!bank_active[write_bank])
@@ -307,7 +307,7 @@ module sdram_controller
                 begin
                     // Precharge a single bank that has an open row in preparation
                     // for a transfer.
-                    dram_addr =  {SDRAM_ADDR_WIDTH{1'b0}};
+                    dram_adr =  {SDRAM_ADDR_WIDTH{1'b0}};
                     if (access_is_read_ff)
                         dram_ba = read_bank;
                     else
@@ -323,13 +323,13 @@ module sdram_controller
                     if (access_is_read_ff)
                     begin
                         dram_ba = read_bank;
-                        dram_addr = SDRAM_ADDR_WIDTH'(read_row);
+                        dram_adr = SDRAM_ADDR_WIDTH'(read_row);
                         state_nxt = STATE_CAS_WAIT;
                     end
                     else
                     begin
                         dram_ba = write_bank;
-                        dram_addr = SDRAM_ADDR_WIDTH'(write_row);
+                        dram_adr = SDRAM_ADDR_WIDTH'(write_row);
                         state_nxt = STATE_WRITE_BURST;
                     end
                     command = CMD_ACTIVATE;
@@ -339,7 +339,7 @@ module sdram_controller
                 STATE_CAS_WAIT:
                 begin
                     command = CMD_READ;
-                    dram_addr = SDRAM_ADDR_WIDTH'(read_column);
+                    dram_adr = SDRAM_ADDR_WIDTH'(read_column);
                     dram_ba = read_bank;
                     timer_nxt = TIMER_WIDTH'(T_CAS_LATENCY);
                     state_nxt = STATE_READ_BURST;
@@ -360,7 +360,7 @@ module sdram_controller
                     begin
                         // On first cycle
                         dram_ba = write_bank;
-                        dram_addr = SDRAM_ADDR_WIDTH'(write_column);
+                        dram_adr = SDRAM_ADDR_WIDTH'(write_column);
                         command = CMD_WRITE;
                     end
 
@@ -372,7 +372,7 @@ module sdram_controller
                 STATE_AUTO_REFRESH0:
                 begin
                     // Precharge all banks before auto-refresh
-                    dram_addr = SDRAM_ADDR_WIDTH'('b0010000000000);    // XXX parameterize
+                    dram_adr = SDRAM_ADDR_WIDTH'('b0010000000000);    // XXX parameterize
                     command = CMD_PRECHARGE;
                     timer_nxt = TIMER_WIDTH'(T_ROW_PRECHARGE);
                     state_nxt = STATE_AUTO_REFRESH1;
@@ -407,11 +407,11 @@ module sdram_controller
 
             access_is_read_ff <= '0;
             burst_offset_ff <= '0;
-            read_address <= '0;
+            read_adress <= '0;
             read_length <= '0;
             read_pending <= '0;
             timer_ff <= '0;
-            write_address <= '0;
+            write_adress <= '0;
             write_length <= '0;
             write_pending <= '0;
         end
@@ -454,7 +454,7 @@ module sdram_controller
                 // The bus transfer may be longer than the SDRAM burst.
                 // Determine if we are done yet.
                 write_length <= write_length - 8'(SDRAM_BURST_LENGTH);
-                write_address <= write_address + INTERNAL_ADDR_WIDTH'(SDRAM_BURST_LENGTH);
+                write_adress <= write_adress + INTERNAL_ADDR_WIDTH'(SDRAM_BURST_LENGTH);
                 if (write_length == SDRAM_BURST_LENGTH - 1)
                     write_pending <= 0;
             end
@@ -464,19 +464,19 @@ module sdram_controller
 
                 // Ensure the the burst is aligned on an SDRAM burst boundary.
                 assert(((axi_bus.m_awlen + 1) & (SDRAM_BURST_LENGTH - 1)) == 0);
-                assert((axi_bus.m_awaddr & (SDRAM_BURST_LENGTH - 1)) == 0);
+                assert((axi_bus.m_awadr & (SDRAM_BURST_LENGTH - 1)) == 0);
 
 `ifdef SIMULATION
-                // Make sure memory address is in memory range
-                if (axi_bus.m_awaddr >= MEMORY_SIZE)
+                // Make sure memory adress is in memory range
+                if (axi_bus.m_awadr >= MEMORY_SIZE)
                 begin
-                    $display("sdram: write address out of range %x", axi_bus.m_awaddr);
+                    $display("sdram: write adress out of range %x", axi_bus.m_awadr);
                     $finish;
                 end
 `endif
 
-                // axi_bus.m_awaddr is in terms of bytes.  Convert to # of transfers.
-                write_address <= INTERNAL_ADDR_WIDTH'(axi_bus.m_awaddr[AXI_ADDR_WIDTH - 1:$clog2(DATA_WIDTH / 8)]);
+                // axi_bus.m_awadr is in terms of bytes.  Convert to # of transfers.
+                write_adress <= INTERNAL_ADDR_WIDTH'(axi_bus.m_awadr[AXI_ADDR_WIDTH-1:$clog2(DATA_WIDTH / 8)]);
                 write_length <= axi_bus.m_awlen;
                 write_pending <= 1'b1;
             end
@@ -485,7 +485,7 @@ module sdram_controller
                 state_nxt != STATE_READ_BURST)
             begin
                 read_length <= read_length - 8'(SDRAM_BURST_LENGTH);
-                read_address <= read_address + INTERNAL_ADDR_WIDTH'(SDRAM_BURST_LENGTH);
+                read_adress <= read_adress + INTERNAL_ADDR_WIDTH'(SDRAM_BURST_LENGTH);
                 if (read_length == SDRAM_BURST_LENGTH - 1)
                     read_pending <= 0;
             end
@@ -495,19 +495,19 @@ module sdram_controller
 
                 // Ensure the the burst is aligned on an SDRAM burst boundary.
                 assert(((axi_bus.m_arlen + 1) & (SDRAM_BURST_LENGTH - 1)) == 0);
-                assert((axi_bus.m_araddr & (SDRAM_BURST_LENGTH - 1)) == 0);
+                assert((axi_bus.m_aradr & (SDRAM_BURST_LENGTH - 1)) == 0);
 
 `ifdef SIMULATION
-                // Make sure memory address is in memory range
-                if (axi_bus.m_araddr >= MEMORY_SIZE)
+                // Make sure memory adress is in memory range
+                if (axi_bus.m_aradr >= MEMORY_SIZE)
                 begin
-                    $display("sdram: read address out of range %x", axi_bus.m_araddr);
+                    $display("sdram: read adress out of range %x", axi_bus.m_aradr);
                     $finish;
                 end
 `endif
 
-                // axi_bus.m_araddr is in terms of bytes.  Convert to # of transfers.
-                read_address <= INTERNAL_ADDR_WIDTH'(axi_bus.m_araddr[AXI_ADDR_WIDTH - 1:$clog2(DATA_WIDTH / 8)]);
+                // axi_bus.m_aradr is in terms of bytes.  Convert to # of transfers.
+                read_adress <= INTERNAL_ADDR_WIDTH'(axi_bus.m_aradr[AXI_ADDR_WIDTH-1:$clog2(DATA_WIDTH / 8)]);
                 read_length <= axi_bus.m_arlen;
                 read_pending <= 1'b1;
             end

@@ -22,9 +22,9 @@ module test_idx_to_oh(input clk, input reset);
     localparam NUM_SIGNALS = 7; // Non power-of-two
     localparam INDEX_WIDTH = $clog2(NUM_SIGNALS);
 
-    logic[INDEX_WIDTH - 1:0] index;
-    logic[NUM_SIGNALS - 1:0] one_hot0;
-    logic[NUM_SIGNALS - 1:0] one_hot1;
+    logic[INDEX_WIDTH-1:0] index;
+    logic[NUM_SIGNALS-1:0] one_hot0;
+    logic[NUM_SIGNALS-1:0] one_hot1;
 
     idx_to_oh #(
         .NUM_SIGNALS(NUM_SIGNALS),

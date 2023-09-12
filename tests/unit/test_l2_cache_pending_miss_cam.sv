@@ -27,7 +27,7 @@ module test_l2_cache_pending_miss_cam(input clk, input reset);
     localparam ADDR4 = 1143;
 
     logic request_valid;
-    cache_line_index_t request_addr;
+    cache_line_index_t request_adr;
     logic enqueue_fill_request;
     logic l2r_l2_fill;
     logic duplicate_request;
@@ -35,9 +35,9 @@ module test_l2_cache_pending_miss_cam(input clk, input reset);
 
     l2_cache_pending_miss_cam #(.QUEUE_SIZE(8)) l2_cache_pending_miss_cam(.*);
 
-    task enqueue_request(cache_line_index_t addr, logic load_request, logic l2_fill);
+    task enqueue_request(cache_line_index_t adr, logic load_request, logic l2_fill);
         request_valid <= 1;
-        request_addr <= addr;
+        request_adr <= adr;
         enqueue_fill_request <= load_request;
         l2r_l2_fill <= l2_fill;
     endtask
@@ -48,7 +48,7 @@ module test_l2_cache_pending_miss_cam(input clk, input reset);
         begin
             cycle <= 0;
             request_valid <= 0;
-            request_addr <= 0;
+            request_adr <= 0;
             enqueue_fill_request <= 0;
             l2r_l2_fill <= 0;
         end
@@ -67,7 +67,7 @@ module test_l2_cache_pending_miss_cam(input clk, input reset);
                 begin
                     assert(!duplicate_request);
 
-                    // Enqueue load for another address
+                    // Enqueue load for another adress
                     enqueue_request(ADDR2, 1, 0);
                 end
 
@@ -115,7 +115,7 @@ module test_l2_cache_pending_miss_cam(input clk, input reset);
                 begin
                     assert(!duplicate_request);
 
-                    // Enqueue address for real to validate last did not update cam.
+                    // Enqueue adress for real to validate last did not update cam.
                     // Will not be marked as dup because it's new.
                     enqueue_request(ADDR4, 1, 0);
                 end

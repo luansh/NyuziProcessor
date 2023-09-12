@@ -55,11 +55,11 @@ module sim_jtag
 
     int control_port_open;
     bit[31:0] instruction_length;
-    bit[MAX_INSTRUCTION_LEN - 1:0] instruction;
+    bit[MAX_INSTRUCTION_LEN-1:0] instruction;
     bit[31:0] data_length;
-    bit[MAX_DATA_LEN - 1:0] data;
-    bit[MAX_INSTRUCTION_LEN - 1:0] instruction_shift;
-    bit[MAX_DATA_LEN - 1:0] data_shift;
+    bit[MAX_DATA_LEN-1:0] data;
+    bit[MAX_INSTRUCTION_LEN-1:0] instruction_shift;
+    bit[MAX_DATA_LEN-1:0] data_shift;
     int shift_count;
     jtag_state_t state_ff = JTAG_RESET;
     jtag_state_t state_nxt;

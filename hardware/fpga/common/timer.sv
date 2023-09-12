@@ -30,7 +30,7 @@ module timer
         end
         else
         begin
-            if (io_bus.write_en && io_bus.address == BASE_ADDRESS)
+            if (io_bus.write_en && io_bus.adress == BASE_ADDRESS)
                 counter <= io_bus.write_data;
             else if (counter != 0)
                 counter <= counter - 1;

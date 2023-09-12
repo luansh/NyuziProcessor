@@ -62,7 +62,7 @@ module spi_controller
         end
         else
         begin
-            if (io_bus.address == RX_REG)
+            if (io_bus.adress == RX_REG)
                 io_bus.read_data <= scalar_t'(miso_byte);
             else // RX_STATUS_REG
                 io_bus.read_data <= scalar_t'(!transfer_active);
@@ -70,9 +70,9 @@ module spi_controller
             // Control register
             if (io_bus.write_en)
             begin
-                if (io_bus.address == CONTROL_REG)
+                if (io_bus.adress == CONTROL_REG)
                     spi_cs_n <= io_bus.write_data[0];
-                else if (io_bus.address == DIVISOR_REG)
+                else if (io_bus.adress == DIVISOR_REG)
                     divider_rate <= io_bus.write_data[7:0];
             end
 
@@ -104,7 +104,7 @@ module spi_controller
                 else
                     divider_countdown <= divider_countdown - 8'd1;
             end
-            else if (io_bus.write_en && io_bus.address == TX_REG)
+            else if (io_bus.write_en && io_bus.adress == TX_REG)
             begin
                 assert(spi_clk == 0);
 

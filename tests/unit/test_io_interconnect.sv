@@ -24,7 +24,7 @@ module test_io_interconnect(input clk, input reset);
     localparam DATA0 = 32'h5f168902;
     localparam DATA1 = 32'h1d483d36;
 
-    logic [`NUM_CORES - 1:0] ior_request_valid;
+    logic [`NUM_CORES-1:0] ior_request_valid;
     ioreq_packet_t ior_request[`NUM_CORES];
     logic ii_ready[`NUM_CORES];
     logic ii_response_valid;
@@ -52,7 +52,7 @@ module test_io_interconnect(input clk, input reset);
 
                     ior_request[0].store <= 1;
                     ior_request[0].thread_idx <= 1;
-                    ior_request[0].address <= ADDR0;
+                    ior_request[0].adress <= ADDR0;
                     ior_request[0].value <= DATA0;
                     ior_request_valid[0] <= 1;
                     state <= state + 1;
@@ -68,7 +68,7 @@ module test_io_interconnect(input clk, input reset);
                     assert(!ii_response_valid);
                     assert(ii_ready[0]);
                     assert(io_bus.write_en);
-                    assert(io_bus.address == ADDR0);
+                    assert(io_bus.adress == ADDR0);
                     assert(io_bus.write_data == DATA0);
                     state <= state + 1;
                 end
@@ -96,7 +96,7 @@ module test_io_interconnect(input clk, input reset);
 
                     ior_request[0].store <= 0;
                     ior_request[0].thread_idx <= 2;
-                    ior_request[0].address <= ADDR1;
+                    ior_request[0].adress <= ADDR1;
                     ior_request_valid[0] <= 1;
                     state <= state + 1;
                 end
@@ -111,7 +111,7 @@ module test_io_interconnect(input clk, input reset);
                     assert(ii_ready[0]);
                     assert(io_bus.read_en);
                     assert(io_bus.read_en);
-                    assert(io_bus.address == ADDR1);
+                    assert(io_bus.adress == ADDR1);
                     state <= state + 1;
                     io_bus.read_data <= DATA1;
                 end

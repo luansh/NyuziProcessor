@@ -25,12 +25,12 @@ module test_load_miss_queue(input clk, input reset);
     localparam ADDR3 = 'hcc3;
 
     logic cache_miss;
-    cache_line_index_t cache_miss_addr;
+    cache_line_index_t cache_miss_adr;
     local_thread_idx_t cache_miss_thread_idx;
     logic cache_miss_sync;
     logic dequeue_ready;
     logic dequeue_ack;
-    cache_line_index_t dequeue_addr;
+    cache_line_index_t dequeue_adr;
     l1_miss_entry_idx_t dequeue_idx;
     logic dequeue_sync;
     logic l2_response_valid;
@@ -69,20 +69,20 @@ module test_load_miss_queue(input clk, input reset);
                     assert(wake_bitmap == 0);
 
                     cache_miss <= 1;
-                    cache_miss_addr <= ADDR0;
+                    cache_miss_adr <= ADDR0;
                     cache_miss_thread_idx <= 0;
                     cache_miss_sync <= 0;
                 end
 
                 // Enqueue a load miss, thread 1. This will not be
-                // load combined, because it is a different address
+                // load combined, because it is a different adress
                 1:
                 begin
                     assert(!dequeue_ready);
                     assert(wake_bitmap == 0);
 
                     cache_miss <= 1;
-                    cache_miss_addr <= ADDR1;
+                    cache_miss_adr <= ADDR1;
                     cache_miss_thread_idx <= 1;
                     cache_miss_sync <= 0;
                 end
@@ -102,14 +102,14 @@ module test_load_miss_queue(input clk, input reset);
                     // The order that we will receive these requests is arbitrary,
                     // so keep track of that here.
                     assert(dequeue_ready);
-                    if (dequeue_addr == ADDR0)
+                    if (dequeue_adr == ADDR0)
                     begin
                         l2_requests_in_order <= 1;
                         saved_request_idx0 <= dequeue_idx;
                     end
                     else
                     begin
-                        assert(dequeue_addr == ADDR1);
+                        assert(dequeue_adr == ADDR1);
                         l2_requests_in_order <= 0;
                         saved_request_idx1 <= dequeue_idx;
                     end
@@ -118,14 +118,14 @@ module test_load_miss_queue(input clk, input reset);
                     assert(wake_bitmap == 0);
                 end
 
-                // Create another request for the second address from thread 2
+                // Create another request for the second adress from thread 2
                 4:
                 begin
                     assert(dequeue_ready);
                     assert(wake_bitmap == 0);
 
                     cache_miss <= 1;
-                    cache_miss_addr <= ADDR1;
+                    cache_miss_adr <= ADDR1;
                     cache_miss_thread_idx <= 2;
                     cache_miss_sync <= 0;
                 end
@@ -141,12 +141,12 @@ module test_load_miss_queue(input clk, input reset);
                     // Check the request. It should be the one not asserted earlier.
                     if (l2_requests_in_order)
                     begin
-                        assert(dequeue_addr == ADDR1);
+                        assert(dequeue_adr == ADDR1);
                         saved_request_idx1 <= dequeue_idx;
                     end
                     else
                     begin
-                        assert(dequeue_addr == ADDR0);
+                        assert(dequeue_adr == ADDR0);
                         saved_request_idx0 <= dequeue_idx;
                     end
                     assert(!dequeue_sync);
@@ -208,7 +208,7 @@ module test_load_miss_queue(input clk, input reset);
                 13:
                 begin
                     cache_miss <= 1;
-                    cache_miss_addr <= ADDR2;
+                    cache_miss_adr <= ADDR2;
                     cache_miss_thread_idx <= 0;
                     cache_miss_sync <= 1;
                 end
@@ -217,7 +217,7 @@ module test_load_miss_queue(input clk, input reset);
                 14:
                 begin
                     cache_miss <= 1;
-                    cache_miss_addr <= ADDR2;
+                    cache_miss_adr <= ADDR2;
                     cache_miss_thread_idx <= 1;
                     cache_miss_sync <= 0;
                     dequeue_ack <= 1;
@@ -227,7 +227,7 @@ module test_load_miss_queue(input clk, input reset);
                 15:
                 begin
                     assert(dequeue_ready);
-                    assert(dequeue_addr == ADDR2);
+                    assert(dequeue_adr == ADDR2);
                     if (dequeue_sync)
                     begin
                         l2_requests_in_order <= 1;
@@ -246,7 +246,7 @@ module test_load_miss_queue(input clk, input reset);
                 16:
                 begin
                     assert(dequeue_ready);
-                    assert(dequeue_addr == ADDR2);
+                    assert(dequeue_adr == ADDR2);
                     if (l2_requests_in_order)
                     begin
                         assert(dequeue_idx == saved_request_idx1);
@@ -289,7 +289,7 @@ module test_load_miss_queue(input clk, input reset);
                 20:
                 begin
                     cache_miss <= 1;
-                    cache_miss_addr <= ADDR2;
+                    cache_miss_adr <= ADDR2;
                     cache_miss_thread_idx <= 2;
                     cache_miss_sync <= 0;
                 end
@@ -298,7 +298,7 @@ module test_load_miss_queue(input clk, input reset);
                 21:
                 begin
                     cache_miss <= 1;
-                    cache_miss_addr <= ADDR2;
+                    cache_miss_adr <= ADDR2;
                     cache_miss_thread_idx <= 3;
                     cache_miss_sync <= 1;
                     dequeue_ack <= 1;
@@ -308,7 +308,7 @@ module test_load_miss_queue(input clk, input reset);
                 22:
                 begin
                     assert(dequeue_ready);
-                    assert(dequeue_addr == ADDR2);
+                    assert(dequeue_adr == ADDR2);
                     if (dequeue_sync)
                     begin
                         l2_requests_in_order <= 0;
@@ -327,7 +327,7 @@ module test_load_miss_queue(input clk, input reset);
                 23:
                 begin
                     assert(dequeue_ready);
-                    assert(dequeue_addr == ADDR2);
+                    assert(dequeue_adr == ADDR2);
                     if (l2_requests_in_order)
                     begin
                         saved_request_idx1 <= dequeue_idx;

@@ -41,7 +41,7 @@ module test_int_execute_stage(input clk, input reset);
     scalar_t ix_rollback_pc;
     subcycle_t ix_subcycle;
     logic ix_privileged_op_fault;
-    scalar_t cr_eret_address[`THREADS_PER_CORE];
+    scalar_t cr_eret_adress[`THREADS_PER_CORE];
     logic cr_supervisor_en[`THREADS_PER_CORE];
     logic ix_perf_uncond_branch;
     logic ix_perf_cond_branch_taken;
@@ -78,7 +78,7 @@ module test_int_execute_stage(input clk, input reset);
             of_subcycle <= '0;
             wb_rollback_thread_idx <= '0;
             for (int i = 0; i < `THREADS_PER_CORE; i++)
-                cr_eret_address[i] <= '0;
+                cr_eret_adress[i] <= '0;
 
             for (int i = 0; i < `THREADS_PER_CORE; i++)
                 cr_supervisor_en[i] <= '0;
@@ -125,10 +125,10 @@ module test_int_execute_stage(input clk, input reset);
                 begin
                     branch(BRANCH_ERET, 0);
                     cr_supervisor_en[0] <= 1;
-                    cr_eret_address[0] <= ERET_ADDR;
-                    cr_eret_address[1] <= $random();
-                    cr_eret_address[2] <= $random();
-                    cr_eret_address[3] <= $random();
+                    cr_eret_adress[0] <= ERET_ADDR;
+                    cr_eret_adress[1] <= $random();
+                    cr_eret_adress[2] <= $random();
+                    cr_eret_adress[3] <= $random();
                     assert(!ix_perf_uncond_branch);
                     assert(!ix_perf_cond_branch_taken);
                     assert(!ix_perf_cond_branch_not_taken);
@@ -144,7 +144,7 @@ module test_int_execute_stage(input clk, input reset);
                 5:
                 begin
                     assert(ix_rollback_en);
-                    assert(ix_rollback_pc == cr_eret_address[0]);
+                    assert(ix_rollback_pc == cr_eret_adress[0]);
                     assert(ix_perf_uncond_branch);
                     assert(!ix_perf_cond_branch_taken);
                     assert(!ix_perf_cond_branch_not_taken);

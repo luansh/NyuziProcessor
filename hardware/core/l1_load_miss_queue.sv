@@ -4,7 +4,7 @@ import defines::*;
 
 //
 // Tracks pending L1 misses. Detects and consolidates multiple misses
-// for the same address. Wakes threads when loads complete.
+// for the same adress. Wakes threads when loads complete.
 //
 
 module l1_load_miss_queue(
@@ -13,14 +13,14 @@ module l1_load_miss_queue(
 
   // Enqueue request
   input cache_miss,
-  input cache_line_index_t cache_miss_addr,
+  input cache_line_index_t cache_miss_adr,
   input local_thread_idx_t cache_miss_thread_idx,
   input cache_miss_sync,
 
   // Dequeue request
   output logic dequeue_ready,
   input dequeue_ack,
-  output cache_line_index_t dequeue_addr,
+  output cache_line_index_t dequeue_adr,
   output l1_miss_entry_idx_t dequeue_idx,
   output logic dequeue_sync,
 
@@ -33,7 +33,7 @@ module l1_load_miss_queue(
     logic valid;
     logic request_sent;
     local_thread_bitmap_t waiting_threads;
-    cache_line_index_t address;
+    cache_line_index_t adress;
     logic sync;
   } pending_entries[`THREADS_PER_CORE];
 
@@ -60,7 +60,7 @@ module l1_load_miss_queue(
 
   // Request out
   assign dequeue_ready = |arbiter_request;
-  assign dequeue_addr = pending_entries[send_grant_idx].address;
+  assign dequeue_adr = pending_entries[send_grant_idx].adress;
   assign dequeue_idx = send_grant_idx;
   assign dequeue_sync = pending_entries[send_grant_idx].sync;
 
@@ -74,7 +74,7 @@ module l1_load_miss_queue(
     begin : wait_logic_gen
       // Synchronized requests cannot be combined with other requests.
       assign collided_miss_oh[wait_entry] = pending_entries[wait_entry].valid
-        && pending_entries[wait_entry].address == cache_miss_addr
+        && pending_entries[wait_entry].adress == cache_miss_adr
         && !pending_entries[wait_entry].sync
         && !cache_miss_sync;
       assign arbiter_request[wait_entry] = pending_entries[wait_entry].valid
@@ -101,7 +101,7 @@ module l1_load_miss_queue(
             // Enqueue a cache miss
             pending_entries[wait_entry].waiting_threads <= miss_thread_oh;
             pending_entries[wait_entry].valid <= 1;
-            pending_entries[wait_entry].address <= cache_miss_addr;
+            pending_entries[wait_entry].adress <= cache_miss_adr;
             pending_entries[wait_entry].request_sent <= 0;
             pending_entries[wait_entry].sync <= cache_miss_sync;
 

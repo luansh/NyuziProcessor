@@ -17,7 +17,7 @@ module io_request_queue
   input dd_io_write_en,
   input dd_io_read_en,
   input local_thread_idx_t dd_io_thread_idx,
-  input scalar_t dd_io_addr,
+  input scalar_t dd_io_adr,
   input scalar_t dd_io_write_value,
 
   // To writeback_stage
@@ -43,7 +43,7 @@ module io_request_queue
     logic valid;
     logic request_sent;
     logic store;
-    scalar_t address;
+    scalar_t adress;
     scalar_t value;
   } pending_request[`THREADS_PER_CORE];
   local_thread_bitmap_t wake_thread_oh;
@@ -79,7 +79,7 @@ module io_request_queue
               // Request initiated
               pending_request[thread_idx].valid <= 1;
               pending_request[thread_idx].store <= dd_io_write_en;
-              pending_request[thread_idx].address <= dd_io_addr;
+              pending_request[thread_idx].adress <= dd_io_adr;
               pending_request[thread_idx].value <= dd_io_write_value;
               pending_request[thread_idx].request_sent <= 0;
             end
@@ -121,7 +121,7 @@ module io_request_queue
   // Send request
   assign ior_request_valid = |send_request;
   assign ior_request.store = pending_request[send_grant_idx].store;
-  assign ior_request.address = pending_request[send_grant_idx].address;
+  assign ior_request.adress = pending_request[send_grant_idx].adress;
   assign ior_request.value = pending_request[send_grant_idx].value;
   assign ior_request.thread_idx = send_grant_idx;
 

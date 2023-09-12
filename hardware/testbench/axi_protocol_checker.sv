@@ -33,7 +33,7 @@ module axi_protocol_checker(
 
     // Write checks
     burst_state_t write_burst_state;
-    logic[AXI_ADDR_WIDTH - 1:0] awaddr;
+    logic[AXI_ADDR_WIDTH-1:0] awadr;
     logic [7:0] awlen;
     int write_count;
 
@@ -63,7 +63,7 @@ module axi_protocol_checker(
                 begin
                     if (axi_bus.m_awvalid)
                     begin
-                        awaddr <= axi_bus.m_awaddr;
+                        awadr <= axi_bus.m_awadr;
                         awlen <= axi_bus.m_awlen;
 
                         // This is not a requirement of the spec, but
@@ -72,8 +72,8 @@ module axi_protocol_checker(
                         assert(!axi_bus.m_wvalid);
 
                         // A3.4.1 Ensure this transaction doesn't cross a 4k boundary
-                        assert ((int'(axi_bus.m_awaddr) / 4096) ==
-                            ((int'(axi_bus.m_awaddr) + int'(axi_bus.m_awlen) * 4) / 4096));
+                        assert ((int'(axi_bus.m_awadr) / 4096) ==
+                            ((int'(axi_bus.m_awadr) + int'(axi_bus.m_awlen) * 4) / 4096));
 
                         write_count <= 0;
                         if (axi_bus.s_awready)
@@ -89,7 +89,7 @@ module axi_protocol_checker(
                     // until the slave asserts AWREADY. AWADDR and AWLEN
                     // must also be stable.
                     assert(axi_bus.m_awvalid);
-                    assert(axi_bus.m_awaddr === awaddr);
+                    assert(axi_bus.m_awadr === awadr);
                     assert(axi_bus.m_awlen === awlen);
 
                     // Ensure single transaction is pending (not spec constraint)
@@ -133,7 +133,7 @@ module axi_protocol_checker(
 
     // Read checks
     burst_state_t read_burst_state;
-    logic[AXI_ADDR_WIDTH - 1:0] araddr;
+    logic[AXI_ADDR_WIDTH-1:0] aradr;
     logic [7:0] arlen;
     int read_count;
 
@@ -162,12 +162,12 @@ module axi_protocol_checker(
                 begin
                     if (axi_bus.m_arvalid)
                     begin
-                        araddr <= axi_bus.m_araddr;
+                        aradr <= axi_bus.m_aradr;
                         arlen <= axi_bus.m_arlen;
 
                         // A3.4.1 Ensure this transaction doesn't cross a 4k boundary
-                        assert ((int'(axi_bus.m_araddr) / 4096) ==
-                            ((int'(axi_bus.m_araddr) + int'(axi_bus.m_arlen) * 4) / 4096));
+                        assert ((int'(axi_bus.m_aradr) / 4096) ==
+                            ((int'(axi_bus.m_aradr) + int'(axi_bus.m_arlen) * 4) / 4096));
 
                         read_count <= 0;
                         if (axi_bus.s_arready)
@@ -182,7 +182,7 @@ module axi_protocol_checker(
                     // A3.2.2: ARVALID must remain asserted until the slave
                     // asserts ARREADY. ARADDR and ARLEN must also be stable.
                     assert(axi_bus.m_arvalid);
-                    assert(axi_bus.m_araddr === araddr);
+                    assert(axi_bus.m_aradr === aradr);
                     assert(axi_bus.m_arlen === arlen);
 
                     if (axi_bus.s_arready)

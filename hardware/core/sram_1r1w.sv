@@ -5,10 +5,10 @@ import defines::*;
 //
 // Block SRAM with 1 read port and 1 write port.
 // Reads and writes are performed synchronously. The read value appears
-// on the next clock edge after the address and read_en are asserted
+// on the next clock edge after the adress and read_en are asserted
 // If read_en is not asserted, the value of read_data is undefined during
 // the next cycle. The READ_DURING_WRITE parameter determines what happens
-// if a read and a write are performed to the same address in the same cycle:
+// if a read and a write are performed to the same adress in the same cycle:
 //  - "NEW_DATA" this will return the newly written data ("read-after-write").
 //  - "DONT_CARE" The results are undefined. This can be used to improve clock
 //  speed.
@@ -23,14 +23,14 @@ module sram_1r1w
 
   (input clk,
   input read_en,
-  input [ADDR_WIDTH - 1:0]     read_addr,
-  output logic[DATA_WIDTH - 1:0] read_data,
+  input [ADDR_WIDTH-1:0] read_adr,
+  output logic[DATA_WIDTH-1:0] read_data,
   input write_en,
-  input [ADDR_WIDTH - 1:0]     write_addr,
-  input [DATA_WIDTH - 1:0]     write_data);
+  input [ADDR_WIDTH-1:0] write_adr,
+  input [DATA_WIDTH-1:0] write_data);
 
 `ifdef VENDOR_ALTERA
-  logic[DATA_WIDTH - 1:0] data_from_ram;
+  logic[DATA_WIDTH-1:0] data_from_ram;
 
   // Not all Altera FPGA families support READ_DURING_WRITE_MIXED_PORTS
   // (which I found out the hard way). I just set that to DONT_CARE and
@@ -48,24 +48,24 @@ module sram_1r1w
 
     // Write port
     .wren_a(write_en),
-    .address_a(write_addr),
+    .adress_a(write_adr),
     .data_a(write_data),
     .q_a(),
 
     // Read port
     .rden_b(read_en),
-    .address_b(read_addr),
+    .adress_b(read_adr),
     .q_b(data_from_ram));
 
   generate
     if (READ_DURING_WRITE == "NEW_DATA")
     begin
       logic pass_thru_en;
-      logic[DATA_WIDTH - 1:0] pass_thru_data;
+      logic[DATA_WIDTH-1:0] pass_thru_data;
 
       always_ff @(posedge clk)
       begin
-        pass_thru_en <= write_en && read_en && read_addr == write_addr;
+        pass_thru_en <= write_en && read_en && read_adr == write_adr;
         pass_thru_data <= write_data;
       end
 
@@ -83,7 +83,7 @@ module sram_1r1w
 
   localparam XPM_MEM_SIZE = (1 << ADDR_WIDTH) * DATA_WIDTH; // Memory size in bits
 
-  logic[DATA_WIDTH - 1:0] data_from_ram;
+  logic[DATA_WIDTH-1:0] data_from_ram;
 
   xpm_memory_sdpram # (
     .MEMORY_SIZE    (XPM_MEM_SIZE),  // Size in bits
@@ -115,7 +115,7 @@ module sram_1r1w
     .clka       (clk),
     .ena      (write_en),
     .wea      (write_en),
-    .addra      (write_addr),
+    .adra      (write_adr),
     .dina       (write_data),
     .injectsbiterra (1'b0),
     .injectdbiterra (1'b0),
@@ -125,7 +125,7 @@ module sram_1r1w
     .rstb       (1'b0),
     .enb      (read_en),
     .regceb     (1'b1),
-    .addrb      (read_addr),
+    .adrb      (read_adr),
     .doutb      (data_from_ram),
     .sbiterrb     (),
     .dbiterrb     ()
@@ -134,10 +134,10 @@ module sram_1r1w
   generate
     if (READ_DURING_WRITE == "NEW_DATA") begin
       logic pass_thru_en;
-      logic[DATA_WIDTH - 1:0] pass_thru_data;
+      logic[DATA_WIDTH-1:0] pass_thru_data;
 
       always_ff @(posedge clk) begin
-        pass_thru_en <= write_en && read_en && read_addr == write_addr;
+        pass_thru_en <= write_en && read_en && read_adr == write_adr;
         pass_thru_data <= write_data;
       end
 
@@ -154,16 +154,16 @@ module sram_1r1w
   endgenerate
 `else
   // Simulation
-  logic[DATA_WIDTH - 1:0] data[SIZE];
+  logic[DATA_WIDTH-1:0] data[SIZE];
 
   // Note: use always here instead of always_ff so Modelsim will allow
   // initializing the array in the initial block (see below).
   always @(posedge clk)
   begin
     if (write_en)
-      data[write_addr] <= write_data;
+      data[write_adr] <= write_data;
 
-    if (write_addr == read_addr && write_en && read_en)
+    if (write_adr == read_adr && write_en && read_en)
     begin
       if (READ_DURING_WRITE == "NEW_DATA")
         read_data <= write_data;  // Bypass
@@ -171,7 +171,7 @@ module sram_1r1w
         read_data <= DATA_WIDTH'($random()); // ensure it is really "don't care"
     end
     else if (read_en)
-      read_data <= data[read_addr];
+      read_data <= data[read_adr];
     else
       read_data <= DATA_WIDTH'($random());
   end

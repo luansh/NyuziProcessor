@@ -27,7 +27,7 @@ module test_io_request_queue(input clk, input reset);
     logic dd_io_write_en;
     logic dd_io_read_en;
     local_thread_idx_t dd_io_thread_idx;
-    scalar_t dd_io_addr;
+    scalar_t dd_io_adr;
     scalar_t dd_io_write_value;
     scalar_t ior_read_value;
     logic ior_rollback_en;
@@ -80,7 +80,7 @@ module test_io_request_queue(input clk, input reset);
 
                     dd_io_write_en <= 1;
                     dd_io_thread_idx <= 0;
-                    dd_io_addr <= ADDR0;
+                    dd_io_adr <= ADDR0;
                     dd_io_write_value <= DATA0;
                     state <= state + 1;
                 end
@@ -132,7 +132,7 @@ module test_io_request_queue(input clk, input reset);
                     assert(ior_request_valid);
                     assert(ior_request.store);
                     assert(ior_request.thread_idx == 0);
-                    assert(ior_request.address == ADDR0);
+                    assert(ior_request.adress == ADDR0);
                     assert(ior_request.value == DATA0);
 
                     state <= state + 1;
@@ -168,7 +168,7 @@ module test_io_request_queue(input clk, input reset);
 
                     dd_io_write_en <= 1;
                     dd_io_thread_idx <= 0;
-                    dd_io_addr <= ADDR0;
+                    dd_io_adr <= ADDR0;
                     dd_io_write_value <= DATA0;
                     state <= state + 1;
                 end
@@ -198,7 +198,7 @@ module test_io_request_queue(input clk, input reset);
 
                     dd_io_read_en <= 1;
                     dd_io_thread_idx <= 1;
-                    dd_io_addr <= ADDR1;
+                    dd_io_adr <= ADDR1;
                     dd_io_write_value <= DATA1;
                     state <= state + 1;
                 end
@@ -250,7 +250,7 @@ module test_io_request_queue(input clk, input reset);
                     assert(ior_request_valid);
                     assert(!ior_request.store);
                     assert(ior_request.thread_idx == 1);
-                    assert(ior_request.address == ADDR1);
+                    assert(ior_request.adress == ADDR1);
 
                     state <= state + 1;
                 end
@@ -286,7 +286,7 @@ module test_io_request_queue(input clk, input reset);
 
                     dd_io_read_en <= 1;
                     dd_io_thread_idx <= 1;
-                    dd_io_addr <= ADDR1;
+                    dd_io_adr <= ADDR1;
                     state <= state + 1;
                 end
 

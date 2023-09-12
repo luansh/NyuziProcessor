@@ -38,7 +38,7 @@ module test_tlb(input clk, input reset);
     logic invalidate_en;
     logic invalidate_all_en;
     page_index_t request_vpage_idx;
-    logic [ASID_WIDTH - 1:0] request_asid;
+    logic [ASID_WIDTH-1:0] request_asid;
     page_index_t update_ppage_idx;
     logic update_present;
     logic update_exe_writable;
@@ -56,7 +56,7 @@ module test_tlb(input clk, input reset);
     // The is using non-blocking assignments, so the response will not occur on the
     // next cycle, the request does. The response will occur 2 cycles later, so there
     // needs to be an extra clock between this call and reading the result.
-    task lookup_page(input page_index_t vpageidx, input logic [ASID_WIDTH - 1:0] asid);
+    task lookup_page(input page_index_t vpageidx, input logic [ASID_WIDTH-1:0] asid);
         lookup_en <= 1;
         invalidate_en <= 0;
         invalidate_all_en <= 0;
@@ -66,7 +66,7 @@ module test_tlb(input clk, input reset);
     endtask
 
     task update_page(input page_index_t vpageidx, input page_index_t ppageidx,
-    input logic [ASID_WIDTH - 1:0] asid, logic present, logic global, logic writable,
+    input logic [ASID_WIDTH-1:0] asid, logic present, logic global, logic writable,
         logic supervisor);
 
         update_en <= 1;
@@ -111,7 +111,7 @@ module test_tlb(input clk, input reset);
                 1: update_page(VPAGE2, PPAGE2, 0, 0, 0, 0, 0);
                 2: update_page(VPAGE3, PPAGE3, 0, 1, 0, 1, 0);
 
-                // Insert page with different ASID, but same address as another
+                // Insert page with different ASID, but same adress as another
                 // XXX assuming here this entry won't evict the previous one,
                 // which is possible in some cases based on randomized
                 // replacement algorithm
@@ -300,7 +300,7 @@ module test_tlb(input clk, input reset);
                 ///////////////////////////////////////////////////////////
                 // Insert global page after local. This is a regression
                 // test for for issue #143, which would assert with multiple
-                // way hits for an address.
+                // way hits for an adress.
                 ///////////////////////////////////////////////////////////
                 40: update_page(VPAGE6, PPAGE1, 1, 1, 0, 0, 0); // ASID 1, Present
                 41: update_page(VPAGE6, PPAGE1, 2, 1, 1, 0, 0); // ASID 2, present, global

@@ -3,10 +3,10 @@
 import defines::*;
 
 //
-// Content addressable memory.
+// Content adressable memory.
 // Lookup is async: This asserts lookup_idx and lookup_hit the same cycle
 // lookup_key is asserted. It registers the update signals on the edge of clk.
-// If an update is performed to the same address as a lookup in the same clock
+// If an update is performed to the same adress as a lookup in the same clock
 // cycle, it doesn't flag a match.
 //
 
@@ -19,19 +19,19 @@ module cam
   input reset,
 
   // Lookup interface
-  input [KEY_WIDTH - 1:0]      lookup_key,
-  output logic[INDEX_WIDTH - 1:0]  lookup_idx,
+  input [KEY_WIDTH-1:0] lookup_key,
+  output logic[INDEX_WIDTH-1:0] lookup_idx,
   output logic lookup_hit,
 
   // Update interface
   input update_en,
-  input [KEY_WIDTH - 1:0]      update_key,
-  input [INDEX_WIDTH - 1:0]    update_idx,
+  input [KEY_WIDTH-1:0] update_key,
+  input [INDEX_WIDTH-1:0] update_idx,
   input update_valid);
 
-  logic[KEY_WIDTH - 1:0] lookup_table[NUM_ENTRIES];
-  logic[NUM_ENTRIES - 1:0] entry_valid;
-  logic[NUM_ENTRIES - 1:0] hit_oh;
+  logic[KEY_WIDTH-1:0] lookup_table[NUM_ENTRIES];
+  logic[NUM_ENTRIES-1:0] entry_valid;
+  logic[NUM_ENTRIES-1:0] hit_oh;
 
   genvar test_index;
   generate

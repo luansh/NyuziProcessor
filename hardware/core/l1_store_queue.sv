@@ -24,16 +24,16 @@ module l1_store_queue(
   input dd_membar_en,
   input dd_iinvalidate_en,
   input dd_dinvalidate_en,
-  input cache_line_index_t dd_store_addr,
-  input [CACHE_LINE_BYTES - 1:0]     dd_store_mask,
+  input cache_line_index_t dd_store_adr,
+  input [CACHE_LINE_BYTES-1:0] dd_store_mask,
   input cache_line_data_t dd_store_data,
   input dd_store_sync,
   input local_thread_idx_t dd_store_thread_idx,
-  input cache_line_index_t dd_store_bypass_addr,
+  input cache_line_index_t dd_store_bypass_adr,
   input local_thread_idx_t dd_store_bypass_thread_idx,
 
   // To writeback_stage
-  output logic [CACHE_LINE_BYTES - 1:0]  sq_store_bypass_mask,
+  output logic [CACHE_LINE_BYTES-1:0] sq_store_bypass_mask,
   output cache_line_data_t sq_store_bypass_data,
   output logic sq_store_sync_success,
 
@@ -45,9 +45,9 @@ module l1_store_queue(
 
   // To l1_l2_interface
   output logic sq_dequeue_ready,
-  output cache_line_index_t sq_dequeue_addr,
+  output cache_line_index_t sq_dequeue_adr,
   output l1_miss_entry_idx_t sq_dequeue_idx,
-  output logic[CACHE_LINE_BYTES - 1:0]   sq_dequeue_mask,
+  output logic[CACHE_LINE_BYTES-1:0] sq_dequeue_mask,
   output cache_line_data_t sq_dequeue_data,
   output logic sq_dequeue_sync,
   output logic sq_dequeue_flush,
@@ -67,8 +67,8 @@ module l1_store_queue(
     logic thread_waiting;
     logic valid;
     cache_line_data_t data;
-    logic[CACHE_LINE_BYTES - 1:0] mask;
-    cache_line_index_t address;
+    logic[CACHE_LINE_BYTES-1:0] mask;
+    cache_line_index_t adress;
   } pending_stores[`THREADS_PER_CORE];
   local_thread_bitmap_t rollback;
   local_thread_bitmap_t send_request;
@@ -104,7 +104,7 @@ module l1_store_queue(
       assign membar_requested_this_entry = dd_membar_en && dd_store_thread_idx == local_thread_idx_t'(thread_idx);
       assign send_this_cycle = send_grant_oh[thread_idx] && storebuf_dequeue_ack;
       assign can_write_combine = pending_stores[thread_idx].valid
-        && pending_stores[thread_idx].address == dd_store_addr
+        && pending_stores[thread_idx].adress == dd_store_adr
         && !pending_stores[thread_idx].flush
         && !pending_stores[thread_idx].iinvalidate
         && !pending_stores[thread_idx].dinvalidate
@@ -182,8 +182,8 @@ module l1_store_queue(
             // The restarted store should be synchronized
             assert(dd_store_sync);
 
-            // The request should be for the same address.
-            assert(dd_store_addr == pending_stores[thread_idx].address);
+            // The request should be for the same adress.
+            assert(dd_store_adr == pending_stores[thread_idx].adress);
           end
 
           if (send_this_cycle)
@@ -237,7 +237,7 @@ module l1_store_queue(
               assert(!enqueue_cache_control);
 
               pending_stores[thread_idx].valid <= 1;
-              pending_stores[thread_idx].address <= dd_store_addr;
+              pending_stores[thread_idx].adress <= dd_store_adr;
               pending_stores[thread_idx].sync <= dd_store_sync;
               pending_stores[thread_idx].flush <= 0;
               pending_stores[thread_idx].iinvalidate <= 0;
@@ -251,7 +251,7 @@ module l1_store_queue(
             assert(!rollback[thread_idx]);
 
             pending_stores[thread_idx].valid <= 1;
-            pending_stores[thread_idx].address <= dd_store_addr;
+            pending_stores[thread_idx].adress <= dd_store_adr;
             pending_stores[thread_idx].sync <= 0;
             pending_stores[thread_idx].flush <= dd_flush_en;
             pending_stores[thread_idx].iinvalidate <= dd_iinvalidate_en;
@@ -292,7 +292,7 @@ module l1_store_queue(
   // XXX may want to register this to reduce latency.
   assign sq_dequeue_ready = |send_grant_oh;
   assign sq_dequeue_idx = send_grant_idx;
-  assign sq_dequeue_addr = pending_stores[send_grant_idx].address;
+  assign sq_dequeue_adr = pending_stores[send_grant_idx].adress;
   assign sq_dequeue_mask = pending_stores[send_grant_idx].mask;
   assign sq_dequeue_data = pending_stores[send_grant_idx].data;
   assign sq_dequeue_sync = pending_stores[send_grant_idx].sync;
@@ -303,13 +303,13 @@ module l1_store_queue(
   always_ff @(posedge clk)
   begin
     sq_store_bypass_data <= pending_stores[dd_store_bypass_thread_idx].data;
-    if (dd_store_bypass_addr == pending_stores[dd_store_bypass_thread_idx].address
+    if (dd_store_bypass_adr == pending_stores[dd_store_bypass_thread_idx].adress
       && pending_stores[dd_store_bypass_thread_idx].valid
       && !pending_stores[dd_store_bypass_thread_idx].flush
       && !pending_stores[dd_store_bypass_thread_idx].iinvalidate
       && !pending_stores[dd_store_bypass_thread_idx].dinvalidate)
     begin
-      // There is a store for this address, set mask
+      // There is a store for this adress, set mask
       sq_store_bypass_mask <= pending_stores[dd_store_bypass_thread_idx].mask;
     end
     else

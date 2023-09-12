@@ -3,7 +3,7 @@
 // Software uploads a small microcode program that this runs. It
 // contains two counters and supports two instructions:
 // INITCNT: load a value into the selected counter
-// LOOP: decrement the selected counter and branch to an address if the
+// LOOP: decrement the selected counter and branch to an adress if the
 //       value is not zero.
 // The frame_done bit will restart the microprogram from the beginning.
 //
@@ -21,11 +21,11 @@ module vga_sequencer(
     output logic pixel_en,
   input sequencer_en,
   input prog_write_en,
-  input[31:0]                 prog_data);
+  input[31:0] prog_data);
 
     localparam MAX_INSTRUCTIONS = 48;
 
-    typedef logic[$clog2(MAX_INSTRUCTIONS) - 1:0] progaddr_t;
+    typedef logic[$clog2(MAX_INSTRUCTIONS)-1:0] progadr_t;
     typedef logic[12:0] counter_t;
 
     typedef enum logic {
@@ -48,9 +48,9 @@ module vga_sequencer(
     uop_t current_uop;
     counter_t counter[2];
     counter_t counter_nxt;
-    progaddr_t pc;
-    progaddr_t pc_nxt;
-    progaddr_t prog_load_addr;
+    progadr_t pc;
+    progadr_t pc_nxt;
+    progadr_t prog_load_adr;
     logic branch_en;
 
     sram_1r1w #(
@@ -58,11 +58,11 @@ module vga_sequencer(
         .SIZE(MAX_INSTRUCTIONS)
     ) instruction_memory(
         .read_en(1'b1),
-        .read_addr(pc_nxt),
+        .read_adr(pc_nxt),
         .read_data(current_uop),
         .write_en(prog_write_en),
-        .write_addr(prog_load_addr),
-        .write_data(prog_data[$bits(uop_t) - 1:0]),
+        .write_adr(prog_load_adr),
+        .write_data(prog_data[$bits(uop_t)-1:0]),
         .*);
 
     assign counter_nxt = current_uop.instruction_type == INITCNT
@@ -80,9 +80,9 @@ module vga_sequencer(
         if (pixel_en)
         begin
             if (branch_en)
-                pc_nxt = progaddr_t'(current_uop.immediate_value);
+                pc_nxt = progadr_t'(current_uop.immediate_value);
             else
-                pc_nxt = pc + progaddr_t'(1);
+                pc_nxt = pc + progadr_t'(1);
         end
         else
             pc_nxt = pc;
@@ -95,7 +95,7 @@ module vga_sequencer(
             counter[0] <= '0;
             counter[1] <= '0;
             pc <= '0;
-            prog_load_addr <= '0;
+            prog_load_adr <= '0;
         end
         else
         begin
@@ -108,12 +108,12 @@ module vga_sequencer(
                     counter[current_uop.counter_select] <= counter_nxt;
 
                 pc <= pc_nxt;
-                prog_load_addr <= '0;
+                prog_load_adr <= '0;
             end
             else if (prog_write_en)
             begin
                 pc <= '0;
-                prog_load_addr <= prog_load_addr + progaddr_t'(1);
+                prog_load_adr <= prog_load_adr + progadr_t'(1);
             end
         end
     end

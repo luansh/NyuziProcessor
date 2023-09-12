@@ -10,12 +10,12 @@ import defines::*;
 // separate block of tag ram for each way, which this reads in parallel. The
 // next stage will check them to see if there is a cache hit on one of the
 // ways. This also contains the translation lookaside buffer, which will
-// convert the virtual memory address to a physical one. The cache is
+// convert the virtual memory adress to a physical one. The cache is
 // virtually indexed and physically tagged: the tag memories contain physical
-// addresses, translated by the TLB.
+// adresses, translated by the TLB.
 //
 // This also performs snoops from the l1_l2_interface when there are writes
-// from this or other cores. Snoop addresses are physical addresses, but the
+// from this or other cores. Snoop adresses are physical adresses, but the
 // tag memory is virtually indexed. To avoid aliasing, the size of a way must
 // be the same size or smaller than a virtual page
 // (cache line size * num sets <= page_size).
@@ -43,8 +43,8 @@ module dcache_tag_stage
   output decoded_instruction_t dt_instruction,
   output vector_mask_t dt_mask_value,
   output local_thread_idx_t dt_thread_idx,
-  output l1d_addr_t dt_request_vaddr,
-  output l1d_addr_t dt_request_paddr,
+  output l1d_adr_t dt_request_vadr,
+  output l1d_adr_t dt_request_padr,
   output logic dt_tlb_hit,
   output logic dt_tlb_writable,
   output vector_t dt_store_value,
@@ -58,7 +58,7 @@ module dcache_tag_stage
   output logic dt_invalidate_tlb_en,
   output logic dt_invalidate_tlb_all_en,
   output logic dt_update_itlb_en,
-  output [ASID_WIDTH - 1:0]           dt_update_itlb_asid,
+  output [ASID_WIDTH-1:0] dt_update_itlb_asid,
   output page_index_t dt_update_itlb_vpage_idx,
   output page_index_t dt_update_itlb_ppage_idx,
   output logic dt_update_itlb_present,
@@ -69,7 +69,7 @@ module dcache_tag_stage
   // From l1_l2_interface
   input l2i_dcache_lru_fill_en,
   input l1d_set_idx_t l2i_dcache_lru_fill_set,
-  input [`L1D_WAYS - 1:0]           l2i_dtag_update_en_oh,
+  input [`L1D_WAYS-1:0] l2i_dtag_update_en_oh,
   input l1d_set_idx_t l2i_dtag_update_set,
   input l1d_tag_t l2i_dtag_update_tag,
   input l2i_dtag_update_valid,
@@ -84,20 +84,20 @@ module dcache_tag_stage
   // From control_registers
   input cr_mmu_en[`THREADS_PER_CORE],
   input logic cr_supervisor_en[`THREADS_PER_CORE],
-  input [ASID_WIDTH - 1:0]          cr_current_asid[`THREADS_PER_CORE],
+  input [ASID_WIDTH-1:0] cr_current_asid[`THREADS_PER_CORE],
 
   // From writeback_stage
   input logic wb_rollback_en,
   input local_thread_idx_t wb_rollback_thread_idx);
 
-  l1d_addr_t request_addr_nxt;
+  l1d_adr_t request_adr_nxt;
   logic cache_load_en;
   logic instruction_valid;
-  logic[$clog2(NUM_VECTOR_LANES) - 1:0] scgath_lane;
+  logic[$clog2(NUM_VECTOR_LANES)-1:0] scgath_lane;
   page_index_t tlb_ppage_idx;
   logic tlb_hit;
   page_index_t ppage_idx;
-  scalar_t fetched_addr;
+  scalar_t fetched_adr;
   logic tlb_lookup_en;
   logic valid_cache_control;
   logic update_dtlb_en;
@@ -116,7 +116,7 @@ module dcache_tag_stage
     && of_instruction.memory_access    // Not cache control
     && of_instruction.load;
   assign scgath_lane = ~of_subcycle;
-  assign request_addr_nxt = of_operand1[scgath_lane] + of_instruction.immediate_value;
+  assign request_adr_nxt = of_operand1[scgath_lane] + of_instruction.immediate_value;
   assign new_tlb_value = of_store_value[0];
   assign dt_invalidate_tlb_en = valid_cache_control
     && of_instruction.cache_control_op == CACHE_TLB_INVAL
@@ -167,13 +167,13 @@ module dcache_tag_stage
         .READ_DURING_WRITE("NEW_DATA")
       ) sram_tags(
         .read1_en(cache_load_en),
-        .read1_addr(request_addr_nxt.set_idx),
+        .read1_adr(request_adr_nxt.set_idx),
         .read1_data(dt_tag[way_idx]),
         .read2_en(l2i_snoop_en),
-        .read2_addr(l2i_snoop_set),
+        .read2_adr(l2i_snoop_set),
         .read2_data(dt_snoop_tag[way_idx]),
         .write_en(l2i_dtag_update_en_oh[way_idx]),
-        .write_addr(l2i_dtag_update_set),
+        .write_adr(l2i_dtag_update_set),
         .write_data(l2i_dtag_update_tag),
         .*);
 
@@ -196,10 +196,10 @@ module dcache_tag_stage
         // Fetch cache line state for pipeline
         if (cache_load_en)
         begin
-          if (l2i_dtag_update_en_oh[way_idx] && l2i_dtag_update_set == request_addr_nxt.set_idx)
+          if (l2i_dtag_update_en_oh[way_idx] && l2i_dtag_update_set == request_adr_nxt.set_idx)
             dt_valid[way_idx] <= l2i_dtag_update_valid;  // Bypass
           else
-            dt_valid[way_idx] <= line_valid[request_addr_nxt.set_idx];
+            dt_valid[way_idx] <= line_valid[request_adr_nxt.set_idx];
         end
 
         // Fetch cache line state for snoop
@@ -222,7 +222,7 @@ module dcache_tag_stage
     .update_en(update_dtlb_en),
     .invalidate_en(dt_invalidate_tlb_en),
     .invalidate_all_en(dt_invalidate_tlb_all_en),
-    .request_vpage_idx(request_addr_nxt[31-:PAGE_NUM_BITS]),
+    .request_vpage_idx(request_adr_nxt[31-:PAGE_NUM_BITS]),
     .request_asid(cr_current_asid[of_thread_idx]),
     .update_ppage_idx(new_tlb_value.ppage_idx),
     .update_present(new_tlb_value.present),
@@ -255,7 +255,7 @@ module dcache_tag_stage
       dt_tlb_writable = 1;
       dt_tlb_present = 1;
       dt_tlb_supervisor = 0;
-      ppage_idx = fetched_addr[31-:PAGE_NUM_BITS];
+      ppage_idx = fetched_adr[31-:PAGE_NUM_BITS];
     end
   end
 
@@ -267,7 +267,7 @@ module dcache_tag_stage
     .fill_set(l2i_dcache_lru_fill_set),
     .fill_way(dt_fill_lru),
     .access_en(instruction_valid),
-    .access_set(request_addr_nxt.set_idx),
+    .access_set(request_adr_nxt.set_idx),
     .update_en(dd_update_lru_en),
     .update_way(dd_update_lru_way),
     .*);
@@ -279,7 +279,7 @@ module dcache_tag_stage
     dt_thread_idx <= of_thread_idx;
     dt_store_value <= of_store_value;
     dt_subcycle <= of_subcycle;
-    fetched_addr <= request_addr_nxt;
+    fetched_adr <= request_adr_nxt;
   end
 
   always_ff @(posedge clk, posedge reset)
@@ -293,6 +293,6 @@ module dcache_tag_stage
     end
   end
 
-  assign dt_request_paddr = {ppage_idx, fetched_addr[31 - PAGE_NUM_BITS:0]};
-  assign dt_request_vaddr = fetched_addr;
+  assign dt_request_padr = {ppage_idx, fetched_adr[31 - PAGE_NUM_BITS:0]};
+  assign dt_request_vadr = fetched_adr;
 endmodule

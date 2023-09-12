@@ -16,7 +16,7 @@ module logic_analyzer
 
     (input clk,
   input reset,
-  input[CAPTURE_WIDTH_BITS - 1:0] capture_data,
+  input[CAPTURE_WIDTH_BITS-1:0] capture_data,
   input capture_enable,
   input trigger,
     output logic uart_tx);
@@ -30,14 +30,14 @@ module logic_analyzer
 
     logic[1:0] state;
     logic wrapped;
-    logic[CAPTURE_INDEX_WIDTH - 1:0] capture_entry;
-    logic[CAPTURE_INDEX_WIDTH - 1:0] dump_entry;
-    logic[$clog2(CAPTURE_WIDTH_BYTES) - 1:0] dump_byte;
-    logic[CAPTURE_INDEX_WIDTH - 1:0] dump_entry_nxt;
-    logic[$clog2(CAPTURE_WIDTH_BYTES) - 1:0] dump_byte_nxt;
+    logic[CAPTURE_INDEX_WIDTH-1:0] capture_entry;
+    logic[CAPTURE_INDEX_WIDTH-1:0] dump_entry;
+    logic[$clog2(CAPTURE_WIDTH_BYTES)-1:0] dump_byte;
+    logic[CAPTURE_INDEX_WIDTH-1:0] dump_entry_nxt;
+    logic[$clog2(CAPTURE_WIDTH_BYTES)-1:0] dump_byte_nxt;
     logic tx_enable = 0;
     logic[7:0] tx_char;
-    logic[CAPTURE_WIDTH_BITS - 1:0] dump_value;
+    logic[CAPTURE_WIDTH_BITS-1:0] dump_value;
 
     /*AUTOLOGIC*/
     // Beginning of automatic wires (for undeclared instantiated-module outputs)
@@ -47,10 +47,10 @@ module logic_analyzer
     sram_1r1w #(.DATA_WIDTH(CAPTURE_WIDTH_BITS), .SIZE(CAPTURE_SIZE)) capture_mem(
         .clk(clk),
         .read_en(1'b1),
-        .read_addr(dump_entry_nxt),
+        .read_adr(dump_entry_nxt),
         .read_data(dump_value),
         .write_en(state == STATE_CAPTURE && capture_enable),
-        .write_addr(capture_entry),
+        .write_adr(capture_entry),
         .write_data(capture_data));
 
     uart_transmit #(.DIVISOR_WIDTH(12)) uart_transmit(

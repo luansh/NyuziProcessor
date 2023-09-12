@@ -27,8 +27,8 @@ module test_ifetch_data_stage(input clk, input reset);
     localparam INJECT_INST = 32'h51407de1;
 
     logic ift_instruction_requested;
-    l1i_addr_t ift_pc_paddr;
-    scalar_t ift_pc_vaddr;
+    l1i_adr_t ift_pc_padr;
+    scalar_t ift_pc_vadr;
     local_thread_idx_t ift_thread_idx;
     logic ift_tlb_hit;
     logic ift_tlb_present;
@@ -43,11 +43,11 @@ module test_ifetch_data_stage(input clk, input reset);
     l1i_way_idx_t l2i_idata_update_way;
     l1i_set_idx_t l2i_idata_update_set;
     cache_line_data_t l2i_idata_update_data;
-    logic[`L1I_WAYS - 1:0] l2i_itag_update_en;
+    logic[`L1I_WAYS-1:0] l2i_itag_update_en;
     l1i_set_idx_t l2i_itag_update_set;
     l1i_tag_t l2i_itag_update_tag;
     logic ifd_cache_miss;
-    cache_line_index_t ifd_cache_miss_paddr;
+    cache_line_index_t ifd_cache_miss_padr;
     local_thread_idx_t ifd_cache_miss_thread_idx;
     logic cr_supervisor_en[`THREADS_PER_CORE];
     scalar_t ifd_instruction;
@@ -77,10 +77,10 @@ module test_ifetch_data_stage(input clk, input reset);
 
     ifetch_data_stage ifetch_data_stage(.*);
 
-    task cache_hit(input int vaddr, input int paddr);
+    task cache_hit(input int vadr, input int padr);
         ift_instruction_requested <= 1;
-        ift_pc_vaddr <= vaddr;
-        ift_pc_paddr <= paddr;
+        ift_pc_vadr <= vadr;
+        ift_pc_padr <= padr;
         ift_tlb_hit <= 1;
         ift_valid[0] <= 1;
         ift_valid[1] <= 0;
@@ -89,7 +89,7 @@ module test_ifetch_data_stage(input clk, input reset);
         ift_tlb_present <= 1;
         ift_tlb_executable <= 1;
         ift_tlb_supervisor <= 0;
-        ift_tag[0] <= l1i_tag_t'(paddr >> (32 - ICACHE_TAG_BITS));
+        ift_tag[0] <= l1i_tag_t'(padr >> (32 - ICACHE_TAG_BITS));
     endtask
 
     // Performace counters
@@ -150,8 +150,8 @@ module test_ifetch_data_stage(input clk, input reset);
                 0:
                 begin
                     ift_instruction_requested <= 1;
-                    ift_pc_vaddr <= VADDR0;
-                    ift_pc_paddr <= PADDR0;
+                    ift_pc_vadr <= VADDR0;
+                    ift_pc_padr <= PADDR0;
                     ift_tlb_hit <= 1;
                     ift_tlb_present <= 1;
                     ift_tlb_executable <= 1;
@@ -199,8 +199,8 @@ module test_ifetch_data_stage(input clk, input reset);
 
                     // TLB miss
                     ift_instruction_requested <= 1;
-                    ift_pc_vaddr <= VADDR0;
-                    ift_pc_paddr <= PADDR0;
+                    ift_pc_vadr <= VADDR0;
+                    ift_pc_padr <= PADDR0;
                     ift_tlb_hit <= 0;
                 end
 
@@ -254,7 +254,7 @@ module test_ifetch_data_stage(input clk, input reset);
                     assert(!ifd_executable_fault);
                     assert(!ifd_inst_injected);
 
-                    // Page not executable (valid, tag, and paddr flags are retained
+                    // Page not executable (valid, tag, and padr flags are retained
                     // from above).
                     cache_hit(VADDR0, PADDR0);
                     ift_tlb_executable <= 0;
@@ -339,8 +339,8 @@ module test_ifetch_data_stage(input clk, input reset);
 
                     // TLB miss
                     ift_instruction_requested <= 1;
-                    ift_pc_vaddr <= VADDR0;
-                    ift_pc_paddr <= PADDR0;
+                    ift_pc_vadr <= VADDR0;
+                    ift_pc_padr <= PADDR0;
                     ift_tlb_hit <= 0;
                     wb_rollback_en <= 1;
                 end

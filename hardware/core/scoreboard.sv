@@ -55,10 +55,10 @@ module scoreboard(
   // generate traps.
   localparam ROLLBACK_STAGES = 4;
 
-  typedef logic[SCOREBOARD_ENTRIES - 1:0] scoreboard_bitmap_t;
+  typedef logic[SCOREBOARD_ENTRIES-1:0] scoreboard_bitmap_t;
   typedef logic[5:0] ext_register_idx_t;  // 0-31 are scalar, 32-63 vector
 
-  logic[ROLLBACK_STAGES - 1:0] has_writeback;
+  logic[ROLLBACK_STAGES-1:0] has_writeback;
   ext_register_idx_t writeback_reg[ROLLBACK_STAGES];
   scoreboard_bitmap_t scoreboard_regs;
   scoreboard_bitmap_t scoreboard_regs_nxt;

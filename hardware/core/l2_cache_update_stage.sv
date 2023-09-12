@@ -18,7 +18,7 @@ module l2_cache_update_stage(
   input l2req_packet_t l2r_request,
   input cache_line_data_t l2r_data,
   input l2r_cache_hit,
-  input logic[$clog2(`L2_WAYS * `L2_SETS) - 1:0] l2r_hit_cache_idx,
+  input logic[$clog2(`L2_WAYS * `L2_SETS)-1:0] l2r_hit_cache_idx,
   input l2r_l2_fill,
   input l2r_restarted_flush,
   input cache_line_data_t l2r_data_from_memory,
@@ -27,7 +27,7 @@ module l2_cache_update_stage(
 
   // To l2_cache_read_stage
   output logic l2u_write_en,
-  output logic[$clog2(`L2_WAYS * `L2_SETS) - 1:0] l2u_write_addr,
+  output logic[$clog2(`L2_WAYS * `L2_SETS)-1:0] l2u_write_adr,
   output cache_line_data_t l2u_write_data,
 
   // To cores
@@ -56,7 +56,7 @@ module l2_cache_update_stage(
   assign l2u_write_en = l2r_request_valid
     && (l2r_l2_fill || (l2r_cache_hit && (l2r_request.packet_type == L2REQ_STORE
     || l2r_request.packet_type == L2REQ_STORE_SYNC)));
-  assign l2u_write_addr = l2r_hit_cache_idx;
+  assign l2u_write_adr = l2r_hit_cache_idx;
 
   // Response packet type
   always_comb
@@ -125,6 +125,6 @@ module l2_cache_update_stage(
     l2_response.packet_type <= response_type;
     l2_response.cache_type <= l2r_request.cache_type;
     l2_response.data <= l2u_write_data;
-    l2_response.address <= l2r_request.address;
+    l2_response.adress <= l2r_request.adress;
   end
 endmodule

@@ -6,7 +6,7 @@ import defines::*;
 // The L2 cache has a four stage pipeline:
 //  - Arbitrate: selects one request from cores, or a restarted request
 //  (described below) to send to the next stage.
-//  - Tag: issues address to tag ram ways, checks LRU.
+//  - Tag: issues adress to tag ram ways, checks LRU.
 //  - Read: checks for cache hit, reads cache memory
 //  - Update: generates signals to update cache memory and broadcasts response
 //  to cores.
@@ -16,7 +16,7 @@ import defines::*;
 // If the evicted line has unwritten data, the read stage reads it from cache
 // memory and puts it into a writeback queue in the system memory interface.
 //
-// The L2 cache is physically indexed/physically tagged, and thus all addresses
+// The L2 cache is physically indexed/physically tagged, and thus all adresses
 // used here are physical. Address translation is done by TLBs in the L1 caches.
 //
 
@@ -25,7 +25,7 @@ module l2_cache(
   input reset,
 
   // From l1_l2_interface
-  input [`NUM_CORES - 1:0]        l2i_request_valid,
+  input [`NUM_CORES-1:0] l2i_request_valid,
   input l2req_packet_t l2i_request[`NUM_CORES],
 
   // To l1_l2_interface
@@ -37,7 +37,7 @@ module l2_cache(
   axi4_interface.master         axi_bus,
 
   // To performance_counters
-  output logic[L2_PERF_EVENTS - 1:0]  l2_perf_events);
+  output logic[L2_PERF_EVENTS-1:0] l2_perf_events);
 
   /*AUTOLOGIC*/
   // Beginning of automatic wires (for undeclared instantiated-module outputs)
@@ -83,7 +83,7 @@ module l2_cache(
   logic l2t_restarted_flush;  // From l2_cache_tag_stage of l2_cache_tag_stage.v
   l2_tag_t l2t_tag [`L2_WAYS];   // From l2_cache_tag_stage of l2_cache_tag_stage.v
   logic l2t_valid [`L2_WAYS];   // From l2_cache_tag_stage of l2_cache_tag_stage.v
-  logic [$clog2(`L2_WAYS*`L2_SETS)-1:0] l2u_write_addr;// From l2_cache_update_stage of l2_cache_update_stage.v
+  logic [$clog2(`L2_WAYS*`L2_SETS)-1:0] l2u_write_adr;// From l2_cache_update_stage of l2_cache_update_stage.v
   cache_line_data_t l2u_write_data;     // From l2_cache_update_stage of l2_cache_update_stage.v
   logic l2u_write_en;       // From l2_cache_update_stage of l2_cache_update_stage.v
   // End of automatics

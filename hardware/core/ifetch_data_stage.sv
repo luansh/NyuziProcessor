@@ -18,8 +18,8 @@ module ifetch_data_stage(
   // If ift_instruction_requested is low, the other signals in this group are
   // undefined.
   input ift_instruction_requested,
-  input l1i_addr_t ift_pc_paddr,
-  input scalar_t ift_pc_vaddr,
+  input l1i_adr_t ift_pc_padr,
+  input scalar_t ift_pc_vadr,
   input local_thread_idx_t ift_thread_idx,
   input ift_tlb_hit,
   input ift_tlb_present,
@@ -38,13 +38,13 @@ module ifetch_data_stage(
   input l1i_way_idx_t l2i_idata_update_way,
   input l1i_set_idx_t l2i_idata_update_set,
   input cache_line_data_t l2i_idata_update_data,
-  input [`L1I_WAYS - 1:0]      l2i_itag_update_en,
+  input [`L1I_WAYS-1:0] l2i_itag_update_en,
   input l1i_set_idx_t l2i_itag_update_set,
   input l1i_tag_t l2i_itag_update_tag,
 
   // To l1_l2_interface
   output logic ifd_cache_miss,
-  output cache_line_index_t ifd_cache_miss_paddr,
+  output cache_line_index_t ifd_cache_miss_padr,
   output local_thread_idx_t ifd_cache_miss_thread_idx,  // also to ifetch_tag
 
   // From control registers
@@ -81,11 +81,11 @@ module ifetch_data_stage(
   input local_thread_idx_t ocd_thread);
 
   logic cache_hit;
-  logic[`L1I_WAYS - 1:0] way_hit_oh;
+  logic[`L1I_WAYS-1:0] way_hit_oh;
   l1i_way_idx_t way_hit_idx;
-  logic[CACHE_LINE_BITS - 1:0] fetched_cache_line;
+  logic[CACHE_LINE_BITS-1:0] fetched_cache_line;
   scalar_t fetched_word;
-  logic[$clog2(CACHE_LINE_WORDS) - 1:0] cache_lane_idx;
+  logic[$clog2(CACHE_LINE_WORDS)-1:0] cache_lane_idx;
   logic alignment_fault;
   logic squash_instruction;
   logic ocd_halt_latched;
@@ -100,7 +100,7 @@ module ifetch_data_stage(
   generate
     for (way_idx = 0; way_idx < `L1I_WAYS; way_idx++)
     begin : hit_check_gen
-      assign way_hit_oh[way_idx] = ift_pc_paddr.tag == ift_tag[way_idx]
+      assign way_hit_oh[way_idx] = ift_pc_padr.tag == ift_tag[way_idx]
         && ift_valid[way_idx];
     end
   endgenerate
@@ -122,16 +122,16 @@ module ifetch_data_stage(
     && ift_tlb_hit
     && ift_instruction_requested
     && |l2i_itag_update_en
-    && l2i_itag_update_set == ift_pc_paddr.set_idx
-    && l2i_itag_update_tag == ift_pc_paddr.tag;
+    && l2i_itag_update_set == ift_pc_padr.set_idx
+    && l2i_itag_update_tag == ift_pc_padr.tag;
   assign ifd_cache_miss = !cache_hit
     && ift_tlb_hit
     && ift_instruction_requested
     && !ifd_near_miss
     && !squash_instruction;
-  assign ifd_cache_miss_paddr = {ift_pc_paddr.tag, ift_pc_paddr.set_idx};
+  assign ifd_cache_miss_padr = {ift_pc_padr.tag, ift_pc_padr.set_idx};
   assign ifd_cache_miss_thread_idx = ift_thread_idx;
-  assign alignment_fault = ift_pc_paddr[1:0] != 0;
+  assign alignment_fault = ift_pc_padr[1:0] != 0;
 
   //
   // Cache data
@@ -142,14 +142,14 @@ module ifetch_data_stage(
     .READ_DURING_WRITE("NEW_DATA")
   ) sram_l1i_data(
     .read_en(cache_hit && ift_instruction_requested),
-    .read_addr({way_hit_idx, ift_pc_paddr.set_idx}),
+    .read_adr({way_hit_idx, ift_pc_padr.set_idx}),
     .read_data(fetched_cache_line),
     .write_en(l2i_idata_update_en),
-    .write_addr({l2i_idata_update_way, l2i_idata_update_set}),
+    .write_adr({l2i_idata_update_way, l2i_idata_update_set}),
     .write_data(l2i_idata_update_data),
     .*);
 
-  assign cache_lane_idx = ~ifd_pc[CACHE_LINE_OFFSET_WIDTH - 1:2];
+  assign cache_lane_idx = ~ifd_pc[CACHE_LINE_OFFSET_WIDTH-1:2];
   assign fetched_word = fetched_cache_line[32 * cache_lane_idx+:32];
   assign ifd_instruction = ocd_halt_latched
     ? ocd_inject_inst
@@ -160,7 +160,7 @@ module ifetch_data_stage(
 
   always_ff @(posedge clk)
   begin
-    ifd_pc <= ift_pc_vaddr;
+    ifd_pc <= ift_pc_vadr;
     ifd_thread_idx <= ocd_halt ? ocd_thread : ift_thread_idx;
   end
 

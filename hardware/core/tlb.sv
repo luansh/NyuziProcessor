@@ -20,7 +20,7 @@ import defines::*;
 
 //
 // Translation lookaside buffer.
-// Caches virtual to physical address translations.
+// Caches virtual to physical adress translations.
 //
 
 module tlb
@@ -37,7 +37,7 @@ module tlb
   input invalidate_en,
   input invalidate_all_en,
   input page_index_t request_vpage_idx,
-  input [ASID_WIDTH - 1:0]  request_asid,
+  input [ASID_WIDTH-1:0] request_asid,
   input page_index_t update_ppage_idx,
   input update_present,
   input update_exe_writable,
@@ -55,32 +55,32 @@ module tlb
   localparam SET_INDEX_WIDTH = $clog2(NUM_SETS);
   localparam WAY_INDEX_WIDTH = $clog2(NUM_WAYS);
 
-  logic[NUM_WAYS - 1:0] way_hit_oh;
+  logic[NUM_WAYS-1:0] way_hit_oh;
   page_index_t way_ppage_idx[NUM_WAYS];
   logic way_present[NUM_WAYS];
   logic way_exe_writable[NUM_WAYS];
   logic way_supervisor[NUM_WAYS];
   page_index_t request_vpage_idx_latched;
   page_index_t update_ppage_idx_latched;
-  logic[SET_INDEX_WIDTH - 1:0] request_set_idx;
-  logic[SET_INDEX_WIDTH - 1:0] update_set_idx;
+  logic[SET_INDEX_WIDTH-1:0] request_set_idx;
+  logic[SET_INDEX_WIDTH-1:0] update_set_idx;
   logic update_en_latched;
   logic update_valid;
   logic invalidate_en_latched;
   logic tlb_read_en;
-  logic[NUM_WAYS - 1:0] way_update_oh;
-  logic[NUM_WAYS - 1:0] next_way_oh;
+  logic[NUM_WAYS-1:0] way_update_oh;
+  logic[NUM_WAYS-1:0] next_way_oh;
   logic update_present_latched;
   logic update_exe_writable_latched;
   logic update_supervisor_latched;
   logic update_global_latched;
-  logic[ASID_WIDTH - 1:0] request_asid_latched;
+  logic[ASID_WIDTH-1:0] request_asid_latched;
 
   //
   // Stage 1: lookup
   //
-  assign request_set_idx = request_vpage_idx[SET_INDEX_WIDTH - 1:0];
-  assign update_set_idx = request_vpage_idx_latched[SET_INDEX_WIDTH - 1:0];
+  assign request_set_idx = request_vpage_idx[SET_INDEX_WIDTH-1:0];
+  assign update_set_idx = request_vpage_idx_latched[SET_INDEX_WIDTH-1:0];
   assign tlb_read_en = lookup_en || update_en || invalidate_en;
 
   genvar way_idx;
@@ -90,16 +90,16 @@ module tlb
       page_index_t way_vpage_idx;
       logic way_valid;
       logic entry_valid[NUM_SETS];
-      logic[ASID_WIDTH - 1:0] way_asid;
+      logic[ASID_WIDTH-1:0] way_asid;
       logic way_global;
 
       sram_1r1w #(
         .SIZE(NUM_SETS),
         .DATA_WIDTH(PAGE_NUM_BITS * 2 + 4 + ASID_WIDTH),
         .READ_DURING_WRITE("NEW_DATA")
-      ) tlb_paddr_sram(
+      ) tlb_padr_sram(
         .read_en(tlb_read_en),
-        .read_addr(request_set_idx),
+        .read_adr(request_set_idx),
         .read_data({way_vpage_idx,
           way_asid,
           way_ppage_idx[way_idx],
@@ -108,7 +108,7 @@ module tlb
           way_supervisor[way_idx],
           way_global}),
         .write_en(way_update_oh[way_idx]),
-        .write_addr(update_set_idx),
+        .write_adr(update_set_idx),
         .write_data({request_vpage_idx_latched,
           request_asid_latched,
           update_ppage_idx_latched,

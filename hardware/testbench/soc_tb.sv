@@ -31,14 +31,14 @@ module soc_tb(
     logic sd_cs_n;
     logic sd_di;
     logic sd_sclk;
-    io_bus_interface peripheral_io_bus[NUM_PERIPHERALS - 1:0]();
+    io_bus_interface peripheral_io_bus[NUM_PERIPHERALS-1:0]();
     io_bus_interface nyuzi_io_bus();
     jtag_interface host_jtag();
     jtag_interface target_jtag();
     logic data_shift_val;
     scalar_t peripheral_read_data[NUM_PERIPHERALS];
 `ifdef VCS
-    enum logic[$clog2(NUM_PERIPHERALS) - 1:0] {
+    enum logic[$clog2(NUM_PERIPHERALS)-1:0] {
         IO_ONES = 0,
         IO_LOOPBACK_UART = 1,
         IO_PS2 = 2,
@@ -47,7 +47,7 @@ module soc_tb(
         IO_VGA = 5
     } io_bus_source;
 `else
-    enum logic[$clog2(NUM_PERIPHERALS) - 1:0] {
+    enum logic[$clog2(NUM_PERIPHERALS)-1:0] {
         IO_ONES,
         IO_LOOPBACK_UART,
         IO_PS2,
@@ -73,8 +73,8 @@ module soc_tb(
 
     /*AUTOLOGIC*/
     // Beginning of automatic wires (for undeclared instantiated-module outputs)
-    logic [12:0]        dram_addr;              // From sdram_controller of sdram_controller.v
-    logic [1:0]         dram_ba;                // From sdram_controller of sdram_controller.v
+    logic [12:0] dram_adr;              // From sdram_controller of sdram_controller.v
+    logic [1:0] dram_ba;                // From sdram_controller of sdram_controller.v
     logic dram_cas_n;             // From sdram_controller of sdram_controller.v
     logic dram_cke;               // From sdram_controller of sdram_controller.v
     logic dram_clk;               // From sdram_controller of sdram_controller.v
@@ -87,12 +87,12 @@ module soc_tb(
     logic ps2_data;               // From sim_ps2 of sim_ps2.v
     logic sd_do;                  // From sim_sdmmc of sim_sdmmc.v
     logic timer_interrupt;        // From timer of timer.v
-    logic [7:0]         vga_b;                  // From vga_controller of vga_controller.v
+    logic [7:0] vga_b;                  // From vga_controller of vga_controller.v
     logic vga_blank_n;            // From vga_controller of vga_controller.v
     logic vga_clk;                // From vga_controller of vga_controller.v
-    logic [7:0]         vga_g;                  // From vga_controller of vga_controller.v
+    logic [7:0] vga_g;                  // From vga_controller of vga_controller.v
     logic vga_hs;                 // From vga_controller of vga_controller.v
-    logic [7:0]         vga_r;                  // From vga_controller of vga_controller.v
+    logic [7:0] vga_r;                  // From vga_controller of vga_controller.v
     logic vga_sync_n;             // From vga_controller of vga_controller.v
     logic vga_vs;                 // From vga_controller of vga_controller.v
     // End of automatics
@@ -245,7 +245,7 @@ module soc_tb(
         begin : io_gen
             assign peripheral_io_bus[io_idx].write_en = nyuzi_io_bus.write_en;
             assign peripheral_io_bus[io_idx].read_en = nyuzi_io_bus.read_en;
-            assign peripheral_io_bus[io_idx].address = nyuzi_io_bus.address;
+            assign peripheral_io_bus[io_idx].adress = nyuzi_io_bus.adress;
             assign peripheral_io_bus[io_idx].write_data = nyuzi_io_bus.write_data;
             assign peripheral_read_data[io_idx] = peripheral_io_bus[io_idx].read_data;
         end
@@ -282,7 +282,7 @@ module soc_tb(
         begin
             if (nyuzi_io_bus.write_en)
             begin
-                case (nyuzi_io_bus.address)
+                case (nyuzi_io_bus.adress)
                     // Serial output
                     'h48:
                     begin
@@ -300,7 +300,7 @@ module soc_tb(
 
             if (nyuzi_io_bus.read_en)
             begin
-                casez (nyuzi_io_bus.address[15:0])
+                casez (nyuzi_io_bus.adress[15:0])
                     // Hack for cosimulation tests
                     'h04,
                     'h08,
@@ -344,7 +344,7 @@ module soc_tb(
         .dd_instruction_load(`CORE0.dd_instruction.load),
         .dt_instruction_pc(`CORE0.dt_instruction.pc),
         .dt_thread_idx(`CORE0.dt_thread_idx),
-        .dt_request_virt_addr(`CORE0.dt_request_vaddr),
+        .dt_request_virt_adr(`CORE0.dt_request_vadr),
         .sq_rollback_en(`CORE0.sq_rollback_en),
         .sq_store_sync_success(`CORE0.sq_store_sync_success),
         .wb_trap_pc(`CORE0.wb_trap_pc),

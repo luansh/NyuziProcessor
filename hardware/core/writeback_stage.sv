@@ -51,7 +51,7 @@ module writeback_stage(
   input decoded_instruction_t dd_instruction,
   input vector_mask_t dd_lane_mask,
   input local_thread_idx_t dd_thread_idx,
-  input l1d_addr_t dd_request_vaddr,
+  input l1d_adr_t dd_request_vadr,
   input subcycle_t dd_subcycle,
   input dd_rollback_en,
   input scalar_t dd_rollback_pc,
@@ -62,7 +62,7 @@ module writeback_stage(
   input trap_cause_t dd_trap_cause,
 
   // From l1_store_queue
-  input [CACHE_LINE_BYTES - 1:0]    sq_store_bypass_mask,
+  input [CACHE_LINE_BYTES-1:0] sq_store_bypass_mask,
   input cache_line_data_t sq_store_bypass_data,
   input sq_store_sync_success,
   input sq_rollback_en,
@@ -81,7 +81,7 @@ module writeback_stage(
   output logic wb_trap,
   output trap_cause_t wb_trap_cause,
   output scalar_t wb_trap_pc,
-  output scalar_t wb_trap_access_vaddr,
+  output scalar_t wb_trap_access_vadr,
   output subcycle_t wb_trap_subcycle,
   output syscall_index_t wb_syscall_index,
   output logic wb_eret,
@@ -114,14 +114,14 @@ module writeback_stage(
   output logic wb_perf_interrupt);
 
   scalar_t mem_load_lane;
-  logic[$clog2(CACHE_LINE_WORDS) - 1:0] mem_load_lane_idx;
+  logic[$clog2(CACHE_LINE_WORDS)-1:0] mem_load_lane_idx;
   logic[7:0] byte_aligned;
   logic[15:0] half_aligned;
   logic[31:0] swapped_word_value;
   memory_op_t memory_op;
   cache_line_data_t endian_twiddled_data;
-  logic[NUM_VECTOR_LANES - 1:0] scycle_vcompare_result;
-  logic[NUM_VECTOR_LANES - 1:0] mcycle_vcompare_result;
+  logic[NUM_VECTOR_LANES-1:0] scycle_vcompare_result;
+  logic[NUM_VECTOR_LANES-1:0] mcycle_vcompare_result;
   vector_mask_t dd_vector_lane_oh;
   cache_line_data_t bypassed_read_data;
   local_thread_bitmap_t thread_dd_oh;
@@ -154,7 +154,7 @@ module writeback_stage(
     wb_trap_cause = {2'b0, TT_RESET};
     wb_rollback_subcycle = 0;
     wb_trap_pc = 0;
-    wb_trap_access_vaddr = 0;
+    wb_trap_access_vadr = 0;
     wb_trap_subcycle = dd_subcycle;
     wb_eret = 0;
 
@@ -178,7 +178,7 @@ module writeback_stage(
         wb_trap_cause = ix_instruction.trap_cause;
 
       wb_trap_pc = ix_instruction.pc;
-      wb_trap_access_vaddr = ix_instruction.pc;
+      wb_trap_access_vadr = ix_instruction.pc;
       wb_trap_subcycle = ix_subcycle;
     end
     else if (dd_instruction_valid && dd_trap)
@@ -195,7 +195,7 @@ module writeback_stage(
       wb_trap = 1;
       wb_trap_cause = dd_trap_cause;
       wb_trap_pc = dd_instruction.pc;
-      wb_trap_access_vaddr = dd_request_vaddr;
+      wb_trap_access_vadr = dd_request_vadr;
     end
     else if (ix_instruction_valid && ix_rollback_en)
     begin
@@ -262,13 +262,13 @@ module writeback_stage(
   endgenerate
 
   assign memory_op = dd_instruction.memory_access_type;
-  assign mem_load_lane_idx = ~dd_request_vaddr.offset[2+:$clog2(CACHE_LINE_WORDS)];
+  assign mem_load_lane_idx = ~dd_request_vadr.offset[2+:$clog2(CACHE_LINE_WORDS)];
   assign mem_load_lane = bypassed_read_data[mem_load_lane_idx * 32+:32];
 
   // Byte memory load aligner.
   always_comb
   begin
-    unique case (dd_request_vaddr.offset[1:0])
+    unique case (dd_request_vadr.offset[1:0])
       2'd0: byte_aligned = mem_load_lane[31:24];
       2'd1: byte_aligned = mem_load_lane[23:16];
       2'd2: byte_aligned = mem_load_lane[15:8];
@@ -280,7 +280,7 @@ module writeback_stage(
   // Halfword memory load aligner.
   always_comb
   begin
-    unique case (dd_request_vaddr.offset[1])
+    unique case (dd_request_vadr.offset[1])
       1'd0: half_aligned = {mem_load_lane[23:16], mem_load_lane[31:24]};
       1'd1: half_aligned = {mem_load_lane[7:0], mem_load_lane[15:8]};
       default: half_aligned = '0;
@@ -523,7 +523,7 @@ module writeback_stage(
         // been set in the control register.
         if (wb_trap && wb_rollback_pc == 0)
         begin
-            $display("thread %0d caught trap, no handler set, cause %0d address %08x", wb_rollback_thread_idx,
+            $display("thread %0d caught trap, no handler set, cause %0d adress %08x", wb_rollback_thread_idx,
                 wb_trap_cause, wb_trap_pc);
             $finish;
         end

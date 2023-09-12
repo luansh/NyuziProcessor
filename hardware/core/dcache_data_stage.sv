@@ -22,8 +22,8 @@ module dcache_data_stage(
   input decoded_instruction_t dt_instruction,
   input vector_mask_t dt_mask_value,
   input local_thread_idx_t dt_thread_idx,
-  input l1d_addr_t dt_request_vaddr,
-  input l1d_addr_t dt_request_paddr,
+  input l1d_adr_t dt_request_vadr,
+  input l1d_adr_t dt_request_padr,
   input dt_tlb_hit,
   input dt_tlb_present,
   input dt_tlb_supervisor,
@@ -41,7 +41,7 @@ module dcache_data_stage(
   output logic dd_io_write_en,
   output logic dd_io_read_en,
   output local_thread_idx_t dd_io_thread_idx,
-  output scalar_t dd_io_addr,
+  output scalar_t dd_io_adr,
   output scalar_t dd_io_write_value,
 
   // To writeback_stage
@@ -49,7 +49,7 @@ module dcache_data_stage(
   output decoded_instruction_t dd_instruction,
   output vector_mask_t dd_lane_mask,
   output local_thread_idx_t dd_thread_idx,
-  output l1d_addr_t dd_request_vaddr,
+  output l1d_adr_t dd_request_vadr,
   output subcycle_t dd_subcycle,
   output logic dd_rollback_en,
   output scalar_t dd_rollback_pc,
@@ -74,13 +74,13 @@ module dcache_data_stage(
   input l1d_way_idx_t l2i_ddata_update_way,
   input l1d_set_idx_t l2i_ddata_update_set,
   input cache_line_data_t l2i_ddata_update_data,
-  input [`L1D_WAYS - 1:0]           l2i_dtag_update_en_oh,
+  input [`L1D_WAYS-1:0] l2i_dtag_update_en_oh,
   input l1d_set_idx_t l2i_dtag_update_set,
   input l1d_tag_t l2i_dtag_update_tag,
 
    // To l1_l2_interface
   output logic dd_cache_miss,
-  output cache_line_index_t dd_cache_miss_addr,
+  output cache_line_index_t dd_cache_miss_adr,
   output local_thread_idx_t dd_cache_miss_thread_idx,
   output logic dd_cache_miss_sync,
   output logic dd_store_en,
@@ -88,12 +88,12 @@ module dcache_data_stage(
   output logic dd_membar_en,
   output logic dd_iinvalidate_en,
   output logic dd_dinvalidate_en,
-  output logic[CACHE_LINE_BYTES - 1:0]    dd_store_mask,
-  output cache_line_index_t dd_store_addr,
+  output logic[CACHE_LINE_BYTES-1:0] dd_store_mask,
+  output cache_line_index_t dd_store_adr,
   output cache_line_data_t dd_store_data,
   output local_thread_idx_t dd_store_thread_idx,
   output logic dd_store_sync,
-  output cache_line_index_t dd_store_bypass_addr,
+  output cache_line_index_t dd_store_bypass_adr,
   output local_thread_idx_t dd_store_bypass_thread_idx,
 
   // From writeback_stage
@@ -119,8 +119,8 @@ module dcache_data_stage(
   logic iinvalidate_req;
   logic dinvalidate_req;
   logic membar_req;
-  logic addr_in_io_region;
-  logic unaligned_address;
+  logic adr_in_io_region;
+  logic unaligned_adress;
   logic supervisor_fault;
   logic alignment_fault;
   logic privileged_op_fault;
@@ -130,18 +130,18 @@ module dcache_data_stage(
   logic any_fault;
   vector_mask_t word_store_mask;
   logic[3:0] byte_store_mask;
-  logic[$clog2(CACHE_LINE_WORDS) - 1:0] cache_lane_idx;
+  logic[$clog2(CACHE_LINE_WORDS)-1:0] cache_lane_idx;
   cache_line_data_t endian_twiddled_data;
   scalar_t lane_store_value;
-  logic[CACHE_LINE_WORDS - 1:0] cache_lane_mask;
-  logic[CACHE_LINE_WORDS - 1:0] subcycle_mask;
-  logic[`L1D_WAYS - 1:0] way_hit_oh;
+  logic[CACHE_LINE_WORDS-1:0] cache_lane_mask;
+  logic[CACHE_LINE_WORDS-1:0] subcycle_mask;
+  logic[`L1D_WAYS-1:0] way_hit_oh;
   l1d_way_idx_t way_hit_idx;
   logic cache_hit;
-  scalar_t dcache_request_addr;
+  scalar_t dcache_request_adr;
   logic squash_instruction;
   logic cache_near_miss;
-  logic[$clog2(NUM_VECTOR_LANES) - 1:0] scgath_lane;
+  logic[$clog2(NUM_VECTOR_LANES)-1:0] scgath_lane;
   logic tlb_read;
   logic fault_store_flag;
   logic lane_enabled;
@@ -173,7 +173,7 @@ module dcache_data_stage(
   // Decode request type. If this instruction is squashed, ignore (same as
   // dt_instruction_valid being false). These do not consider if the
   // request is legal or possible, just what the instruction is asking to do.
-  assign addr_in_io_region = dt_request_paddr ==? 32'hffff????;
+  assign adr_in_io_region = dt_request_padr ==? 32'hffff????;
   assign sync_access_req = dt_instruction.memory_access_type == MEM_SYNC;
 
   // Note the last part that checks the store mask. If the store mask is zero
@@ -184,8 +184,8 @@ module dcache_data_stage(
     && dt_instruction.memory_access
     && dt_instruction.memory_access_type != MEM_CONTROL_REG
     && lane_enabled;
-  assign io_access_req = memory_access_req && addr_in_io_region;
-  assign cached_access_req = memory_access_req && !addr_in_io_region;
+  assign io_access_req = memory_access_req && adr_in_io_region;
+  assign cached_access_req = memory_access_req && !adr_in_io_region;
   assign cached_load_req = cached_access_req && dt_instruction.load;
   assign cached_store_req = cached_access_req && !dt_instruction.load;
   assign cache_control_req = dt_instruction_valid
@@ -193,13 +193,13 @@ module dcache_data_stage(
     && dt_instruction.cache_control;
   assign flush_req = cache_control_req
     && dt_instruction.cache_control_op == CACHE_DFLUSH
-    && !addr_in_io_region;
+    && !adr_in_io_region;
   assign iinvalidate_req = cache_control_req
     && dt_instruction.cache_control_op == CACHE_IINVALIDATE
-    && !addr_in_io_region;
+    && !adr_in_io_region;
   assign dinvalidate_req = cache_control_req
     && dt_instruction.cache_control_op == CACHE_DINVALIDATE
-    && !addr_in_io_region;
+    && !adr_in_io_region;
   assign membar_req = cache_control_req
     && dt_instruction.cache_control_op == CACHE_MEMBAR;
   assign tlb_update_req = cache_control_req
@@ -227,7 +227,7 @@ module dcache_data_stage(
       else if (dt_instruction.cache_control)
       begin
         // Only these cache control opertions perform a virtual->physical
-        // address translation.
+        // adress translation.
         tlb_read = dt_instruction.cache_control_op == CACHE_DFLUSH
           || dt_instruction.cache_control_op == CACHE_DINVALIDATE;
       end
@@ -242,14 +242,14 @@ module dcache_data_stage(
   always_comb
   begin
     unique case (dt_instruction.memory_access_type)
-      MEM_S, MEM_SX: unaligned_address = dt_request_paddr.offset[0];
-      MEM_L, MEM_SYNC, MEM_SCGATH, MEM_SCGATH_M: unaligned_address = |dt_request_paddr.offset[1:0];
-      MEM_BLOCK, MEM_BLOCK_M: unaligned_address = dt_request_paddr.offset != 0;
-      default: unaligned_address = 0;
+      MEM_S, MEM_SX: unaligned_adress = dt_request_padr.offset[0];
+      MEM_L, MEM_SYNC, MEM_SCGATH, MEM_SCGATH_M: unaligned_adress = |dt_request_padr.offset[1:0];
+      MEM_BLOCK, MEM_BLOCK_M: unaligned_adress = dt_request_padr.offset != 0;
+      default: unaligned_adress = 0;
     endcase
   end
 
-  assign alignment_fault = (cached_access_req || io_access_req) && unaligned_address;
+  assign alignment_fault = (cached_access_req || io_access_req) && unaligned_adress;
   assign privileged_op_fault = (creg_access_req || tlb_update_req || dinvalidate_req)
     && !cr_supervisor_en[dt_thread_idx];
   assign page_fault = memory_access_req
@@ -275,12 +275,12 @@ module dcache_data_stage(
   assign dd_store_en = cached_store_req
     && !tlb_miss
     && !any_fault;
-  assign dcache_request_addr = {dt_request_paddr[31:CACHE_LINE_OFFSET_WIDTH],
+  assign dcache_request_adr = {dt_request_padr[31:CACHE_LINE_OFFSET_WIDTH],
     {CACHE_LINE_OFFSET_WIDTH{1'b0}}};
-  assign cache_lane_idx = dt_request_paddr.offset[CACHE_LINE_OFFSET_WIDTH - 1:2];
-  assign dd_store_bypass_addr = dt_request_paddr[31:CACHE_LINE_OFFSET_WIDTH];
+  assign cache_lane_idx = dt_request_padr.offset[CACHE_LINE_OFFSET_WIDTH-1:2];
+  assign dd_store_bypass_adr = dt_request_padr[31:CACHE_LINE_OFFSET_WIDTH];
   assign dd_store_bypass_thread_idx = dt_thread_idx;
-  assign dd_store_addr = dt_request_paddr[31:CACHE_LINE_OFFSET_WIDTH];
+  assign dd_store_adr = dt_request_padr[31:CACHE_LINE_OFFSET_WIDTH];
   assign dd_store_sync = sync_access_req;
   assign dd_store_thread_idx = dt_thread_idx;
 
@@ -295,7 +295,7 @@ module dcache_data_stage(
     && !any_fault;
   assign dd_io_write_value = dt_store_value[0];
   assign dd_io_thread_idx = dt_thread_idx;
-  assign dd_io_addr = {16'd0, dt_request_paddr[15:0]};
+  assign dd_io_adr = {16'd0, dt_request_padr[15:0]};
 
   // Control register access
   assign dd_creg_write_en = creg_access_req
@@ -313,7 +313,7 @@ module dcache_data_stage(
   assign dd_flush_en = flush_req
     && dt_tlb_hit
     && dt_tlb_present
-    && !io_access_req // XXX should a cache control of IO address raise exception?
+    && !io_access_req // XXX should a cache control of IO adress raise exception?
     && !any_fault;
   assign dd_iinvalidate_en = iinvalidate_req
     && dt_tlb_hit
@@ -335,7 +335,7 @@ module dcache_data_stage(
   generate
     for (way_idx = 0; way_idx < `L1D_WAYS; way_idx++)
     begin : hit_check_gen
-      assign way_hit_oh[way_idx] = dt_request_paddr.tag == dt_tag[way_idx]
+      assign way_hit_oh[way_idx] = dt_request_padr.tag == dt_tag[way_idx]
         && dt_valid[way_idx];
     end
   endgenerate
@@ -397,7 +397,7 @@ module dcache_data_stage(
       MEM_B, MEM_BX: // Byte
       begin
         dd_store_data = {CACHE_LINE_WORDS * 4{dt_store_value[0][7:0]}};
-        case (dt_request_paddr.offset[1:0])
+        case (dt_request_padr.offset[1:0])
           2'd0: byte_store_mask = 4'b1000;
           2'd1: byte_store_mask = 4'b0100;
           2'd2: byte_store_mask = 4'b0010;
@@ -409,7 +409,7 @@ module dcache_data_stage(
       MEM_S, MEM_SX: // 16 bits
       begin
         dd_store_data = {CACHE_LINE_WORDS * 2{dt_store_value[0][7:0], dt_store_value[0][15:8]}};
-        if (dt_request_paddr.offset[1] == 1'b0)
+        if (dt_request_padr.offset[1] == 1'b0)
           byte_store_mask = 4'b1100;
         else
           byte_store_mask = 4'b0011;
@@ -463,12 +463,12 @@ module dcache_data_stage(
   ) l1d_data(
     // Instruction pipeline access.
     .read_en(cache_hit && cached_load_req),
-    .read_addr({way_hit_idx, dt_request_paddr.set_idx}),
+    .read_adr({way_hit_idx, dt_request_padr.set_idx}),
     .read_data(dd_load_data),
 
     // Update from L2 cache interface
     .write_en(l2i_ddata_update_en),
-    .write_addr({l2i_ddata_update_way, l2i_ddata_update_set}),
+    .write_adr({l2i_ddata_update_way, l2i_ddata_update_set}),
     .write_data(l2i_ddata_update_data),
     .*);
 
@@ -476,13 +476,13 @@ module dcache_data_stage(
   // filling the same line. If this suspends the thread, it will never
   // receive a wakeup. Instead, roll the thread back and let it retry.
   // Do not be set for a synchronized load, even if the data is in the L1
-  // cache: it must do a round trip to the L2 cache to latch the address.
+  // cache: it must do a round trip to the L2 cache to latch the adress.
   assign cache_near_miss = !cache_hit
     && dt_tlb_hit
     && cached_load_req
     && |l2i_dtag_update_en_oh
-    && l2i_dtag_update_set == dt_request_paddr.set_idx
-    && l2i_dtag_update_tag == dt_request_paddr.tag
+    && l2i_dtag_update_set == dt_request_padr.set_idx
+    && l2i_dtag_update_tag == dt_request_padr.tag
     && !sync_access_req
     && !any_fault;
 
@@ -491,7 +491,7 @@ module dcache_data_stage(
     && dt_tlb_hit
     && !cache_near_miss
     && !any_fault;
-  assign dd_cache_miss_addr = dcache_request_addr[31:CACHE_LINE_OFFSET_WIDTH];
+  assign dd_cache_miss_adr = dcache_request_adr[31:CACHE_LINE_OFFSET_WIDTH];
   assign dd_cache_miss_thread_idx = dt_thread_idx;
   assign dd_cache_miss_sync = sync_access_req;
 
@@ -531,7 +531,7 @@ module dcache_data_stage(
     dd_instruction <= dt_instruction;
     dd_lane_mask <= dt_mask_value;
     dd_thread_idx <= dt_thread_idx;
-    dd_request_vaddr <= dt_request_vaddr;
+    dd_request_vadr <= dt_request_vadr;
     dd_subcycle <= dt_subcycle;
     dd_rollback_pc <= dt_instruction.pc;
     dd_io_access <= io_access_req;

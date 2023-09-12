@@ -28,13 +28,13 @@ module test_l2_cache_atomic(input clk, input reset);
     localparam DATA1 = 512'h43931f6f;
     localparam DATA2 = 512'h44dff947;
 
-    logic[`NUM_CORES - 1:0] l2i_request_valid;
+    logic[`NUM_CORES-1:0] l2i_request_valid;
     l2req_packet_t l2i_request[`NUM_CORES];
     logic l2_ready[`NUM_CORES];
     logic l2_response_valid;
     l2rsp_packet_t l2_response;
     axi4_interface axi_bus();
-    logic[L2_PERF_EVENTS - 1:0] l2_perf_events;
+    logic[L2_PERF_EVENTS-1:0] l2_perf_events;
     int state;
 
     l2_cache l2_cache(.*);
@@ -71,7 +71,7 @@ module test_l2_cache_atomic(input clk, input reset);
                     l2i_request[0].id <= 0;
                     l2i_request[0].packet_type = L2REQ_LOAD;
                     l2i_request[0].cache_type = CT_DCACHE;
-                    l2i_request[0].address = ADDR0;
+                    l2i_request[0].adress = ADDR0;
                     state <= state + 1;
                 end
 
@@ -99,7 +99,7 @@ module test_l2_cache_atomic(input clk, input reset);
                     assert(l2_response.id == 0);
                     assert(l2_response.packet_type == L2RSP_LOAD_ACK);
                     assert(l2_response.cache_type == CT_DCACHE);
-                    assert(l2_response.address == ADDR0);
+                    assert(l2_response.adress == ADDR0);
                     assert(l2_response.data == '0);
                     state <= state + 1;
                 end
@@ -119,7 +119,7 @@ module test_l2_cache_atomic(input clk, input reset);
                     assert(l2_response.id == 0);
                     assert(l2_response.packet_type == L2RSP_STORE_ACK);
                     assert(l2_response.cache_type == CT_DCACHE);
-                    assert(l2_response.address == ADDR0);
+                    assert(l2_response.adress == ADDR0);
                     assert(l2_response.data == DATA0);
                     assert(l2_response.status);    // succcessfully stored
                     state <= state + 1;
@@ -153,7 +153,7 @@ module test_l2_cache_atomic(input clk, input reset);
                     assert(l2_response.core == 0);
                     assert(l2_response.id == 1);
                     assert(l2_response.packet_type == L2RSP_LOAD_ACK);
-                    assert(l2_response.address == ADDR0);
+                    assert(l2_response.adress == ADDR0);
                     assert(l2_response.data == DATA0);
                     state <= state + 1;
                 end
@@ -164,7 +164,7 @@ module test_l2_cache_atomic(input clk, input reset);
                     assert(l2_response.core == 0);
                     assert(l2_response.id == 2);
                     assert(l2_response.packet_type == L2RSP_LOAD_ACK);
-                    assert(l2_response.address == ADDR0);
+                    assert(l2_response.adress == ADDR0);
                     assert(l2_response.data == DATA0);
                     state <= state + 1;
                 end
@@ -195,7 +195,7 @@ module test_l2_cache_atomic(input clk, input reset);
                     assert(l2_response.core == 0);
                     assert(l2_response.id == 1);
                     assert(l2_response.packet_type == L2RSP_STORE_ACK);
-                    assert(l2_response.address == ADDR0);
+                    assert(l2_response.adress == ADDR0);
                     assert(l2_response.data == DATA1);
                     assert(l2_response.status); // succcessfully stored
                     state <= state + 1;
@@ -207,7 +207,7 @@ module test_l2_cache_atomic(input clk, input reset);
                     assert(l2_response.core == 0);
                     assert(l2_response.id == 2);
                     assert(l2_response.packet_type == L2RSP_STORE_ACK);
-                    assert(l2_response.address == ADDR0);
+                    assert(l2_response.adress == ADDR0);
                     assert(l2_response.data == DATA1);
                     assert(!l2_response.status); // unsuccessful
                     state <= state + 1;

@@ -48,13 +48,13 @@ module operand_fetch_stage(
     .READ_DURING_WRITE("DONT_CARE")
   ) scalar_registers(
     .read1_en(ts_instruction_valid && ts_instruction.has_scalar1),
-    .read1_addr({ts_thread_idx, ts_instruction.scalar_sel1}),
+    .read1_adr({ts_thread_idx, ts_instruction.scalar_sel1}),
     .read1_data(scalar_val1),
     .read2_en(ts_instruction_valid && ts_instruction.has_scalar2),
-    .read2_addr({ts_thread_idx, ts_instruction.scalar_sel2}),
+    .read2_adr({ts_thread_idx, ts_instruction.scalar_sel2}),
     .read2_data(scalar_val2),
     .write_en(wb_writeback_en && !wb_writeback_vector),
-    .write_addr({wb_writeback_thread_idx, wb_writeback_reg}),
+    .write_adr({wb_writeback_thread_idx, wb_writeback_reg}),
     .write_data(wb_writeback_value[0]),
     .*);
 
@@ -68,13 +68,13 @@ module operand_fetch_stage(
         .READ_DURING_WRITE("DONT_CARE")
       ) vector_registers (
         .read1_en(ts_instruction.has_vector1),
-        .read1_addr({ts_thread_idx, ts_instruction.vector_sel1}),
+        .read1_adr({ts_thread_idx, ts_instruction.vector_sel1}),
         .read1_data(vector_val1[lane]),
         .read2_en(ts_instruction.has_vector2),
-        .read2_addr({ts_thread_idx, ts_instruction.vector_sel2}),
+        .read2_adr({ts_thread_idx, ts_instruction.vector_sel2}),
         .read2_data(vector_val2[lane]),
         .write_en(wb_writeback_en && wb_writeback_vector && wb_writeback_mask[NUM_VECTOR_LANES - lane - 1]),
-        .write_addr({wb_writeback_thread_idx, wb_writeback_reg}),
+        .write_adr({wb_writeback_thread_idx, wb_writeback_reg}),
         .write_data(wb_writeback_value[lane]),
         .*);
     end
@@ -116,8 +116,8 @@ module operand_fetch_stage(
     endcase
 
     unique case (of_instruction.mask_src)
-      MASK_SRC_SCALAR1: of_mask_value = scalar_val1[NUM_VECTOR_LANES - 1:0];
-      MASK_SRC_SCALAR2: of_mask_value = scalar_val2[NUM_VECTOR_LANES - 1:0];
+      MASK_SRC_SCALAR1: of_mask_value = scalar_val1[NUM_VECTOR_LANES-1:0];
+      MASK_SRC_SCALAR2: of_mask_value = scalar_val2[NUM_VECTOR_LANES-1:0];
       default:      of_mask_value = {NUM_VECTOR_LANES{1'b1}};  // MASK_SRC_ALL_ONES
     endcase
   end

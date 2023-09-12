@@ -17,18 +17,18 @@ module sim_sdram
   input dram_ras_n,
   input dram_cas_n,
   input dram_we_n,      // Write enable
-  input[1:0]                  dram_ba,        // Bank select
-  input[12:0]                 dram_addr,
-    inout[DATA_WIDTH - 1:0]     dram_dq);
+  input[1:0] dram_ba,        // Bank select
+  input[12:0] dram_adr,
+    inout[DATA_WIDTH-1:0] dram_dq);
 
     localparam NUM_BANKS = 4;
     localparam MEM_SIZE = (1 << ROW_ADDR_WIDTH) * (1 << COL_ADDR_WIDTH) * NUM_BANKS;
 
     logic[9:0] mode_register_ff;
-    logic[NUM_BANKS - 1:0] bank_active;
-    logic[NUM_BANKS - 1:0] bank_cas_delay[0:3];
-    logic[ROW_ADDR_WIDTH - 1:0] bank_active_row[0:NUM_BANKS - 1];
-    logic[DATA_WIDTH - 1:0] sdram_data[0:MEM_SIZE - 1] /*verilator public*/;
+    logic[NUM_BANKS-1:0] bank_active;
+    logic[NUM_BANKS-1:0] bank_cas_delay[0:3];
+    logic[ROW_ADDR_WIDTH-1:0] bank_active_row[0:NUM_BANKS - 1];
+    logic[DATA_WIDTH-1:0] sdram_data[0:MEM_SIZE - 1] /*verilator public*/;
     logic[15:0] refresh_delay;
 
     // Current burst info
@@ -37,15 +37,15 @@ module sim_sdram
     logic[3:0] burst_count_ff;    // How many transfers have occurred
     logic[1:0] burst_bank;
     logic burst_auto_precharge;
-    logic[10:0] burst_column_address;
+    logic[10:0] burst_column_adress;
     logic[3:0] burst_read_delay_count;
     logic cke_ff;
     logic initialized;
     logic[3:0] burst_length;
     logic burst_interleaved;
-    logic[COL_ADDR_WIDTH - 1:0] burst_address_offset;
-    logic[$clog2(MEM_SIZE) - 1:0] burst_address;
-    logic[DATA_WIDTH - 1:0] output_reg;
+    logic[COL_ADDR_WIDTH-1:0] burst_adress_offset;
+    logic[$clog2(MEM_SIZE)-1:0] burst_adress;
+    logic[DATA_WIDTH-1:0] output_reg;
     logic[2:0] cas_delay;
     logic cmd_en;
     logic cmd_load_mode;
@@ -68,7 +68,7 @@ module sim_sdram
         burst_count_ff = 0;
         burst_bank = '0;
         burst_auto_precharge = '0;
-        burst_column_address = '0;
+        burst_column_adress = '0;
         burst_read_delay_count = '0;
         cke_ff = 0;
         initialized = 0;
@@ -104,7 +104,7 @@ module sim_sdram
     begin
         if (cmd_precharge)
         begin
-            if (dram_addr[10])
+            if (dram_adr[10])
             begin
 `ifdef SDRAM_DEBUG
                 $display("precharge all");
@@ -127,10 +127,10 @@ module sim_sdram
             assert(!bank_active[dram_ba]);
 
 `ifdef SDRAM_DEBUG
-            $display("bank %d activated row %d", dram_ba, dram_addr[ROW_ADDR_WIDTH - 1:0]);
+            $display("bank %d activated row %d", dram_ba, dram_adr[ROW_ADDR_WIDTH-1:0]);
 `endif
             bank_active[dram_ba] <= 1'b1;
-            bank_active_row[dram_ba] <= dram_addr[ROW_ADDR_WIDTH - 1:0];
+            bank_active_row[dram_ba] <= dram_adr[ROW_ADDR_WIDTH-1:0];
         end
         else if (burst_count_ff == burst_length - 1 && burst_active && cke_ff
             && burst_auto_precharge)
@@ -143,9 +143,9 @@ module sim_sdram
         if (cmd_load_mode)
         begin
 `ifdef SDRAM_DEBUG
-            $display("latching mode %x", dram_addr[9:0]);
+            $display("latching mode %x", dram_adr[9:0]);
 `endif
-            mode_register_ff <= dram_addr[9:0];
+            mode_register_ff <= dram_adr[9:0];
         end
     end
 
@@ -183,12 +183,12 @@ module sim_sdram
 `ifdef SDRAM_DEBUG
             $display("start %s transfer bank %d row %d column %d",
                 cmd_write_burst ? "write" : "read", dram_ba,
-                bank_active_row[dram_ba], dram_addr[COL_ADDR_WIDTH - 1:0]);
+                bank_active_row[dram_ba], dram_adr[COL_ADDR_WIDTH-1:0]);
 `endif
             burst_w <= cmd_write_burst;
             burst_bank <= dram_ba;
-            burst_auto_precharge <= dram_addr[10];
-            burst_column_address <= $size(burst_column_address)'(dram_addr[COL_ADDR_WIDTH - 1:0]);
+            burst_auto_precharge <= dram_adr[10];
+            burst_column_adress <= $size(burst_column_adress)'(dram_adr[COL_ADDR_WIDTH-1:0]);
         end
         else if (cmd_auto_refresh)
         begin
@@ -216,9 +216,9 @@ module sim_sdram
     always @(posedge dram_clk) // fix for multiple drivers on sdram_data -- other driver is in soc_tb
     begin
         if (burst_active && cke_ff && burst_w)
-            sdram_data[burst_address] <= dram_dq;    // Write
+            sdram_data[burst_adress] <= dram_dq;    // Write
         else if (cmd_write_burst)
-            sdram_data[{bank_active_row[dram_ba], dram_ba, dram_addr[COL_ADDR_WIDTH - 1:0]}] <= dram_dq;    // Latch first word
+            sdram_data[{bank_active_row[dram_ba], dram_ba, dram_adr[COL_ADDR_WIDTH-1:0]}] <= dram_dq;    // Latch first word
 
 `ifndef VERILATOR
         // Check if data is still high-z. This doesn't work on verilator, because
@@ -243,7 +243,7 @@ module sim_sdram
     end
 
     // RAM read
-    assign output_reg = sdram_data[burst_address];
+    assign output_reg = sdram_data[burst_adress];
     assign dram_dq = (burst_w || cmd_write_burst) ? {DATA_WIDTH{1'hZ}} : output_reg;
 
     // Make sure client is respecting CAS latency.
@@ -264,8 +264,8 @@ module sim_sdram
     //
     assign burst_length = 1 << mode_register_ff[2:0];
     assign burst_interleaved = mode_register_ff[3];
-    assign burst_address_offset = burst_interleaved
-        ? COL_ADDR_WIDTH'(burst_column_address) ^ COL_ADDR_WIDTH'(burst_count_ff)
-        : COL_ADDR_WIDTH'(burst_column_address) + COL_ADDR_WIDTH'(burst_count_ff);
-    assign burst_address = {bank_active_row[burst_bank], burst_bank, burst_address_offset};
+    assign burst_adress_offset = burst_interleaved
+        ? COL_ADDR_WIDTH'(burst_column_adress) ^ COL_ADDR_WIDTH'(burst_count_ff)
+        : COL_ADDR_WIDTH'(burst_column_adress) + COL_ADDR_WIDTH'(burst_count_ff);
+    assign burst_adress = {bank_active_row[burst_bank], burst_bank, burst_adress_offset};
 endmodule

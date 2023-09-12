@@ -17,9 +17,9 @@
 module test_rr_arbiter(input clk, input reset);
     localparam NUM_REQUESTERS = 4;
 
-    logic[NUM_REQUESTERS - 1:0] request;
+    logic[NUM_REQUESTERS-1:0] request;
     logic update_lru;
-    logic[NUM_REQUESTERS - 1:0] grant_oh;
+    logic[NUM_REQUESTERS-1:0] grant_oh;
     int cycle;
 
     rr_arbiter #(.NUM_REQUESTERS(4)) rr_arbiter(.*);

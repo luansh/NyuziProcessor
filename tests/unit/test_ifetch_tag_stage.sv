@@ -28,8 +28,8 @@ module test_ifetch_tag_stage(input clk, input reset);
     logic ifd_near_miss;
     local_thread_idx_t ifd_cache_miss_thread_idx;
     logic ift_instruction_requested;
-    l1i_addr_t ift_pc_paddr;
-    scalar_t ift_pc_vaddr;
+    l1i_adr_t ift_pc_padr;
+    scalar_t ift_pc_vadr;
     local_thread_idx_t ift_thread_idx;
     logic ift_tlb_hit;
     logic ift_tlb_present;
@@ -39,17 +39,17 @@ module test_ifetch_tag_stage(input clk, input reset);
     logic ift_valid[`L1I_WAYS];
     logic l2i_icache_lru_fill_en;
     l1i_set_idx_t l2i_icache_lru_fill_set;
-    logic[`L1I_WAYS - 1:0] l2i_itag_update_en;
+    logic[`L1I_WAYS-1:0] l2i_itag_update_en;
     l1i_set_idx_t l2i_itag_update_set;
     l1i_tag_t l2i_itag_update_tag;
     logic l2i_itag_update_valid;
     local_thread_bitmap_t l2i_icache_wake_bitmap;
     l1i_way_idx_t ift_fill_lru;
     logic cr_mmu_en[`THREADS_PER_CORE];
-    logic[ASID_WIDTH - 1:0] cr_current_asid[`THREADS_PER_CORE];
+    logic[ASID_WIDTH-1:0] cr_current_asid[`THREADS_PER_CORE];
     logic dt_invalidate_tlb_en;
     logic dt_invalidate_tlb_all_en;
-    logic[ASID_WIDTH - 1:0] dt_update_itlb_asid;
+    logic[ASID_WIDTH-1:0] dt_update_itlb_asid;
     page_index_t dt_update_itlb_vpage_idx;
     logic dt_update_itlb_en;
     logic dt_update_itlb_supervisor;
@@ -124,8 +124,8 @@ module test_ifetch_tag_stage(input clk, input reset);
 
                 2:
                 begin
-                    assert(ift_pc_vaddr == 0);
-                    assert(ift_pc_paddr == 0);
+                    assert(ift_pc_vadr == 0);
+                    assert(ift_pc_padr == 0);
                     assert(ift_instruction_requested);
                     assert(ift_thread_idx == 0);
                     assert(ift_tlb_hit);
@@ -163,8 +163,8 @@ module test_ifetch_tag_stage(input clk, input reset);
 
                 9:
                 begin
-                    assert(ift_pc_vaddr == 0);
-                    assert(ift_pc_paddr == 0);
+                    assert(ift_pc_vadr == 0);
+                    assert(ift_pc_padr == 0);
                     assert(ift_instruction_requested);
                     assert(ift_thread_idx == 0);
                     assert(ift_tlb_hit);
@@ -185,8 +185,8 @@ module test_ifetch_tag_stage(input clk, input reset);
                 ////////////////////////////////////////////////////////////
                 10:
                 begin
-                    assert(ift_pc_vaddr == 4);
-                    assert(ift_pc_paddr == 4);
+                    assert(ift_pc_vadr == 4);
+                    assert(ift_pc_padr == 4);
                     assert(ift_instruction_requested);
                     assert(ift_thread_idx == 0);
                     assert(ift_tlb_hit);
@@ -195,8 +195,8 @@ module test_ifetch_tag_stage(input clk, input reset);
 
                 11:
                 begin
-                    assert(ift_pc_vaddr == 8);
-                    assert(ift_pc_paddr == 8);
+                    assert(ift_pc_vadr == 8);
+                    assert(ift_pc_padr == 8);
                     assert(ift_instruction_requested);
                     assert(ift_thread_idx == 0);
                     assert(ift_tlb_hit);
@@ -207,8 +207,8 @@ module test_ifetch_tag_stage(input clk, input reset);
                 13:
                 begin
                     // Back to the cycle near miss was asserted
-                    assert(ift_pc_vaddr == 8);
-                    assert(ift_pc_paddr == 8);
+                    assert(ift_pc_vadr == 8);
+                    assert(ift_pc_padr == 8);
                     assert(ift_instruction_requested);
                     assert(ift_thread_idx == 0);
                     assert(ift_tlb_hit);
@@ -217,13 +217,13 @@ module test_ifetch_tag_stage(input clk, input reset);
                 // next instruction
                 14:
                 begin
-                    assert(ift_pc_vaddr == 12);
-                    assert(ift_pc_paddr == 12);
+                    assert(ift_pc_vadr == 12);
+                    assert(ift_pc_padr == 12);
                     assert(ift_instruction_requested);
                     assert(ift_thread_idx == 0);
                     assert(ift_tlb_hit);
 
-                    // Enable address translation
+                    // Enable adress translation
                     cr_mmu_en[0] <= 1;
                 end
 
@@ -251,8 +251,8 @@ module test_ifetch_tag_stage(input clk, input reset);
                 23:
                 begin
                     assert(ift_instruction_requested);
-                    assert(ift_pc_vaddr == 'h4000);
-                    assert(ift_pc_paddr == 'h4000);
+                    assert(ift_pc_vadr == 'h4000);
+                    assert(ift_pc_padr == 'h4000);
                     assert(ift_thread_idx == 0);
                     assert(ift_tlb_hit);    // because MMU is off now
 
@@ -268,8 +268,8 @@ module test_ifetch_tag_stage(input clk, input reset);
                 begin
                     // One more instruction fetched
                     assert(ift_instruction_requested);
-                    assert(ift_pc_vaddr == 'h4004);
-                    assert(ift_pc_paddr == 'h4004);
+                    assert(ift_pc_vadr == 'h4004);
+                    assert(ift_pc_padr == 'h4004);
                     assert(ift_thread_idx == 0);
                     assert(ift_tlb_hit);
                 end
@@ -282,8 +282,8 @@ module test_ifetch_tag_stage(input clk, input reset);
                 26:
                 begin
                     assert(ift_instruction_requested);
-                    assert(ift_pc_vaddr == 'h4008);
-                    assert(ift_pc_paddr == 'h4008);
+                    assert(ift_pc_vadr == 'h4008);
+                    assert(ift_pc_padr == 'h4008);
                     assert(ift_thread_idx == 0);
                     assert(ift_tlb_hit);
 
@@ -299,11 +299,11 @@ module test_ifetch_tag_stage(input clk, input reset);
 
                 29:
                 begin
-                    // Ensure we now get a translated address
+                    // Ensure we now get a translated adress
                     assert(ift_instruction_requested);
                     assert(ift_tlb_hit);
-                    assert(ift_pc_vaddr == 'hc);
-                    assert(ift_pc_paddr == 'h800c);
+                    assert(ift_pc_vadr == 'hc);
+                    assert(ift_pc_padr == 'h800c);
                     assert(ift_thread_idx == 0);
                 end
 
@@ -314,7 +314,7 @@ module test_ifetch_tag_stage(input clk, input reset);
                 ////////////////////////////////////////////////////////////
                 40:
                 begin
-                    // First insert a new entry at a different address than
+                    // First insert a new entry at a different adress than
                     // we are fetching from.
                     dt_update_itlb_en <= 1;
                     dt_update_itlb_present <= 1;
@@ -325,8 +325,8 @@ module test_ifetch_tag_stage(input clk, input reset);
 
                 // Skip two cycles
 
-                // Invalidate this address (PC is still fetching from a
-                // different address)
+                // Invalidate this adress (PC is still fetching from a
+                // different adress)
                 42:
                 begin
                     dt_invalidate_tlb_en <= 1;
@@ -335,7 +335,7 @@ module test_ifetch_tag_stage(input clk, input reset);
 
                 // Skip two cycles
 
-                // Jump to address we inserted
+                // Jump to adress we inserted
                 44:
                 begin
                     wb_rollback_en <= 1;
@@ -352,7 +352,7 @@ module test_ifetch_tag_stage(input clk, input reset);
                     // Ensure this is no longer translated
                     assert(!ift_tlb_hit);
                     assert(ift_thread_idx == 0);
-                    assert(ift_pc_vaddr == 'hd000);
+                    assert(ift_pc_vadr == 'hd000);
                 end
 
                 ////////////////////////////////////////////////////////////
@@ -360,7 +360,7 @@ module test_ifetch_tag_stage(input clk, input reset);
                 ////////////////////////////////////////////////////////////
                 50:
                 begin
-                    // Roll back to a known address
+                    // Roll back to a known adress
                     wb_rollback_en <= 1;
                     wb_rollback_thread_idx <= 0;
                     wb_rollback_pc <= 'ha000;
@@ -370,7 +370,7 @@ module test_ifetch_tag_stage(input clk, input reset);
 
                 53:
                 begin
-                    assert(ift_pc_vaddr == 'ha000);
+                    assert(ift_pc_vadr == 'ha000);
                     assert(ift_instruction_requested);
                     ts_fetch_en <= 0;
                 end
@@ -378,7 +378,7 @@ module test_ifetch_tag_stage(input clk, input reset);
                 54:
                 begin
                     assert(ift_instruction_requested);
-                    assert(ift_pc_vaddr == 'ha004);
+                    assert(ift_pc_vadr == 'ha004);
                 end
 
                 // wait several cycles to ensure nothing is requested
@@ -393,9 +393,9 @@ module test_ifetch_tag_stage(input clk, input reset);
                 58: assert(!ift_instruction_requested);
                 59:
                 begin
-                    // Ensure we resume fetching at the *very next* address
+                    // Ensure we resume fetching at the *very next* adress
                     assert(ift_instruction_requested);
-                    assert(ift_pc_vaddr == 'ha008);
+                    assert(ift_pc_vadr == 'ha008);
                 end
 
                 ////////////////////////////////////////////////////////////

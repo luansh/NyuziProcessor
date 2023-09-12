@@ -42,25 +42,25 @@ module fp_execute_stage1(
     output vector_mask_t fx1_mask_value,
     output local_thread_idx_t fx1_thread_idx,
     output subcycle_t fx1_subcycle,
-    output logic[NUM_VECTOR_LANES - 1:0]            fx1_result_inf,
-    output logic[NUM_VECTOR_LANES - 1:0]            fx1_result_nan,
-    output logic[NUM_VECTOR_LANES - 1:0]            fx1_equal,
-    output logic[NUM_VECTOR_LANES - 1:0][5:0]       fx1_ftoi_lshift,
+    output logic[NUM_VECTOR_LANES-1:0] fx1_result_inf,
+    output logic[NUM_VECTOR_LANES-1:0] fx1_result_nan,
+    output logic[NUM_VECTOR_LANES-1:0] fx1_equal,
+    output logic[NUM_VECTOR_LANES-1:0][5:0] fx1_ftoi_lshift,
 
     // Floating point addition/subtraction
-    output scalar_t[NUM_VECTOR_LANES - 1:0]         fx1_significand_le,  // Larger exponent
-    output scalar_t[NUM_VECTOR_LANES - 1:0]         fx1_significand_se,  // Smaller exponent
-    output logic[NUM_VECTOR_LANES - 1:0][5:0]       fx1_se_align_shift,
-    output logic[NUM_VECTOR_LANES - 1:0][7:0]       fx1_add_exponent,
-    output logic[NUM_VECTOR_LANES - 1:0]            fx1_logical_subtract,
-    output logic[NUM_VECTOR_LANES - 1:0]            fx1_add_result_sign,
+    output scalar_t[NUM_VECTOR_LANES-1:0] fx1_significand_le,  // Larger exponent
+    output scalar_t[NUM_VECTOR_LANES-1:0] fx1_significand_se,  // Smaller exponent
+    output logic[NUM_VECTOR_LANES-1:0][5:0] fx1_se_align_shift,
+    output logic[NUM_VECTOR_LANES-1:0][7:0] fx1_add_exponent,
+    output logic[NUM_VECTOR_LANES-1:0] fx1_logical_subtract,
+    output logic[NUM_VECTOR_LANES-1:0] fx1_add_result_sign,
 
     // Floating point multiplication
-    output logic[NUM_VECTOR_LANES - 1:0][31:0]      fx1_multiplicand,
-    output logic[NUM_VECTOR_LANES - 1:0][31:0]      fx1_multiplier,
-    output logic[NUM_VECTOR_LANES - 1:0][7:0]       fx1_mul_exponent,
-    output logic[NUM_VECTOR_LANES - 1:0]            fx1_mul_underflow,
-    output logic[NUM_VECTOR_LANES - 1:0]            fx1_mul_sign);
+    output logic[NUM_VECTOR_LANES-1:0][31:0] fx1_multiplicand,
+    output logic[NUM_VECTOR_LANES-1:0][31:0] fx1_multiplier,
+    output logic[NUM_VECTOR_LANES-1:0][7:0] fx1_mul_exponent,
+    output logic[NUM_VECTOR_LANES-1:0] fx1_mul_underflow,
+    output logic[NUM_VECTOR_LANES-1:0] fx1_mul_sign);
 
     logic fmul;
     logic imul;
@@ -91,9 +91,9 @@ module fp_execute_stage1(
             logic op1_hidden_bit;
             logic op2_hidden_bit;
             logic op1_larger;
-            logic[FLOAT32_EXP_WIDTH - 1:0] exp_difference;
+            logic[FLOAT32_EXP_WIDTH-1:0] exp_difference;
             logic subtract;
-            logic[FLOAT32_EXP_WIDTH - 1:0] mul_exponent;
+            logic[FLOAT32_EXP_WIDTH-1:0] mul_exponent;
             logic fop1_inf;
             logic fop1_nan;
             logic fop2_inf;
@@ -172,7 +172,7 @@ module fp_execute_stage1(
             // from biased to unbiased representation by inverting the MSB, then add.
             // XXX handle underflow
             assign {mul_exponent_underflow, mul_exponent_carry, mul_exponent}
-                =  {2'd0, fop1.exponent} + {2'd0, fop2.exponent} - 10'd127;
+ =  {2'd0, fop1.exponent} + {2'd0, fop2.exponent} - 10'd127;
 
             // Subtle: In the case where values are equal, leave operand1 in the _le slot. This properly
             // handles the sign for +/- zero.

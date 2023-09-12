@@ -13,12 +13,12 @@ module rr_arbiter
 
   (input clk,
   input reset,
-  input[NUM_REQUESTERS - 1:0]     request,
+  input[NUM_REQUESTERS-1:0] request,
   input update_lru,
-  output logic[NUM_REQUESTERS - 1:0]  grant_oh);
+  output logic[NUM_REQUESTERS-1:0] grant_oh);
 
-  logic[NUM_REQUESTERS - 1:0] priority_oh_nxt;
-  logic[NUM_REQUESTERS - 1:0] priority_oh;
+  logic[NUM_REQUESTERS-1:0] priority_oh_nxt;
+  logic[NUM_REQUESTERS-1:0] priority_oh;
 
   localparam BIT_IDX_WIDTH = $clog2(NUM_REQUESTERS);
 
@@ -32,8 +32,8 @@ module rr_arbiter
         logic granted;
 
         granted = request[grant_idx] & priority_oh[priority_idx];
-        for (logic[BIT_IDX_WIDTH - 1:0] bit_idx = priority_idx[BIT_IDX_WIDTH - 1:0];
-          bit_idx != grant_idx[BIT_IDX_WIDTH - 1:0]; bit_idx++)
+        for (logic[BIT_IDX_WIDTH-1:0] bit_idx = priority_idx[BIT_IDX_WIDTH-1:0];
+          bit_idx != grant_idx[BIT_IDX_WIDTH-1:0]; bit_idx++)
         begin
           granted &= !request[bit_idx];
         end

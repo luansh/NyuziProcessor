@@ -52,14 +52,14 @@ module test_l1_store_queue(input clk, input reset);
     logic dd_membar_en;
     logic dd_iinvalidate_en;
     logic dd_dinvalidate_en;
-    cache_line_index_t dd_store_addr;
-    logic[CACHE_LINE_BYTES - 1:0] dd_store_mask;
+    cache_line_index_t dd_store_adr;
+    logic[CACHE_LINE_BYTES-1:0] dd_store_mask;
     cache_line_data_t dd_store_data;
     logic dd_store_sync;
     local_thread_idx_t dd_store_thread_idx;
-    cache_line_index_t dd_store_bypass_addr;
+    cache_line_index_t dd_store_bypass_adr;
     local_thread_idx_t dd_store_bypass_thread_idx;
-    logic [CACHE_LINE_BYTES - 1:0] sq_store_bypass_mask;
+    logic [CACHE_LINE_BYTES-1:0] sq_store_bypass_mask;
     cache_line_data_t sq_store_bypass_data;
     logic sq_store_sync_success;
     logic storebuf_dequeue_ack;
@@ -67,9 +67,9 @@ module test_l1_store_queue(input clk, input reset);
     l1_miss_entry_idx_t storebuf_l2_response_idx;
     logic storebuf_l2_sync_success;
     logic sq_dequeue_ready;
-    cache_line_index_t sq_dequeue_addr;
+    cache_line_index_t sq_dequeue_adr;
     l1_miss_entry_idx_t sq_dequeue_idx;
-    logic[CACHE_LINE_BYTES - 1:0] sq_dequeue_mask;
+    logic[CACHE_LINE_BYTES-1:0] sq_dequeue_mask;
     cache_line_data_t sq_dequeue_data;
     logic sq_dequeue_sync;
     logic sq_dequeue_flush;
@@ -82,10 +82,10 @@ module test_l1_store_queue(input clk, input reset);
 
     l1_store_queue l1_store_queue(.*);
 
-    task store_request(input cache_line_index_t address, input logic[CACHE_LINE_BYTES - 1:0] mask,
+    task store_request(input cache_line_index_t adress, input logic[CACHE_LINE_BYTES-1:0] mask,
     input cache_line_data_t data);
         dd_store_en <= 1;
-        dd_store_addr <= address;
+        dd_store_adr <= adress;
         dd_store_mask <= mask;
         dd_store_data <= data;
         dd_store_thread_idx <= 0;
@@ -136,7 +136,7 @@ module test_l1_store_queue(input clk, input reset);
                     assert(sq_wake_bitmap == 4'd0);
 
                     assert(sq_dequeue_ready);
-                    assert(sq_dequeue_addr == ADDR0);
+                    assert(sq_dequeue_adr == ADDR0);
                     assert(sq_dequeue_mask == MASK0);
                     assert(sq_dequeue_data == DATA0);
                     assert(!sq_dequeue_sync);
@@ -150,7 +150,7 @@ module test_l1_store_queue(input clk, input reset);
                 begin
                     assert(sq_wake_bitmap == 4'd0);
 
-                    dd_store_bypass_addr <= ADDR0;
+                    dd_store_bypass_adr <= ADDR0;
                     dd_store_bypass_thread_idx <= 0;
                 end
 
@@ -168,9 +168,9 @@ module test_l1_store_queue(input clk, input reset);
                     assert(sq_store_bypass_mask == MASK0);
                     assert(sq_store_bypass_data == DATA0);
 
-                    // Attempt to byapss from a different address that is not in the
+                    // Attempt to byapss from a different adress that is not in the
                     // store buffer (same thread)
-                    dd_store_bypass_addr <= ADDR1;
+                    dd_store_bypass_adr <= ADDR1;
                     dd_store_bypass_thread_idx <= 0;
                 end
 
@@ -185,8 +185,8 @@ module test_l1_store_queue(input clk, input reset);
                     assert(sq_wake_bitmap == 4'd0);
                     assert(sq_store_bypass_mask == 64'd0);
 
-                    // Attempt to bypass from the same address, but different thread
-                    dd_store_bypass_addr <= ADDR0;
+                    // Attempt to bypass from the same adress, but different thread
+                    dd_store_bypass_adr <= ADDR0;
                     dd_store_bypass_thread_idx <= 1;
                 end
 
@@ -201,7 +201,7 @@ module test_l1_store_queue(input clk, input reset);
                     assert(sq_wake_bitmap == 4'd0);
                     assert(sq_store_bypass_mask == 64'd0);
 
-                    // Try to enqueue another store request for the same address.
+                    // Try to enqueue another store request for the same adress.
                     // This should be write combined.
                     store_request(ADDR0, MASK2, DATA2);
                 end
@@ -219,7 +219,7 @@ module test_l1_store_queue(input clk, input reset);
                     assert(!sq_rollback_en);
 
                     assert(sq_dequeue_ready);
-                    assert(sq_dequeue_addr == ADDR0);
+                    assert(sq_dequeue_adr == ADDR0);
                     assert(sq_dequeue_mask == COMBINED_MASK);
                     assert(sq_dequeue_data == COMBINED_DATA);
                     assert(!sq_dequeue_sync);
@@ -229,7 +229,7 @@ module test_l1_store_queue(input clk, input reset);
                     saved_request_idx <= sq_dequeue_idx;
                 end
 
-                // Try to do a write to a different address. This should cause a rollback.
+                // Try to do a write to a different adress. This should cause a rollback.
                 12:
                 begin
                     assert(sq_wake_bitmap == 4'd0);
@@ -302,7 +302,7 @@ module test_l1_store_queue(input clk, input reset);
                     assert(sq_wake_bitmap == 4'd0);
 
                     assert(sq_dequeue_ready);
-                    assert(sq_dequeue_addr == ADDR3);
+                    assert(sq_dequeue_adr == ADDR3);
                     assert(sq_dequeue_mask == MASK3);
                     assert(sq_dequeue_data == DATA3);
                     assert(!sq_dequeue_sync);
@@ -350,7 +350,7 @@ module test_l1_store_queue(input clk, input reset);
                 26:
                 begin
                     assert(sq_dequeue_ready);
-                    assert(sq_dequeue_addr == ADDR4);
+                    assert(sq_dequeue_adr == ADDR4);
                     assert(sq_dequeue_mask == MASK4);
                     assert(sq_dequeue_data == DATA4);
                     assert(sq_dequeue_sync);
@@ -466,7 +466,7 @@ module test_l1_store_queue(input clk, input reset);
                 40:
                 begin
                     assert(sq_dequeue_ready);
-                    assert(sq_dequeue_addr == ADDR5);
+                    assert(sq_dequeue_adr == ADDR5);
                     assert(sq_dequeue_mask == MASK5);
                     assert(sq_dequeue_data == DATA5);
                     assert(!sq_dequeue_sync);
@@ -531,7 +531,7 @@ module test_l1_store_queue(input clk, input reset);
                     // pending.
                     assert(!sq_rollback_en);
                     assert(sq_dequeue_ready);
-                    assert(sq_dequeue_addr == ADDR5);
+                    assert(sq_dequeue_adr == ADDR5);
                     assert(sq_dequeue_mask == MASK5);
                     assert(sq_dequeue_data == DATA5);
 

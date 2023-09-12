@@ -66,8 +66,8 @@ module thread_select_stage(
   local_thread_bitmap_t can_issue_thread;
   local_thread_bitmap_t thread_issue_oh;
   local_thread_idx_t issue_thread_idx;
-  logic[WRITEBACK_ALLOC_STAGES - 1:0] writeback_allocate;
-  logic[WRITEBACK_ALLOC_STAGES - 1:0] writeback_allocate_nxt;
+  logic[WRITEBACK_ALLOC_STAGES-1:0] writeback_allocate;
+  logic[WRITEBACK_ALLOC_STAGES-1:0] writeback_allocate_nxt;
   subcycle_t current_subcycle[`THREADS_PER_CORE];
   logic issue_last_subcycle[`THREADS_PER_CORE];
 
@@ -203,7 +203,7 @@ module thread_select_stage(
   // stage handles (for example, a store instruction can raise an exception)
   always_comb
   begin
-    writeback_allocate_nxt = {1'b0, writeback_allocate[WRITEBACK_ALLOC_STAGES - 1:1]};
+    writeback_allocate_nxt = {1'b0, writeback_allocate[WRITEBACK_ALLOC_STAGES-1:1]};
     if (|thread_issue_oh)
     begin
       unique case (issue_instr.pipeline_sel)
@@ -270,7 +270,7 @@ module thread_select_stage(
 
       // The writeback stage asserts the suspend signal a cycle after a dcache
       // miss occurs. It is possible a cache miss is already pending for that
-      // address, and that it gets filled in the next cycle. In this case,
+      // adress, and that it gets filled in the next cycle. In this case,
       // suspend and wake will be asserted simultaneously. Wake will win
       // because of the order of this expression. This is intended, since
       // cache data is now available and the thread won't be rolled back.

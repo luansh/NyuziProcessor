@@ -47,13 +47,13 @@ module test_l2_cache(input clk, input reset);
     localparam STORE_DATA6 = 512'hf5a858e020ac522f948f1a87be22855701e6bab71499e63a735aaf5e08cd797f3f2a1860f76c70ac8ad598e39ce771bd5e3de27cfe05f7646f06841420ec7830;
     localparam STORE_MASK6 = 64'hffffffffffffffff;
 
-    logic[`NUM_CORES - 1:0] l2i_request_valid;
+    logic[`NUM_CORES-1:0] l2i_request_valid;
     l2req_packet_t l2i_request[`NUM_CORES];
     logic l2_ready[`NUM_CORES];
     logic l2_response_valid;
     l2rsp_packet_t l2_response;
     axi4_interface axi_bus();
-    logic[L2_PERF_EVENTS - 1:0] l2_perf_events;
+    logic[L2_PERF_EVENTS-1:0] l2_perf_events;
     int state;
     cache_line_data_t axi_data;
     int axi_burst_offset;
@@ -69,14 +69,14 @@ module test_l2_cache(input clk, input reset);
     assign axi_bus.s_wready = 1;
 
     task send_l2_request(input l2req_packet_type_t packet_type,
-    input l2_addr_t address,
-    input logic[CACHE_LINE_BYTES - 1:0] store_mask = 0,
+    input l2_adr_t adress,
+    input logic[CACHE_LINE_BYTES-1:0] store_mask = 0,
     input cache_line_data_t data = 0);
 
         l2i_request_valid <= 1;
         l2i_request[0].id <= last_id + 1;   // Change ID every cycle
         l2i_request[0].packet_type = packet_type;
-        l2i_request[0].address = address;
+        l2i_request[0].adress = adress;
         l2i_request[0].store_mask = store_mask;
         l2i_request[0].data = data;
         last_id <= last_id + 1;
@@ -110,7 +110,7 @@ module test_l2_cache(input clk, input reset);
                     state <= state + 1;
                 end
 
-                // Wait for read address
+                // Wait for read adress
                 1:
                 begin
                     assert(!l2_response_valid);
@@ -118,7 +118,7 @@ module test_l2_cache(input clk, input reset);
                     assert(!axi_bus.m_wvalid);
                     if (axi_bus.m_arvalid)
                     begin
-                        assert(axi_bus.m_araddr == ADDR0 * CACHE_LINE_BYTES);
+                        assert(axi_bus.m_aradr == ADDR0 * CACHE_LINE_BYTES);
                         assert(axi_bus.m_arlen == 15);
                         state <= state + 1;
                         axi_burst_offset <= 0;
@@ -147,7 +147,7 @@ module test_l2_cache(input clk, input reset);
                         assert(l2_response.id == last_id);
                         assert(l2_response.packet_type == L2RSP_LOAD_ACK);
                         assert(l2_response.cache_type == CT_DCACHE);
-                        assert(l2_response.address == ADDR0);
+                        assert(l2_response.adress == ADDR0);
                         assert(l2_response.data == DATA0);
                         state <= state + 1;
                     end
@@ -164,7 +164,7 @@ module test_l2_cache(input clk, input reset);
                     state <= state + 1;
                 end
 
-                // Wait for read address
+                // Wait for read adress
                 5:
                 begin
                     assert(!l2_response_valid);
@@ -172,7 +172,7 @@ module test_l2_cache(input clk, input reset);
                     assert(!axi_bus.m_wvalid);
                     if (axi_bus.m_arvalid)
                     begin
-                        assert(axi_bus.m_araddr == ADDR1 * CACHE_LINE_BYTES);
+                        assert(axi_bus.m_aradr == ADDR1 * CACHE_LINE_BYTES);
                         assert(axi_bus.m_arlen == 15);
                         state <= state + 1;
                         axi_burst_offset <= 0;
@@ -201,7 +201,7 @@ module test_l2_cache(input clk, input reset);
                         assert(l2_response.id == last_id);
                         assert(l2_response.packet_type == L2RSP_STORE_ACK);
                         assert(l2_response.cache_type == CT_DCACHE);
-                        assert(l2_response.address == ADDR1);
+                        assert(l2_response.adress == ADDR1);
                         assert(l2_response.data == STORE_RESULT1);
                         state <= state + 1;
                     end
@@ -232,7 +232,7 @@ module test_l2_cache(input clk, input reset);
                         assert(l2_response.id == 3);
                         assert(l2_response.packet_type == L2RSP_LOAD_ACK);
                         assert(l2_response.cache_type == CT_DCACHE);
-                        assert(l2_response.address == ADDR1);
+                        assert(l2_response.adress == ADDR1);
                         assert(l2_response.data == STORE_RESULT1);
                         state <= state + 1;
                     end
@@ -260,14 +260,14 @@ module test_l2_cache(input clk, input reset);
                         assert(l2_response.id == 0);
                         assert(l2_response.packet_type == L2RSP_STORE_ACK);
                         assert(l2_response.cache_type == CT_DCACHE);
-                        assert(l2_response.address == ADDR0);
+                        assert(l2_response.adress == ADDR0);
                         assert(l2_response.data == STORE_RESULT2);
                         state <= state + 1;
                     end
                 end
 
                 //////////////////////////////////////////////////////////
-                // Collided miss (a second miss occurs to the same address
+                // Collided miss (a second miss occurs to the same adress
                 // before the first completes
                 ///////////////////////////////////////////////////////////
                 12:
@@ -278,7 +278,7 @@ module test_l2_cache(input clk, input reset);
                     state <= state + 1;
                 end
 
-                // Send second request for the same address.
+                // Send second request for the same adress.
                 // I'm taking a few shortcuts here based on knowledge of the
                 // implementation:
                 // - I know the AXI transaction won't come yet, so I don't
@@ -297,7 +297,7 @@ module test_l2_cache(input clk, input reset);
                     state <= state + 1;
                 end
 
-                // Wait for read address
+                // Wait for read adress
                 14:
                 begin
                     assert(!l2_response_valid);
@@ -305,7 +305,7 @@ module test_l2_cache(input clk, input reset);
                     assert(!axi_bus.m_wvalid);
                     if (axi_bus.m_arvalid)
                     begin
-                        assert(axi_bus.m_araddr == ADDR3 * CACHE_LINE_BYTES);
+                        assert(axi_bus.m_aradr == ADDR3 * CACHE_LINE_BYTES);
                         assert(axi_bus.m_arlen == 15);
                         state <= state + 1;
                         axi_burst_offset <= 0;
@@ -338,7 +338,7 @@ module test_l2_cache(input clk, input reset);
                         assert(l2_response.id == last_id - 1);
                         assert(l2_response.packet_type == L2RSP_LOAD_ACK);
                         assert(l2_response.cache_type == CT_DCACHE);
-                        assert(l2_response.address == ADDR3);
+                        assert(l2_response.adress == ADDR3);
                         assert(l2_response.data == DATA3);
                         state <= state + 1;
                     end
@@ -358,14 +358,14 @@ module test_l2_cache(input clk, input reset);
                         assert(l2_response.id == last_id);
                         assert(l2_response.packet_type == L2RSP_LOAD_ACK);
                         assert(l2_response.cache_type == CT_DCACHE);
-                        assert(l2_response.address == ADDR3);
+                        assert(l2_response.adress == ADDR3);
                         assert(l2_response.data == DATA3);
                         state <= state + 1;
                     end
                 end
 
                 /////////////////////////////////////////////////////////
-                // Flush a dirty line (we wrote to this address earlier)
+                // Flush a dirty line (we wrote to this adress earlier)
                 /////////////////////////////////////////////////////////
                 18:
                 begin
@@ -374,7 +374,7 @@ module test_l2_cache(input clk, input reset);
                     state <= state + 1;
                 end
 
-                // Wait for write address
+                // Wait for write adress
                 19:
                 begin
                     assert(!l2_response_valid);
@@ -382,7 +382,7 @@ module test_l2_cache(input clk, input reset);
                     assert(!axi_bus.m_wvalid);
                     if (axi_bus.m_awvalid)
                     begin
-                        assert(axi_bus.m_awaddr == ADDR1 * CACHE_LINE_BYTES);
+                        assert(axi_bus.m_awadr == ADDR1 * CACHE_LINE_BYTES);
                         assert(axi_bus.m_arlen == 15);
                         state <= state + 1;
                         axi_burst_offset <= 0;
@@ -417,13 +417,13 @@ module test_l2_cache(input clk, input reset);
                         assert(l2_response.id == last_id);
                         assert(l2_response.packet_type == L2RSP_FLUSH_ACK);
                         assert(l2_response.cache_type == CT_DCACHE);
-                        // XXX the address isn't set.
+                        // XXX the adress isn't set.
                         state <= state + 1;
                     end
                 end
 
                 ///////////////////////////////////////////////////////////
-                // Do a flush on the same address from above to ensure it
+                // Do a flush on the same adress from above to ensure it
                 // cleared the dirty bit.
                 ///////////////////////////////////////////////////////////
                 22:
@@ -444,7 +444,7 @@ module test_l2_cache(input clk, input reset);
                         assert(l2_response.id == last_id);
                         assert(l2_response.packet_type == L2RSP_FLUSH_ACK);
                         assert(l2_response.cache_type == CT_DCACHE);
-                        // XXX the address isn't set.
+                        // XXX the adress isn't set.
                         state <= state + 1;
                     end
                 end
@@ -472,7 +472,7 @@ module test_l2_cache(input clk, input reset);
                         assert(l2_response.id == last_id);
                         assert(l2_response.packet_type == L2RSP_FLUSH_ACK);
                         assert(l2_response.cache_type == CT_DCACHE);
-                        // XXX the address isn't set.
+                        // XXX the adress isn't set.
                         state <= state + 1;
                     end
                 end
@@ -499,7 +499,7 @@ module test_l2_cache(input clk, input reset);
                         assert(l2_response.id == last_id);
                         assert(l2_response.packet_type == L2RSP_FLUSH_ACK);
                         assert(l2_response.cache_type == CT_DCACHE);
-                        // XXX the address isn't set.
+                        // XXX the adress isn't set.
                         state <= state + 1;
                     end
                 end
@@ -529,7 +529,7 @@ module test_l2_cache(input clk, input reset);
                         assert(l2_response.id == last_id);
                         assert(l2_response.packet_type == L2RSP_STORE_ACK);
                         assert(l2_response.cache_type == CT_DCACHE);
-                        assert(l2_response.address == ADDR6);
+                        assert(l2_response.adress == ADDR6);
                         assert(l2_response.data == STORE_DATA6);
                         state <= state + 1;
                     end
@@ -556,7 +556,7 @@ module test_l2_cache(input clk, input reset);
                         assert(l2_response.id == last_id);
                         assert(l2_response.packet_type == L2RSP_LOAD_ACK);
                         assert(l2_response.cache_type == CT_DCACHE);
-                        assert(l2_response.address == ADDR6);
+                        assert(l2_response.adress == ADDR6);
                         assert(l2_response.data == STORE_DATA6);
                         state <= state + 1;
                     end
@@ -584,12 +584,12 @@ module test_l2_cache(input clk, input reset);
                         assert(l2_response.id == last_id);
                         assert(l2_response.packet_type == L2RSP_DINVALIDATE_ACK);
                         assert(l2_response.cache_type == CT_DCACHE);
-                        // XXX the address isn't set.
+                        // XXX the adress isn't set.
                         state <= state + 1;
                     end
                 end
 
-                // try to reload this address, ensure it attempts a read (confirming
+                // try to reload this adress, ensure it attempts a read (confirming
                 // it was invalidated).
                 34:
                 begin
@@ -598,7 +598,7 @@ module test_l2_cache(input clk, input reset);
                     state <= state + 1;
                 end
 
-                // wait for address
+                // wait for adress
                 35:
                 begin
                     assert(!l2_response_valid);
@@ -606,7 +606,7 @@ module test_l2_cache(input clk, input reset);
                     assert(!axi_bus.m_wvalid);
                     if (axi_bus.m_arvalid)
                     begin
-                        assert(axi_bus.m_araddr == ADDR0 * CACHE_LINE_BYTES);
+                        assert(axi_bus.m_aradr == ADDR0 * CACHE_LINE_BYTES);
                         assert(axi_bus.m_arlen == 15);
                         state <= state + 1;
                         axi_burst_offset <= 0;
@@ -641,7 +641,7 @@ module test_l2_cache(input clk, input reset);
                         assert(l2_response.id == last_id);
                         assert(l2_response.packet_type == L2RSP_LOAD_ACK);
                         assert(l2_response.cache_type == CT_DCACHE);
-                        assert(l2_response.address == ADDR0);
+                        assert(l2_response.adress == ADDR0);
                         assert(l2_response.data == DATA4);
                         state <= state + 1;
                     end
@@ -671,7 +671,7 @@ module test_l2_cache(input clk, input reset);
                         assert(l2_response.id == last_id);
                         assert(l2_response.packet_type == L2RSP_IINVALIDATE_ACK);
                         assert(l2_response.cache_type == CT_DCACHE);
-                        // XXX the address isn't set.
+                        // XXX the adress isn't set.
                         state <= state + 1;
                     end
                 end

@@ -65,7 +65,7 @@ module test_writeback_stage(input clk, input reset);
     decoded_instruction_t dd_instruction;
     vector_mask_t dd_lane_mask;
     local_thread_idx_t dd_thread_idx;
-    l1d_addr_t dd_request_vaddr;
+    l1d_adr_t dd_request_vadr;
     subcycle_t dd_subcycle;
     logic dd_rollback_en;
     scalar_t dd_rollback_pc;
@@ -74,7 +74,7 @@ module test_writeback_stage(input clk, input reset);
     logic dd_io_access;
     logic dd_trap;
     trap_cause_t dd_trap_cause;
-    logic[CACHE_LINE_BYTES - 1:0] sq_store_bypass_mask;
+    logic[CACHE_LINE_BYTES-1:0] sq_store_bypass_mask;
     cache_line_data_t sq_store_bypass_data;
     logic sq_store_sync_success;
     logic sq_rollback_en;
@@ -87,7 +87,7 @@ module test_writeback_stage(input clk, input reset);
     logic wb_trap;
     trap_cause_t wb_trap_cause;
     scalar_t wb_trap_pc;
-    scalar_t wb_trap_access_vaddr;
+    scalar_t wb_trap_access_vadr;
     subcycle_t wb_trap_subcycle;
     logic wb_eret;
     logic wb_rollback_en;
@@ -131,7 +131,7 @@ module test_writeback_stage(input clk, input reset);
             ix_subcycle <= '0;
             dd_lane_mask <= '0;
             dd_thread_idx <= '0;
-            dd_request_vaddr <= '0;
+            dd_request_vadr <= '0;
             dd_subcycle <= '0;
             dd_rollback_pc <= '0;
             dd_load_data <= '0;
@@ -344,7 +344,7 @@ module test_writeback_stage(input clk, input reset);
                     dd_instruction.memory_access_type <= MEM_S;
                     dd_instruction.load <= 1;
                     dd_load_data <= RESULT4;
-                    dd_request_vaddr <= 4;
+                    dd_request_vadr <= 4;
                 end
 
                 13:
@@ -396,7 +396,7 @@ module test_writeback_stage(input clk, input reset);
                     assert(wb_trap);
                     assert(wb_trap_cause == TRAP_CAUSE1);
                     assert(wb_trap_pc == PC5);
-                    assert(wb_trap_access_vaddr == PC5);
+                    assert(wb_trap_access_vadr == PC5);
                     assert(wb_trap_subcycle == 0);
                     assert(!wb_eret);
                     assert(wb_rollback_en);
@@ -437,7 +437,7 @@ module test_writeback_stage(input clk, input reset);
                     dd_trap <= 1;
                     dd_trap_cause <= TRAP_CAUSE2;
                     cr_trap_handler <= TRAP_HANDLER2;
-                    dd_request_vaddr <= ACCESS_ADDR2;
+                    dd_request_vadr <= ACCESS_ADDR2;
                 end
 
                 19:
@@ -445,7 +445,7 @@ module test_writeback_stage(input clk, input reset);
                     assert(wb_trap);
                     assert(wb_trap_cause == TRAP_CAUSE2);
                     assert(wb_trap_pc == PC5);
-                    assert(wb_trap_access_vaddr == ACCESS_ADDR2);
+                    assert(wb_trap_access_vadr == ACCESS_ADDR2);
                     assert(wb_trap_subcycle == 0);
                     assert(!wb_eret);
                     assert(wb_rollback_en);
@@ -533,7 +533,7 @@ module test_writeback_stage(input clk, input reset);
                     dd_trap <= 1;
                     dd_trap_cause <= TLB_MISS_CAUSE;
                     cr_tlb_miss_handler <= TRAP_HANDLER3;
-                    dd_request_vaddr <= ACCESS_ADDR1;
+                    dd_request_vadr <= ACCESS_ADDR1;
                 end
 
                 25:
@@ -541,7 +541,7 @@ module test_writeback_stage(input clk, input reset);
                     assert(wb_trap);
                     assert(wb_trap_cause == TLB_MISS_CAUSE);
                     assert(wb_trap_pc == PC6);
-                    assert(wb_trap_access_vaddr == ACCESS_ADDR1);
+                    assert(wb_trap_access_vadr == ACCESS_ADDR1);
                     assert(wb_trap_subcycle == 0);
                     assert(!wb_eret);
                     assert(wb_rollback_en);

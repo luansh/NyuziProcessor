@@ -15,7 +15,7 @@
     (input clk,
     input reset,
     input local_thread_bitmap_t thread_en,
-    input [NUM_INTERRUPTS - 1:0]       interrupt_req,
+    input [NUM_INTERRUPTS-1:0] interrupt_req,
 
     // From l1_l2_interface
     input l2_ready,
@@ -48,21 +48,21 @@
     output scalar_t cr_data_to_host,
 
     // To nyuzi
-    output logic[TOTAL_THREADS - 1:0]    cr_suspend_thread,
-    output logic[TOTAL_THREADS - 1:0]    cr_resume_thread);
+    output logic[TOTAL_THREADS-1:0] cr_suspend_thread,
+    output logic[TOTAL_THREADS-1:0] cr_resume_thread);
 
     localparam EVENT_IDX_WIDTH = $clog2(CORE_PERF_EVENTS);
     localparam NUM_PERF_COUNTERS = 2;
 
     logic core_selected_debug;
-    logic[CORE_PERF_EVENTS - 1:0] perf_events;
-    logic[NUM_PERF_COUNTERS - 1:0][EVENT_IDX_WIDTH - 1:0] perf_event_select;
+    logic[CORE_PERF_EVENTS-1:0] perf_events;
+    logic[NUM_PERF_COUNTERS-1:0][EVENT_IDX_WIDTH-1:0] perf_event_select;
 
     /*AUTOLOGIC*/
     // Beginning of automatic wires (for undeclared instantiated-module outputs)
     scalar_t cr_creg_read_val;     // From control_registers of control_registers.v
     logic [ASID_WIDTH-1:0] cr_current_asid [`THREADS_PER_CORE];// From control_registers of control_registers.v
-    scalar_t cr_eret_address [`THREADS_PER_CORE];// From control_registers of control_registers.v
+    scalar_t cr_eret_adress [`THREADS_PER_CORE];// From control_registers of control_registers.v
     subcycle_t cr_eret_subcycle [`THREADS_PER_CORE];// From control_registers of control_registers.v
     local_thread_bitmap_t cr_interrupt_en;    // From control_registers of control_registers.v
     logic [`THREADS_PER_CORE-1:0] cr_interrupt_pending;// From control_registers of control_registers.v
@@ -71,7 +71,7 @@
     scalar_t cr_tlb_miss_handler;  // From control_registers of control_registers.v
     scalar_t cr_trap_handler;    // From control_registers of control_registers.v
     logic dd_cache_miss;      // From dcache_data_stage of dcache_data_stage.v
-    cache_line_index_t dd_cache_miss_addr;   // From dcache_data_stage of dcache_data_stage.v
+    cache_line_index_t dd_cache_miss_adr;   // From dcache_data_stage of dcache_data_stage.v
     logic dd_cache_miss_sync;   // From dcache_data_stage of dcache_data_stage.v
     local_thread_idx_t dd_cache_miss_thread_idx;// From dcache_data_stage of dcache_data_stage.v
     control_register_t dd_creg_index;      // From dcache_data_stage of dcache_data_stage.v
@@ -84,7 +84,7 @@
     decoded_instruction_t dd_instruction;     // From dcache_data_stage of dcache_data_stage.v
     logic dd_instruction_valid;   // From dcache_data_stage of dcache_data_stage.v
     logic dd_io_access;       // From dcache_data_stage of dcache_data_stage.v
-    scalar_t dd_io_addr;       // From dcache_data_stage of dcache_data_stage.v
+    scalar_t dd_io_adr;       // From dcache_data_stage of dcache_data_stage.v
     logic dd_io_read_en;      // From dcache_data_stage of dcache_data_stage.v
     local_thread_idx_t dd_io_thread_idx;     // From dcache_data_stage of dcache_data_stage.v
     logic dd_io_write_en;     // From dcache_data_stage of dcache_data_stage.v
@@ -96,11 +96,11 @@
     logic dd_perf_dcache_hit;   // From dcache_data_stage of dcache_data_stage.v
     logic dd_perf_dcache_miss;  // From dcache_data_stage of dcache_data_stage.v
     logic dd_perf_dtlb_miss;    // From dcache_data_stage of dcache_data_stage.v
-    l1d_addr_t dd_request_vaddr;     // From dcache_data_stage of dcache_data_stage.v
+    l1d_adr_t dd_request_vadr;     // From dcache_data_stage of dcache_data_stage.v
     logic dd_rollback_en;     // From dcache_data_stage of dcache_data_stage.v
     scalar_t dd_rollback_pc;     // From dcache_data_stage of dcache_data_stage.v
-    cache_line_index_t dd_store_addr;      // From dcache_data_stage of dcache_data_stage.v
-    cache_line_index_t dd_store_bypass_addr;   // From dcache_data_stage of dcache_data_stage.v
+    cache_line_index_t dd_store_adr;      // From dcache_data_stage of dcache_data_stage.v
+    cache_line_index_t dd_store_bypass_adr;   // From dcache_data_stage of dcache_data_stage.v
     local_thread_idx_t dd_store_bypass_thread_idx;// From dcache_data_stage of dcache_data_stage.v
     cache_line_data_t dd_store_data;      // From dcache_data_stage of dcache_data_stage.v
     logic dd_store_en;      // From dcache_data_stage of dcache_data_stage.v
@@ -120,8 +120,8 @@
     logic dt_invalidate_tlb_all_en;// From dcache_tag_stage of dcache_tag_stage.v
     logic dt_invalidate_tlb_en;   // From dcache_tag_stage of dcache_tag_stage.v
     vector_mask_t dt_mask_value;      // From dcache_tag_stage of dcache_tag_stage.v
-    l1d_addr_t dt_request_paddr;     // From dcache_tag_stage of dcache_tag_stage.v
-    l1d_addr_t dt_request_vaddr;     // From dcache_tag_stage of dcache_tag_stage.v
+    l1d_adr_t dt_request_padr;     // From dcache_tag_stage of dcache_tag_stage.v
+    l1d_adr_t dt_request_vadr;     // From dcache_tag_stage of dcache_tag_stage.v
     l1d_tag_t dt_snoop_tag [`L1D_WAYS];// From dcache_tag_stage of dcache_tag_stage.v
     logic dt_snoop_valid [`L1D_WAYS];// From dcache_tag_stage of dcache_tag_stage.v
     vector_t dt_store_value;     // From dcache_tag_stage of dcache_tag_stage.v
@@ -227,7 +227,7 @@
     local_thread_idx_t id_thread_idx;      // From instruction_decode_stage of instruction_decode_stage.v
     logic ifd_alignment_fault;  // From ifetch_data_stage of ifetch_data_stage.v
     logic ifd_cache_miss;     // From ifetch_data_stage of ifetch_data_stage.v
-    cache_line_index_t ifd_cache_miss_paddr;   // From ifetch_data_stage of ifetch_data_stage.v
+    cache_line_index_t ifd_cache_miss_padr;   // From ifetch_data_stage of ifetch_data_stage.v
     local_thread_idx_t ifd_cache_miss_thread_idx;// From ifetch_data_stage of ifetch_data_stage.v
     logic ifd_executable_fault;   // From ifetch_data_stage of ifetch_data_stage.v
     logic ifd_inst_injected;    // From ifetch_data_stage of ifetch_data_stage.v
@@ -246,8 +246,8 @@
     l1i_way_idx_t ifd_update_lru_way;   // From ifetch_data_stage of ifetch_data_stage.v
     l1i_way_idx_t ift_fill_lru;       // From ifetch_tag_stage of ifetch_tag_stage.v
     logic ift_instruction_requested;// From ifetch_tag_stage of ifetch_tag_stage.v
-    l1i_addr_t ift_pc_paddr;       // From ifetch_tag_stage of ifetch_tag_stage.v
-    scalar_t ift_pc_vaddr;       // From ifetch_tag_stage of ifetch_tag_stage.v
+    l1i_adr_t ift_pc_padr;       // From ifetch_tag_stage of ifetch_tag_stage.v
+    scalar_t ift_pc_vadr;       // From ifetch_tag_stage of ifetch_tag_stage.v
     l1i_tag_t ift_tag [`L1I_WAYS];  // From ifetch_tag_stage of ifetch_tag_stage.v
     local_thread_idx_t ift_thread_idx;     // From ifetch_tag_stage of ifetch_tag_stage.v
     logic ift_tlb_executable;   // From ifetch_tag_stage of ifetch_tag_stage.v
@@ -304,7 +304,7 @@
     vector_t of_store_value;     // From operand_fetch_stage of operand_fetch_stage.v
     subcycle_t of_subcycle;      // From operand_fetch_stage of operand_fetch_stage.v
     local_thread_idx_t of_thread_idx;      // From operand_fetch_stage of operand_fetch_stage.v
-    logic [1:0] [63:0]  perf_event_count;     // From performance_counters of performance_counters.v
+    logic [1:0] [63:0] perf_event_count;     // From performance_counters of performance_counters.v
     logic sq_rollback_en;     // From l1_l2_interface of l1_l2_interface.v
     cache_line_data_t sq_store_bypass_data;   // From l1_l2_interface of l1_l2_interface.v
     logic [CACHE_LINE_BYTES-1:0] sq_store_bypass_mask;// From l1_l2_interface of l1_l2_interface.v
@@ -329,7 +329,7 @@
     local_thread_bitmap_t wb_suspend_thread_oh; // From writeback_stage of writeback_stage.v
     syscall_index_t wb_syscall_index;     // From writeback_stage of writeback_stage.v
     logic wb_trap;        // From writeback_stage of writeback_stage.v
-    scalar_t wb_trap_access_vaddr;   // From writeback_stage of writeback_stage.v
+    scalar_t wb_trap_access_vadr;   // From writeback_stage of writeback_stage.v
     trap_cause_t wb_trap_cause;      // From writeback_stage of writeback_stage.v
     scalar_t wb_trap_pc;       // From writeback_stage of writeback_stage.v
     subcycle_t wb_trap_subcycle;     // From writeback_stage of writeback_stage.v

@@ -4,7 +4,7 @@ import defines::*;
 
 //
 // This routes AXI transactions between two masters and two slaves
-// mapped into different regions of a common address space.
+// mapped into different regions of a common adress space.
 // XXX this should be reworked to support an arbitrary number of
 // controlling masters.
 //
@@ -16,8 +16,8 @@ module axi_interconnect
   input reset,
 
     // These interface control externally connected slaves
-    // Slave Interface 0 (address 0x00000000 - M1_BASE_ADDRESS)
-    // Slave Interface 1 (address M1_BASE_ADDRESS - 0xfffeffff)
+    // Slave Interface 0 (adress 0x00000000 - M1_BASE_ADDRESS)
+    // Slave Interface 1 (adress M1_BASE_ADDRESS - 0xfffeffff)
     axi4_interface.master       axi_bus_s[1:0],
 
     // These interfaces are controlled by externally connected masters.
@@ -31,13 +31,13 @@ module axi_interconnect
     } burst_state_t;
 
     burst_state_t write_state;
-    logic[31:0] write_burst_address;
+    logic[31:0] write_burst_adress;
     logic[7:0] write_burst_length;    // Like axi_awlen, this is number of transfers minus 1
     logic write_slave_select;
     logic read_selected_master;
     logic read_selected_slave;
     logic[7:0] read_burst_length;    // Like axi_arlen, this is number of transfers minus one
-    logic[31:0] read_burst_address;
+    logic[31:0] read_burst_adress;
     burst_state_t read_state;
     logic axi_arready_m;
     logic axi_rready_m;
@@ -51,12 +51,12 @@ module axi_interconnect
     //
 
     // Since only slave interface 0 supports writes, just hard wire these.
-    assign axi_bus_s[0].m_awaddr = write_burst_address;
+    assign axi_bus_s[0].m_awadr = write_burst_adress;
     assign axi_bus_s[0].m_awlen = write_burst_length;
     assign axi_bus_s[0].m_wdata = axi_bus_m[0].m_wdata;
     assign axi_bus_s[0].m_wlast = axi_bus_m[0].m_wlast;
     assign axi_bus_s[0].m_bready = axi_bus_m[0].m_bready;
-    assign axi_bus_s[1].m_awaddr = write_burst_address - M1_BASE_ADDRESS;
+    assign axi_bus_s[1].m_awadr = write_burst_adress - M1_BASE_ADDRESS;
     assign axi_bus_s[1].m_awlen = write_burst_length;
     assign axi_bus_s[1].m_wdata = axi_bus_m[0].m_wdata;
     assign axi_bus_s[1].m_wlast = axi_bus_m[0].m_wlast;
@@ -72,7 +72,7 @@ module axi_interconnect
             write_state <= STATE_ARBITRATE;
             /*AUTORESET*/
             // Beginning of autoreset for uninitialized flops
-            write_burst_address <= '0;
+            write_burst_adress <= '0;
             write_burst_length <= '0;
             write_slave_select <= '0;
             // End of automatics
@@ -89,15 +89,15 @@ module axi_interconnect
         end
         else if (write_state == STATE_ISSUE_ADDRESS)
         begin
-            // Wait for the slave to accept the address and length
+            // Wait for the slave to accept the adress and length
             if (axi_bus_m[0].s_awready)
                 write_state <= STATE_ACTIVE_BURST;
         end
         else if (axi_bus_m[0].m_awvalid)
         begin
             // Start a new write transaction
-            write_slave_select <=  axi_bus_m[0].m_awaddr >= M1_BASE_ADDRESS;
-            write_burst_address <= axi_bus_m[0].m_awaddr;
+            write_slave_select <=  axi_bus_m[0].m_awadr >= M1_BASE_ADDRESS;
+            write_burst_adress <= axi_bus_m[0].m_awadr;
             write_burst_length <= axi_bus_m[0].m_awlen;
             write_state <= STATE_ISSUE_ADDRESS;
         end
@@ -140,7 +140,7 @@ module axi_interconnect
 
             /*AUTORESET*/
             // Beginning of autoreset for uninitialized flops
-            read_burst_address <= '0;
+            read_burst_adress <= '0;
             read_burst_length <= '0;
             read_selected_master <= '0;
             read_selected_slave <= '0;
@@ -158,7 +158,7 @@ module axi_interconnect
         end
         else if (read_state == STATE_ISSUE_ADDRESS)
         begin
-            // Wait for the slave to accept the address and length
+            // Wait for the slave to accept the adress and length
             if (axi_arready_m)
                 read_state <= STATE_ACTIVE_BURST;
         end
@@ -166,19 +166,19 @@ module axi_interconnect
         begin
             // Start a read burst from slave 1
             read_state <= STATE_ISSUE_ADDRESS;
-            read_burst_address <= axi_bus_m[1].m_araddr;
+            read_burst_adress <= axi_bus_m[1].m_aradr;
             read_burst_length <= axi_bus_m[1].m_arlen;
             read_selected_master <= 1'b1;
-            read_selected_slave <= axi_bus_m[1].m_araddr >= M1_BASE_ADDRESS;
+            read_selected_slave <= axi_bus_m[1].m_aradr >= M1_BASE_ADDRESS;
         end
         else if (axi_bus_m[0].m_arvalid)
         begin
             // Start a read burst from slave 0
             read_state <= STATE_ISSUE_ADDRESS;
-            read_burst_address <= axi_bus_m[0].m_araddr;
+            read_burst_adress <= axi_bus_m[0].m_aradr;
             read_burst_length <= axi_bus_m[0].m_arlen;
             read_selected_master <= 1'b0;
-            read_selected_slave <= axi_bus_m[0].m_araddr[31:28] != 0;
+            read_selected_slave <= axi_bus_m[0].m_aradr[31:28] != 0;
         end
     end
 
@@ -215,8 +215,8 @@ module axi_interconnect
 
     assign axi_bus_s[0].m_arvalid = read_state == STATE_ISSUE_ADDRESS && read_selected_slave == 0;
     assign axi_bus_s[1].m_arvalid = read_state == STATE_ISSUE_ADDRESS && read_selected_slave == 1;
-    assign axi_bus_s[0].m_araddr = read_burst_address;
-    assign axi_bus_s[1].m_araddr = read_burst_address - M1_BASE_ADDRESS;
+    assign axi_bus_s[0].m_aradr = read_burst_adress;
+    assign axi_bus_s[1].m_aradr = read_burst_adress - M1_BASE_ADDRESS;
     assign axi_bus_m[0].s_rdata = read_selected_slave ? axi_bus_s[1].s_rdata : axi_bus_s[0].s_rdata;
     assign axi_bus_m[1].s_rdata = axi_bus_m[0].s_rdata;
     assign axi_bus_m[1].s_awready = '0;

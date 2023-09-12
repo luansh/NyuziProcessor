@@ -6,10 +6,10 @@ module uart_transmit
     #(parameter DIVISOR_WIDTH = 16)
     (input clk,
   input reset,
-  input[DIVISOR_WIDTH - 1:0]    clocks_per_bit,
+  input[DIVISOR_WIDTH-1:0] clocks_per_bit,
   input tx_en,
     output logic tx_ready,
-  input[7:0]                    tx_char,
+  input[7:0] tx_char,
     output logic uart_tx);
 
     localparam START_BIT = 1'b0;
@@ -17,7 +17,7 @@ module uart_transmit
 
     logic[9:0] tx_shift;
     logic[3:0] shift_count;
-    logic[DIVISOR_WIDTH - 1:0] next_edge_clocks;
+    logic[DIVISOR_WIDTH-1:0] next_edge_clocks;
     logic transmit_active;
 
     assign transmit_active = shift_count != 0;

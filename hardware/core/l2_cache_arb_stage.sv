@@ -16,7 +16,7 @@ module l2_cache_arb_stage(
   input reset,
 
   // From cores
-  input [`NUM_CORES - 1:0]        l2i_request_valid,
+  input [`NUM_CORES-1:0] l2i_request_valid,
   input l2req_packet_t l2i_request[`NUM_CORES],
   output logic l2_ready[`NUM_CORES],
 
@@ -36,7 +36,7 @@ module l2_cache_arb_stage(
 
   logic can_accept_request;
   l2req_packet_t grant_request;
-  logic[`NUM_CORES - 1:0] grant_oh;
+  logic[`NUM_CORES-1:0] grant_oh;
   logic restarted_flush;
 
   assign can_accept_request = !l2bi_request_valid && !l2bi_stall;
@@ -63,9 +63,9 @@ module l2_cache_arb_stage(
 
       oh_to_idx #(.NUM_SIGNALS(`NUM_CORES)) oh_to_idx_grant(
         .one_hot(grant_oh),
-        .index(grant_idx[CORE_ID_WIDTH - 1:0]));
+        .index(grant_idx[CORE_ID_WIDTH-1:0]));
 
-      assign grant_request = l2i_request[grant_idx[CORE_ID_WIDTH - 1:0]];
+      assign grant_request = l2i_request[grant_idx[CORE_ID_WIDTH-1:0]];
     end
     else
     begin

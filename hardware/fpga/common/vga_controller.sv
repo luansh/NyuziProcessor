@@ -21,9 +21,9 @@ module vga_controller
     axi4_interface.master       axi_bus,
 
     // To DAC
-    output [7:0]                vga_r,
-    output [7:0]                vga_g,
-    output [7:0]                vga_b,
+    output [7:0] vga_r,
+    output [7:0] vga_g,
+    output [7:0] vga_b,
     output logic vga_clk,
     output logic vga_blank_n,
     output logic vga_hs,
@@ -48,11 +48,11 @@ module vga_controller
     logic pixel_en;               // From vga_sequencer of vga_sequencer.v
     logic start_frame;            // From vga_sequencer of vga_sequencer.v
     // End of automatics
-    logic[31:0] vram_addr;
+    logic[31:0] vram_adr;
     logic[7:0] _ignore_alpha;
     logic pixel_fifo_empty;
     logic pixel_fifo_almost_empty;
-    logic[31:0] fb_base_address;
+    logic[31:0] fb_base_adress;
     logic[31:0] fb_length;
     dma_state_t axi_state;
     logic[7:0] burst_count;
@@ -89,7 +89,7 @@ module vga_controller
     begin
         if (reset)
         begin
-            vram_addr <= '0;
+            vram_adr <= '0;
             axi_state <= STATE_WAIT_FRAME_START;
 
             /*AUTORESET*/
@@ -117,7 +117,7 @@ module vga_controller
 
                         axi_state <= STATE_ISSUE_ADDR;
                         pixel_count <= 0;
-                        vram_addr <= fb_base_address;
+                        vram_adr <= fb_base_adress;
                     end
                 end
 
@@ -157,7 +157,7 @@ module vga_controller
                                 else
                                     axi_state <= STATE_WAIT_FIFO_SPACE;
 
-                                vram_addr <= vram_addr + BURST_LENGTH * 4;
+                                vram_adr <= vram_adr + BURST_LENGTH * 4;
                                 pixel_count <= pixel_count + 19'(BURST_LENGTH);
                             end
                         end
@@ -174,8 +174,8 @@ module vga_controller
     assign axi_bus.m_rready = 1'b1;    // The request is only made when there is enough room.
     assign axi_bus.m_arlen = 8'(BURST_LENGTH - 1);
     assign axi_bus.m_arvalid = axi_state == STATE_ISSUE_ADDR;
-    assign axi_bus.m_araddr = vram_addr;
-    assign axi_bus.m_awaddr = '0;
+    assign axi_bus.m_aradr = vram_adr;
+    assign axi_bus.m_awadr = '0;
     assign axi_bus.m_awlen = '0;
 
     // Write channels not used.
@@ -190,14 +190,14 @@ module vga_controller
         if (reset)
         begin
             sequencer_en <= 0;
-            fb_base_address <= '0;
+            fb_base_adress <= '0;
             fb_length <= '0;
         end
         else if (io_bus.write_en)
         begin
-            case (io_bus.address)
+            case (io_bus.adress)
                 BASE_ADDRESS: sequencer_en <= io_bus.write_data[0];
-                BASE_ADDRESS + 8: fb_base_address <= io_bus.write_data;
+                BASE_ADDRESS + 8: fb_base_adress <= io_bus.write_data;
                 BASE_ADDRESS + 12: fb_length <= io_bus.write_data;
             endcase
         end
@@ -206,7 +206,7 @@ module vga_controller
     assign io_bus.read_data = '0;
 
     vga_sequencer vga_sequencer(
-        .prog_write_en(io_bus.write_en && io_bus.address == BASE_ADDRESS + 4),
+        .prog_write_en(io_bus.write_en && io_bus.adress == BASE_ADDRESS + 4),
         .prog_data(io_bus.write_data),
         .*);
 endmodule

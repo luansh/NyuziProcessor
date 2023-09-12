@@ -42,13 +42,13 @@ module trace_logger(
   input dd_instruction_valid,
   input scalar_t dd_instruction_pc,
   input dd_store_en,
-  input [CACHE_LINE_BYTES - 1:0]   dd_store_mask,
+  input [CACHE_LINE_BYTES-1:0] dd_store_mask,
   input vector_t dd_store_data,
   input dd_instruction_load,
   input memory_op_t dd_instruction_memory_access_type,
   input scalar_t dt_instruction_pc,
   input local_thread_idx_t dt_thread_idx,
-  input scalar_t dt_request_virt_addr,
+  input scalar_t dt_request_virt_adr,
   input sq_rollback_en,
   input sq_store_sync_success);
 
@@ -67,8 +67,8 @@ module trace_logger(
         scalar_t pc;
         local_thread_idx_t thread_idx;
         register_idx_t writeback_reg;
-        scalar_t addr;
-        logic[CACHE_LINE_BYTES - 1:0] mask;
+        scalar_t adr;
+        logic[CACHE_LINE_BYTES-1:0] mask;
         vector_t data;
     } trace_event_t;
 
@@ -130,7 +130,7 @@ module trace_logger(
                     $display("store %x %x %x %x %x",
                         trace_reorder_queue[0].pc,
                         trace_reorder_queue[0].thread_idx,
-                        trace_reorder_queue[0].addr,
+                        trace_reorder_queue[0].adr,
                         trace_reorder_queue[0].mask,
                         trace_reorder_queue[0].data);
                 end
@@ -194,8 +194,8 @@ module trace_logger(
                 trace_reorder_queue[5].event_type <= EVENT_STORE;
                 trace_reorder_queue[5].pc <= dt_instruction_pc;
                 trace_reorder_queue[5].thread_idx <= dt_thread_idx;
-                trace_reorder_queue[5].addr <= {
-                    dt_request_virt_addr[31:CACHE_LINE_OFFSET_WIDTH],
+                trace_reorder_queue[5].adr <= {
+                    dt_request_virt_adr[31:CACHE_LINE_OFFSET_WIDTH],
                     {CACHE_LINE_OFFSET_WIDTH{1'b0}}
                 };
                 trace_reorder_queue[5].mask <= dd_store_mask;

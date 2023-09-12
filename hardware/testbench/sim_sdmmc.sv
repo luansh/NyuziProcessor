@@ -64,7 +64,7 @@ module sim_sdmmc(
     integer block_fd;
     sd_state_t current_state;
     int state_delay;
-    int transfer_address;
+    int transfer_adress;
     int transfer_count;
     int block_length;
     int init_clock_count;
@@ -213,7 +213,7 @@ module sim_sdmmc(
                         $finish;
                     end
 
-                    transfer_address <= {command[1], command[2], command[3], command[4]}
+                    transfer_adress <= {command[1], command[2], command[3], command[4]}
                         * block_length;
                     transfer_count <= 0;
                     current_state <= STATE_WRITE_CMD_RESPONSE;
@@ -374,12 +374,12 @@ module sim_sdmmc(
 
 `ifdef VERILATOR
                 // .Verilator doesn't support $fseek
-                $c("fseek(VL_CVT_I_FP(", block_fd, "), ", transfer_address, ", SEEK_SET);");
+                $c("fseek(VL_CVT_I_FP(", block_fd, "), ", transfer_adress, ", SEEK_SET);");
                 $c("fwrite(", block_buffer, ", 1, ", block_length, ", VL_CVT_I_FP(",
                     block_fd, "));");
 `else
                 // May require tweaking for other simulators...
-                $fseek(block_fd, transfer_address, 0);
+                $fseek(block_fd, transfer_adress, 0);
                 $fwrite(block_fd, block_buffer, 0, block_length);
 `endif
             end

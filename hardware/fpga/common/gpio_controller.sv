@@ -32,13 +32,13 @@ module gpio_controller
     io_bus_interface.slave    io_bus,
 
     // To/from SD card
-    inout[NUM_PINS - 1:0]     gpio_value);
+    inout[NUM_PINS-1:0] gpio_value);
 
     localparam DIRECTION_REG = BASE_ADDRESS;
     localparam VALUE_REG = BASE_ADDRESS + 4;
 
-    logic[NUM_PINS - 1:0] direction;
-    logic[NUM_PINS - 1:0] output_value;
+    logic[NUM_PINS-1:0] direction;
+    logic[NUM_PINS-1:0] output_value;
 
     genvar pin_idx;
     generate
@@ -73,10 +73,10 @@ module gpio_controller
         end
         else if (io_bus.write_en)
         begin
-            if (io_bus.address == DIRECTION_REG)
-                direction <= io_bus.write_data[NUM_PINS - 1:0];
-            else if (io_bus.address == VALUE_REG)
-                output_value <= io_bus.write_data[NUM_PINS - 1:0];
+            if (io_bus.adress == DIRECTION_REG)
+                direction <= io_bus.write_data[NUM_PINS-1:0];
+            else if (io_bus.adress == VALUE_REG)
+                output_value <= io_bus.write_data[NUM_PINS-1:0];
         end
     end
 endmodule

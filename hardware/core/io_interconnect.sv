@@ -12,7 +12,7 @@ module io_interconnect(
   input reset,
 
   // From core
-  input [`NUM_CORES - 1:0]     ior_request_valid,
+  input [`NUM_CORES-1:0] ior_request_valid,
   input ioreq_packet_t ior_request[`NUM_CORES],
 
   // To core
@@ -22,7 +22,7 @@ module io_interconnect(
   io_bus_interface.master      io_bus);
 
   core_id_t grant_idx;
-  logic[`NUM_CORES - 1:0] grant_oh;
+  logic[`NUM_CORES-1:0] grant_oh;
   logic request_sent;
   core_id_t request_core;
   local_thread_idx_t request_thread_idx;
@@ -48,7 +48,7 @@ module io_interconnect(
 
       oh_to_idx #(.NUM_SIGNALS(`NUM_CORES)) oh_to_idx_grant(
         .one_hot(grant_oh),
-        .index(grant_idx[CORE_ID_WIDTH - 1:0]));
+        .index(grant_idx[CORE_ID_WIDTH-1:0]));
 
       // Ensure high bits are zeroed. Notes in defines.sv
       // describe why the core ID width needs to be hardcoded.
@@ -58,7 +58,7 @@ module io_interconnect(
         assign grant_idx[grant_idx_bit] = 0;
       end
 
-      assign grant_request = ior_request[grant_idx[CORE_ID_WIDTH - 1:0]];
+      assign grant_request = ior_request[grant_idx[CORE_ID_WIDTH-1:0]];
     end
     else
     begin
@@ -71,7 +71,7 @@ module io_interconnect(
   assign io_bus.write_en = |grant_oh && grant_request.store;
   assign io_bus.read_en = |grant_oh && !grant_request.store;
   assign io_bus.write_data = grant_request.value;
-  assign io_bus.address = grant_request.address;
+  assign io_bus.adress = grant_request.adress;
 
   always_ff @(posedge clk)
   begin

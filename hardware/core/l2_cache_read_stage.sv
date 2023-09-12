@@ -37,10 +37,10 @@ module l2_cache_read_stage(
 
   // To l2_cache_tag_stage
   // Update metadata.
-  output logic[`L2_WAYS - 1:0]        l2r_update_dirty_en,
+  output logic[`L2_WAYS-1:0] l2r_update_dirty_en,
   output l2_set_idx_t l2r_update_dirty_set,
   output logic l2r_update_dirty_value,
-  output logic[`L2_WAYS - 1:0]        l2r_update_tag_en,
+  output logic[`L2_WAYS-1:0] l2r_update_tag_en,
   output l2_set_idx_t l2r_update_tag_set,
   output logic l2r_update_tag_valid,
   output l2_tag_t l2r_update_tag_value,
@@ -49,7 +49,7 @@ module l2_cache_read_stage(
 
   // From l2_cache_update_stage
   input l2u_write_en,
-  input [$clog2(`L2_WAYS * `L2_SETS) - 1:0] l2u_write_addr,
+  input [$clog2(`L2_WAYS * `L2_SETS)-1:0] l2u_write_adr,
   input cache_line_data_t l2u_write_data,
 
   // To l2_cache_update_stage
@@ -57,7 +57,7 @@ module l2_cache_read_stage(
   output l2req_packet_t l2r_request,
   output cache_line_data_t l2r_data,  // Also to bus interface unit
   output logic l2r_cache_hit,
-  output logic[$clog2(`L2_WAYS * `L2_SETS) - 1:0] l2r_hit_cache_idx,
+  output logic[$clog2(`L2_WAYS * `L2_SETS)-1:0] l2r_hit_cache_idx,
   output logic l2r_l2_fill,
   output logic l2r_restarted_flush,
   output cache_line_data_t l2r_data_from_memory,
@@ -75,14 +75,14 @@ module l2_cache_read_stage(
 
   // Track synchronized load/stores, and determine if a synchronized store
   // was successful.
-  cache_line_index_t load_sync_address[TOTAL_THREADS];
-  logic load_sync_address_valid[TOTAL_THREADS];
+  cache_line_index_t load_sync_adress[TOTAL_THREADS];
+  logic load_sync_adress_valid[TOTAL_THREADS];
   logic can_store_sync;
 
-  logic[`L2_WAYS - 1:0] hit_way_oh;
+  logic[`L2_WAYS-1:0] hit_way_oh;
   logic cache_hit;
   l2_way_idx_t hit_way_idx;
-  logic[$clog2(`L2_WAYS * `L2_SETS) - 1:0] read_address;
+  logic[$clog2(`L2_WAYS * `L2_SETS)-1:0] read_adress;
   logic load;
   logic store;
   logic update_dirty;
@@ -92,7 +92,7 @@ module l2_cache_read_stage(
   logic hit_or_miss;
   logic dinvalidate;
   l2_way_idx_t tag_update_way;
-  logic[GLOBAL_THREAD_IDX_WIDTH - 1:0] request_sync_slot;
+  logic[GLOBAL_THREAD_IDX_WIDTH-1:0] request_sync_slot;
 
   assign load = l2t_request.packet_type == L2REQ_LOAD
     || l2t_request.packet_type == L2REQ_LOAD_SYNC;
@@ -109,7 +109,7 @@ module l2_cache_read_stage(
   generate
     for (way_idx = 0; way_idx < `L2_WAYS; way_idx++)
     begin : hit_way_gen
-      assign hit_way_oh[way_idx] = l2t_request.address.tag == l2t_tag[way_idx] && l2t_valid[way_idx];
+      assign hit_way_oh[way_idx] = l2t_request.adress.tag == l2t_tag[way_idx] && l2t_valid[way_idx];
     end
   endgenerate
 
@@ -121,8 +121,8 @@ module l2_cache_read_stage(
 
   // If this is a fill, read the old (potentially dirty line) so it
   // can be written back. If it is a cache hit, read the line data.
-  assign read_address = {(l2t_l2_fill ? l2t_fill_way : hit_way_idx),
-    l2t_request.address.set_idx};
+  assign read_adress = {(l2t_l2_fill ? l2t_fill_way : hit_way_idx),
+    l2t_request.adress.set_idx};
 
   //
   // Cache memory
@@ -133,10 +133,10 @@ module l2_cache_read_stage(
     .READ_DURING_WRITE("NEW_DATA")
   ) sram_l2_data(
     .read_en(l2t_request_valid && (cache_hit || l2t_l2_fill)),
-    .read_addr(read_address),
+    .read_adr(read_adress),
     .read_data(l2r_data),
     .write_en(l2u_write_en),
-    .write_addr(l2u_write_addr),
+    .write_adr(l2u_write_adr),
     .write_data(l2u_write_data),
     .*);
 
@@ -149,7 +149,7 @@ module l2_cache_read_stage(
     && !l2t_restarted_flush;
   assign update_dirty = l2t_request_valid && (l2t_l2_fill
     || (cache_hit && (store || flush_first_pass)));
-  assign l2r_update_dirty_set = l2t_request.address.set_idx;
+  assign l2r_update_dirty_set = l2t_request.adress.set_idx;
   assign l2r_update_dirty_value = store;  // This is zero if this is a flush
 
   genvar dirty_update_idx;
@@ -176,9 +176,9 @@ module l2_cache_read_stage(
     end
   endgenerate
 
-  assign l2r_update_tag_set = l2t_request.address.set_idx;
+  assign l2r_update_tag_set = l2t_request.adress.set_idx;
   assign l2r_update_tag_valid = !dinvalidate;
-  assign l2r_update_tag_value = l2t_request.address.tag;
+  assign l2r_update_tag_value = l2t_request.adress.tag;
 
   //
   // Update LRU
@@ -190,9 +190,9 @@ module l2_cache_read_stage(
   // Synchronized requests
   //
   assign request_sync_slot = GLOBAL_THREAD_IDX_WIDTH'({l2t_request.core, l2t_request.id});
-  assign can_store_sync = load_sync_address[request_sync_slot]
-    == {l2t_request.address.tag, l2t_request.address.set_idx}
-    && load_sync_address_valid[request_sync_slot]
+  assign can_store_sync = load_sync_adress[request_sync_slot]
+    == {l2t_request.adress.tag, l2t_request.adress.set_idx}
+    && load_sync_adress_valid[request_sync_slot]
     && l2t_request.packet_type == L2REQ_STORE_SYNC;
 
   // Used for perf counters below
@@ -208,7 +208,7 @@ module l2_cache_read_stage(
     l2r_writeback_tag <= l2t_tag[writeback_way];
     l2r_needs_writeback <= l2t_dirty[writeback_way] && l2t_valid[writeback_way];
     l2r_data_from_memory <= l2t_data_from_memory;
-    l2r_hit_cache_idx <= read_address;
+    l2r_hit_cache_idx <= read_adress;
     l2r_restarted_flush <= l2t_restarted_flush;
   end
 
@@ -218,8 +218,8 @@ module l2_cache_read_stage(
     begin
       for (int i = 0; i < TOTAL_THREADS; i++)
       begin
-        load_sync_address_valid[i] <= '0;
-        load_sync_address[i] <= '0;
+        load_sync_adress_valid[i] <= '0;
+        load_sync_adress[i] <= '0;
       end
 
       /*AUTORESET*/
@@ -246,8 +246,8 @@ module l2_cache_read_stage(
         unique case (l2t_request.packet_type)
           L2REQ_LOAD_SYNC:
           begin
-            load_sync_address[request_sync_slot] <= {l2t_request.address.tag, l2t_request.address.set_idx};
-            load_sync_address_valid[request_sync_slot] <= 1;
+            load_sync_adress[request_sync_slot] <= {l2t_request.adress.tag, l2t_request.adress.set_idx};
+            load_sync_adress_valid[request_sync_slot] <= 1;
           end
 
           L2REQ_STORE,
@@ -260,8 +260,8 @@ module l2_cache_read_stage(
               // Invalidate
               for (int entry_idx = 0; entry_idx < TOTAL_THREADS; entry_idx++)
               begin
-                if (load_sync_address[entry_idx] == {l2t_request.address.tag, l2t_request.address.set_idx})
-                  load_sync_address_valid[entry_idx] <= 0;
+                if (load_sync_adress[entry_idx] == {l2t_request.adress.tag, l2t_request.adress.set_idx})
+                  load_sync_adress_valid[entry_idx] <= 0;
               end
             end
           end

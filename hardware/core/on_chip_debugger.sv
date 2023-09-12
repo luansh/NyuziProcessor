@@ -111,7 +111,7 @@ module on_chip_debugger
   /*AUTOLOGIC*/
   // Beginning of automatic wires (for undeclared instantiated-module outputs)
   logic capture_dr;       // From jtag_tap_controller of jtag_tap_controller.v
-  logic [3:0]     jtag_instruction;     // From jtag_tap_controller of jtag_tap_controller.v
+  logic [3:0] jtag_instruction;     // From jtag_tap_controller of jtag_tap_controller.v
   logic shift_dr;         // From jtag_tap_controller of jtag_tap_controller.v
   logic update_dr;        // From jtag_tap_controller of jtag_tap_controller.v
   logic update_ir;        // From jtag_tap_controller of jtag_tap_controller.v
@@ -174,8 +174,8 @@ module on_chip_debugger
     begin
       unique case (jtag_instruction)
         INST_BYPASS: data_shift_reg <= 32'(jtag.tdi);
-        INST_CONTROL: data_shift_reg <= 32'({jtag.tdi, data_shift_reg[$bits(debug_control_t) - 1:1]});
-        INST_STATUS: data_shift_reg <= 32'({jtag.tdi, data_shift_reg[$bits(machine_inst_status_t) - 1:1]});
+        INST_CONTROL: data_shift_reg <= 32'({jtag.tdi, data_shift_reg[$bits(debug_control_t)-1:1]});
+        INST_STATUS: data_shift_reg <= 32'({jtag.tdi, data_shift_reg[$bits(machine_inst_status_t)-1:1]});
         // Default covers any 32 bit transfer (most instructions)
         default: data_shift_reg <= 32'({jtag.tdi, data_shift_reg[31:1]});
       endcase

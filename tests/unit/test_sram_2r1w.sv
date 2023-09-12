@@ -41,18 +41,18 @@ module test_sram_1r1w(input clk, input reset);
 
     // These signals are shared between both memories
     logic write_en;
-    logic[ADDR_WIDTH - 1:0] write_addr;
-    logic[DATA_WIDTH - 1:0] write_data;
+    logic[ADDR_WIDTH-1:0] write_adr;
+    logic[DATA_WIDTH-1:0] write_data;
     logic read1_en;
     logic read2_en;
-    logic[ADDR_WIDTH - 1:0] read1_addr;
-    logic[ADDR_WIDTH - 1:0] read2_addr;
+    logic[ADDR_WIDTH-1:0] read1_adr;
+    logic[ADDR_WIDTH-1:0] read2_adr;
 
     // Outputs per memory
-    logic[DATA_WIDTH - 1:0] read1_data1;
-    logic[DATA_WIDTH - 1:0] read2_data1;
-    logic[DATA_WIDTH - 1:0] read1_data2;
-    logic[DATA_WIDTH - 1:0] read2_data2;
+    logic[DATA_WIDTH-1:0] read1_data1;
+    logic[DATA_WIDTH-1:0] read2_data1;
+    logic[DATA_WIDTH-1:0] read1_data2;
+    logic[DATA_WIDTH-1:0] read2_data2;
 
     sram_2r1w #(
         .DATA_WIDTH(32),
@@ -91,14 +91,14 @@ module test_sram_1r1w(input clk, input reset);
                 0:
                 begin
                     write_en <= 1;
-                    write_addr <= ADDR1;
+                    write_adr <= ADDR1;
                     write_data <= DATA1;
                 end
 
                 1:
                 begin
                     write_en <= 1;
-                    write_addr <= ADDR2;
+                    write_adr <= ADDR2;
                     write_data <= DATA2;
                 end
 
@@ -106,9 +106,9 @@ module test_sram_1r1w(input clk, input reset);
                 2:
                 begin
                     read1_en <= 1;
-                    read1_addr <= ADDR1;
+                    read1_adr <= ADDR1;
                     read2_en <= 1;
-                    read2_addr <= ADDR2;
+                    read2_adr <= ADDR2;
                 end
 
                 // skip 3 to wait for result
@@ -120,15 +120,15 @@ module test_sram_1r1w(input clk, input reset);
                     assert(read2_data2 == DATA2);
                 end
 
-                // Now read and write at the same time, but different addresses
+                // Now read and write at the same time, but different adresses
                 5:
                 begin
                     read1_en <= 1;
-                    read1_addr <= ADDR1;
+                    read1_adr <= ADDR1;
                     read2_en <= 1;
-                    read2_addr <= ADDR2;
+                    read2_adr <= ADDR2;
                     write_en <= 1;
-                    write_addr <= ADDR3;
+                    write_adr <= ADDR3;
                     write_data <= DATA3;
                 end
 
@@ -142,7 +142,7 @@ module test_sram_1r1w(input clk, input reset);
 
                     // read back the written value
                     read1_en <= 1;
-                    read1_addr <= ADDR3;
+                    read1_adr <= ADDR3;
                 end
 
                 // skip 8
@@ -151,14 +151,14 @@ module test_sram_1r1w(input clk, input reset);
                     assert(read1_data1 == DATA3);
                     assert(read1_data2 == DATA3);
 
-                    // read and write the same address simultaneously, port 1
+                    // read and write the same adress simultaneously, port 1
                     read1_en <= 1;
-                    read1_addr <= ADDR3;
+                    read1_adr <= ADDR3;
                     read2_en <= 1;
-                    read2_addr <= ADDR1;
+                    read2_adr <= ADDR1;
 
                     write_en <= 1;
-                    write_addr <= ADDR3;
+                    write_adr <= ADDR3;
                     write_data <= DATA4;
                 end
 
@@ -173,9 +173,9 @@ module test_sram_1r1w(input clk, input reset);
                     assert(read1_data2 != DATA4);
                     assert(read2_data2 == DATA1);
 
-                    // Read back the address to ensure it was still written correctly.
+                    // Read back the adress to ensure it was still written correctly.
                     read1_en <= 1;
-                    read1_addr <= ADDR3;
+                    read1_adr <= ADDR3;
                 end
 
                 // Skip 12
@@ -184,14 +184,14 @@ module test_sram_1r1w(input clk, input reset);
                     assert(read1_data1 == DATA4);
                     assert(read1_data2 == DATA4);
 
-                    // read and write same address simultaneously, port 2
+                    // read and write same adress simultaneously, port 2
                     read1_en <= 1;
-                    read1_addr <= ADDR1;
+                    read1_adr <= ADDR1;
                     read2_en <= 1;
-                    read2_addr <= ADDR3;
+                    read2_adr <= ADDR3;
 
                     write_en <= 1;
-                    write_addr <= ADDR3;
+                    write_adr <= ADDR3;
                     write_data <= DATA5;
                 end
 
@@ -204,9 +204,9 @@ module test_sram_1r1w(input clk, input reset);
                     assert(read1_data2 == DATA1);
                     assert(read2_data2 != DATA5);
 
-                    // Read back the address to ensure it was still written correctly.
+                    // Read back the adress to ensure it was still written correctly.
                     read1_en <= 1;
-                    read1_addr <= ADDR3;
+                    read1_adr <= ADDR3;
                 end
 
                 // skip 16

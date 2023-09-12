@@ -39,15 +39,15 @@ module cache_lru
 
   // Fill interface. Used to request LRU to replace when filling.
   input fill_en,
-  input [SET_INDEX_WIDTH - 1:0]     fill_set,
-  output logic[WAY_INDEX_WIDTH - 1:0]   fill_way,
+  input [SET_INDEX_WIDTH-1:0] fill_set,
+  output logic[WAY_INDEX_WIDTH-1:0] fill_way,
 
   // Access interface. Used to move a way to the MRU position when
   // it has been accessed.
   input access_en,
-  input [SET_INDEX_WIDTH - 1:0]     access_set,
+  input [SET_INDEX_WIDTH-1:0] access_set,
   input update_en,
-  input [WAY_INDEX_WIDTH - 1:0]     update_way);
+  input [WAY_INDEX_WIDTH-1:0] update_way);
 
   localparam LRU_FLAG_BITS =
     NUM_WAYS == 1 ? 1 :
@@ -55,14 +55,14 @@ module cache_lru
     NUM_WAYS == 4 ? 3 :
     7;  // NUM_WAYS = 8
 
-  logic[LRU_FLAG_BITS - 1:0] lru_flags;
+  logic[LRU_FLAG_BITS-1:0] lru_flags;
   logic update_lru_en;
-  logic [SET_INDEX_WIDTH - 1:0] update_set;
-  logic[LRU_FLAG_BITS - 1:0] update_flags;
-  logic [SET_INDEX_WIDTH - 1:0] read_set;
+  logic [SET_INDEX_WIDTH-1:0] update_set;
+  logic[LRU_FLAG_BITS-1:0] update_flags;
+  logic [SET_INDEX_WIDTH-1:0] read_set;
   logic read_en;
   logic was_fill;
-  logic[WAY_INDEX_WIDTH - 1:0] new_mru;
+  logic[WAY_INDEX_WIDTH-1:0] new_mru;
 `ifdef SIMULATION
   logic was_access;
 `endif
@@ -103,12 +103,12 @@ module cache_lru
   ) lru_data(
     // Fetch existing flags
     .read_en(read_en),
-    .read_addr(read_set),
+    .read_adr(read_set),
     .read_data(lru_flags),
 
     // Update LRU (from next stage)
     .write_en(update_lru_en),
-    .write_addr(update_set),
+    .write_adr(update_set),
     .write_data(update_flags),
     .*);
 

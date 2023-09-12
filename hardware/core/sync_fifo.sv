@@ -33,11 +33,11 @@ module sync_fifo
   output logic full,
   output logic almost_full,
   input enqueue_en,
-  input [WIDTH - 1:0]      enqueue_value,
+  input [WIDTH-1:0] enqueue_value,
   output logic empty,
   output logic almost_empty,
   input dequeue_en,
-  output logic[WIDTH - 1:0]  dequeue_value);
+  output logic[WIDTH-1:0] dequeue_value);
 
 `ifdef VENDOR_ALTERA
   SCFIFO #(
@@ -68,10 +68,10 @@ module sync_fifo
   // Simulation
   localparam ADDR_WIDTH = $clog2(SIZE);
 
-  logic[ADDR_WIDTH - 1:0] head;
-  logic[ADDR_WIDTH - 1:0] tail;
+  logic[ADDR_WIDTH-1:0] head;
+  logic[ADDR_WIDTH-1:0] tail;
   logic[ADDR_WIDTH:0] count;
-  logic[WIDTH - 1:0] data[SIZE];
+  logic[WIDTH-1:0] data[SIZE];
 
   assign almost_full = count >= (ADDR_WIDTH + 1)'(ALMOST_FULL_THRESHOLD);
   assign almost_empty = count <= (ADDR_WIDTH + 1)'(ALMOST_EMPTY_THRESHOLD);

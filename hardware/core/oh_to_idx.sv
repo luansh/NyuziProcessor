@@ -10,8 +10,8 @@ module oh_to_idx
     parameter DIRECTION = "LSB0",
     parameter INDEX_WIDTH = $clog2(NUM_SIGNALS))
 
-    (input[NUM_SIGNALS - 1:0]         one_hot,
-    output logic[INDEX_WIDTH - 1:0]   index);
+    (input[NUM_SIGNALS-1:0] one_hot,
+    output logic[INDEX_WIDTH-1:0] index);
 
     always_comb
     begin : convert
@@ -21,7 +21,7 @@ module oh_to_idx
             if (one_hot[oh_index])
             begin
                 if (DIRECTION == "LSB0")
-                    index |= oh_index[INDEX_WIDTH - 1:0];    // Use 'or' to avoid synthesizing priority encoder
+                    index |= oh_index[INDEX_WIDTH-1:0];    // Use 'or' to avoid synthesizing priority encoder
                 else
                     index |= INDEX_WIDTH'(NUM_SIGNALS - oh_index - 1);
             end

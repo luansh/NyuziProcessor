@@ -21,24 +21,24 @@ module axi_async_bridge
     localparam DATA_FIFO_LENGTH = 8;
 
     //
-    // Write address from master->slave
+    // Write adress from master->slave
     //
-    logic write_address_full;
-    logic write_address_empty;
+    logic write_adress_full;
+    logic write_adress_empty;
 
-    async_fifo #(ADDR_WIDTH + 8, CONTROL_FIFO_LENGTH) write_address_fifo(
+    async_fifo #(ADDR_WIDTH + 8, CONTROL_FIFO_LENGTH) write_adress_fifo(
         .reset(reset),
         .write_clock(clk_s),
-        .write_enable(!write_address_full && axi_bus_s.m_awvalid),
-        .write_data({axi_bus_s.m_awaddr, axi_bus_s.m_awlen}),
-        .full(write_address_full),
+        .write_enable(!write_adress_full && axi_bus_s.m_awvalid),
+        .write_data({axi_bus_s.m_awadr, axi_bus_s.m_awlen}),
+        .full(write_adress_full),
         .read_clock(clk_m),
-        .read_enable(!write_address_empty && axi_bus_m.s_awready),
-        .read_data({axi_bus_m.m_awaddr, axi_bus_m.m_awlen}),
-        .empty(write_address_empty));
+        .read_enable(!write_adress_empty && axi_bus_m.s_awready),
+        .read_data({axi_bus_m.m_awadr, axi_bus_m.m_awlen}),
+        .empty(write_adress_empty));
 
-    assign axi_bus_s.s_awready = !write_address_full;
-    assign axi_bus_m.m_awvalid = !write_address_empty;
+    assign axi_bus_s.s_awready = !write_adress_full;
+    assign axi_bus_m.m_awvalid = !write_adress_empty;
 
     //
     // Write data from master->slave
@@ -81,24 +81,24 @@ module axi_async_bridge
     assign axi_bus_m.m_bready = !write_response_full;
 
     //
-    // Read address from master->slave
+    // Read adress from master->slave
     //
-    logic read_address_full;
-    logic read_address_empty;
+    logic read_adress_full;
+    logic read_adress_empty;
 
-    async_fifo #(ADDR_WIDTH + 8, CONTROL_FIFO_LENGTH) read_address_fifo(
+    async_fifo #(ADDR_WIDTH + 8, CONTROL_FIFO_LENGTH) read_adress_fifo(
         .reset(reset),
         .write_clock(clk_s),
-        .write_enable(!read_address_full && axi_bus_s.m_arvalid),
-        .write_data({axi_bus_s.m_araddr, axi_bus_s.m_arlen}),
-        .full(read_address_full),
+        .write_enable(!read_adress_full && axi_bus_s.m_arvalid),
+        .write_data({axi_bus_s.m_aradr, axi_bus_s.m_arlen}),
+        .full(read_adress_full),
         .read_clock(clk_m),
-        .read_enable(!read_address_empty && axi_bus_m.s_arready),
-        .read_data({axi_bus_m.m_araddr, axi_bus_m.m_arlen}),
-        .empty(read_address_empty));
+        .read_enable(!read_adress_empty && axi_bus_m.s_arready),
+        .read_data({axi_bus_m.m_aradr, axi_bus_m.m_arlen}),
+        .empty(read_adress_empty));
 
-    assign axi_bus_s.s_arready = !read_address_full;
-    assign axi_bus_m.m_arvalid = !read_address_empty;
+    assign axi_bus_s.s_arready = !read_adress_full;
+    assign axi_bus_m.m_arvalid = !read_adress_empty;
 
     //
     // Read data from slave->master

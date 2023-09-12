@@ -29,13 +29,13 @@ module test_l2_cache_wait_state(input clk, input reset);
     localparam DATA0 = 512'h88a84df3d616f6e7701e6461010a1f3f2c931fb4b396d059d177c51b3b17c82ad26c90f1f7040331efd466bde698718ec430b97e0c9241b9a57322c9b092bf3e;
     localparam DATA1 = 512'h8ddc6625b5f211958e5d77eea014d0500f39ab63bc3cc75f360bf2961bef34ec8f095b878488ed87bc3d499699660adbd5b3a99e8e5fd7a6092dd003dc960d31;
 
-    logic[`NUM_CORES - 1:0] l2i_request_valid;
+    logic[`NUM_CORES-1:0] l2i_request_valid;
     l2req_packet_t l2i_request[`NUM_CORES];
     logic l2_ready[`NUM_CORES];
     logic l2_response_valid;
     l2rsp_packet_t l2_response;
     axi4_interface axi_bus();
-    logic[L2_PERF_EVENTS - 1:0] l2_perf_events;
+    logic[L2_PERF_EVENTS-1:0] l2_perf_events;
     int state;
     int axi_burst_offset;
     l1_miss_entry_idx_t last_id;
@@ -72,11 +72,11 @@ module test_l2_cache_wait_state(input clk, input reset);
                 begin
                     l2i_request_valid <= 1;
                     l2i_request[0].packet_type <= L2REQ_LOAD;
-                    l2i_request[0].address <= ADDR0;
+                    l2i_request[0].adress <= ADDR0;
                     state <= state + 1;
                 end
 
-                // Wait for read address to be asserted on the AXI bus.
+                // Wait for read adress to be asserted on the AXI bus.
                 1:
                 begin
                     assert(!l2_response_valid);
@@ -85,7 +85,7 @@ module test_l2_cache_wait_state(input clk, input reset);
                     l2i_request_valid <= 0;
                     if (axi_bus.m_arvalid)
                     begin
-                        assert(axi_bus.m_araddr == ADDR0 * CACHE_LINE_BYTES);
+                        assert(axi_bus.m_aradr == ADDR0 * CACHE_LINE_BYTES);
                         assert(axi_bus.m_arlen == 15);
                         wait_count <= DELAY;
                         state <= state + 1;
@@ -108,7 +108,7 @@ module test_l2_cache_wait_state(input clk, input reset);
                     // Ensure these are stable
                     // A3.2.1 "...the source must keep its information stable until the transfer
                     // occurs..."
-                    assert(axi_bus.m_araddr == ADDR0 * CACHE_LINE_BYTES);
+                    assert(axi_bus.m_aradr == ADDR0 * CACHE_LINE_BYTES);
                     assert(axi_bus.m_arlen == 15);
 
                     if (wait_count == 0)
@@ -166,7 +166,7 @@ module test_l2_cache_wait_state(input clk, input reset);
                     if (l2_response_valid)
                     begin
                         assert(l2_response.packet_type == L2RSP_LOAD_ACK);
-                        assert(l2_response.address == ADDR0);
+                        assert(l2_response.adress == ADDR0);
                         assert(l2_response.data == DATA0);
                         state <= state + 1;
                     end
@@ -177,7 +177,7 @@ module test_l2_cache_wait_state(input clk, input reset);
                 begin
                     l2i_request_valid <= 1;
                     l2i_request[0].packet_type <= L2REQ_STORE;
-                    l2i_request[0].address <= ADDR0;
+                    l2i_request[0].adress <= ADDR0;
                     l2i_request[0].data <= DATA1;
                     l2i_request[0].store_mask <= 64'hffffffff_ffffffff;
                     state <= state + 1;
@@ -203,11 +203,11 @@ module test_l2_cache_wait_state(input clk, input reset);
                     assert(!l2_response_valid);
                     l2i_request_valid <= 1;
                     l2i_request[0].packet_type = L2REQ_FLUSH;
-                    l2i_request[0].address = ADDR0;
+                    l2i_request[0].adress = ADDR0;
                     state <= state + 1;
                 end
 
-                // Wait for write address on AXI bus
+                // Wait for write adress on AXI bus
                 9:
                 begin
                     l2i_request_valid <= 0;
@@ -217,7 +217,7 @@ module test_l2_cache_wait_state(input clk, input reset);
                     assert(!axi_bus.m_wvalid);
                     if (axi_bus.m_awvalid)
                     begin
-                        assert(axi_bus.m_awaddr == ADDR0 * CACHE_LINE_BYTES);
+                        assert(axi_bus.m_awadr == ADDR0 * CACHE_LINE_BYTES);
                         assert(axi_bus.m_awlen == 15);
                         state <= state + 1;
                         wait_count <= DELAY;
@@ -239,7 +239,7 @@ module test_l2_cache_wait_state(input clk, input reset);
                     // Ensure these are stable
                     // A3.2.1 "...the source must keep its information stable until the transfer
                     // occurs..."
-                    assert(axi_bus.m_awaddr == ADDR0 * CACHE_LINE_BYTES);
+                    assert(axi_bus.m_awadr == ADDR0 * CACHE_LINE_BYTES);
                     assert(axi_bus.m_awlen == 15);
 
                     if (wait_count == 0)
@@ -303,7 +303,7 @@ module test_l2_cache_wait_state(input clk, input reset);
                     if (l2_response_valid)
                     begin
                         assert(l2_response.packet_type == L2RSP_FLUSH_ACK);
-                        // The address isn't set in the response packet, so don't
+                        // The adress isn't set in the response packet, so don't
                         // need to check it.
                         state <= state + 1;
                     end

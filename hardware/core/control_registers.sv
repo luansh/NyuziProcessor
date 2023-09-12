@@ -16,20 +16,20 @@ module control_registers
   (input clk,
   input reset,
 
-  input [NUM_INTERRUPTS - 1:0]      interrupt_req,
+  input [NUM_INTERRUPTS-1:0] interrupt_req,
 
   // To multiple stages
-  output scalar_t cr_eret_address[`THREADS_PER_CORE],
+  output scalar_t cr_eret_adress[`THREADS_PER_CORE],
   output logic cr_mmu_en[`THREADS_PER_CORE],
   output logic cr_supervisor_en[`THREADS_PER_CORE],
-  output logic[ASID_WIDTH - 1:0]      cr_current_asid[`THREADS_PER_CORE],
+  output logic[ASID_WIDTH-1:0] cr_current_asid[`THREADS_PER_CORE],
 
   // To nyuzi
-  output logic[TOTAL_THREADS - 1:0]     cr_suspend_thread,
-  output logic[TOTAL_THREADS - 1:0]     cr_resume_thread,
+  output logic[TOTAL_THREADS-1:0] cr_suspend_thread,
+  output logic[TOTAL_THREADS-1:0] cr_resume_thread,
 
   // To instruction_decode_stage
-  output logic[`THREADS_PER_CORE - 1:0]   cr_interrupt_pending,
+  output logic[`THREADS_PER_CORE-1:0] cr_interrupt_pending,
   output local_thread_bitmap_t cr_interrupt_en,
 
   // From dcache_data_stage
@@ -46,7 +46,7 @@ module control_registers
   input wb_eret,
   input trap_cause_t wb_trap_cause,
   input scalar_t wb_trap_pc,
-  input scalar_t wb_trap_access_vaddr,
+  input scalar_t wb_trap_access_vadr,
   input local_thread_idx_t wb_rollback_thread_idx,
   input subcycle_t wb_trap_subcycle,
   input syscall_index_t wb_syscall_index,
@@ -58,10 +58,10 @@ module control_registers
   output scalar_t cr_tlb_miss_handler,
 
   // To/from performance_counters
-  output logic[EVENT_IDX_WIDTH - 1:0]   cr_perf_event_select0,
-  output logic[EVENT_IDX_WIDTH - 1:0]   cr_perf_event_select1,
-  input[63:0]               perf_event_count0,
-  input[63:0]               perf_event_count1,
+  output logic[EVENT_IDX_WIDTH-1:0] cr_perf_event_select0,
+  output logic[EVENT_IDX_WIDTH-1:0] cr_perf_event_select1,
+  input[63:0] perf_event_count0,
+  input[63:0] perf_event_count1,
 
   // To/from on_chip_debugger
   input scalar_t ocd_data_from_host,
@@ -85,7 +85,7 @@ module control_registers
     // Information about last trap
     trap_cause_t trap_cause;
     scalar_t trap_pc;
-    scalar_t trap_access_addr;
+    scalar_t trap_access_adr;
     subcycle_t trap_subcycle;
     syscall_index_t syscall_index;
   } trap_state_t;
@@ -93,12 +93,12 @@ module control_registers
   trap_state_t trap_state[`THREADS_PER_CORE][TRAP_LEVELS];
   scalar_t page_dir_base[`THREADS_PER_CORE];
   scalar_t cycle_count;
-  logic[NUM_INTERRUPTS - 1:0] interrupt_mask[`THREADS_PER_CORE];
-  logic[NUM_INTERRUPTS - 1:0] interrupt_pending[`THREADS_PER_CORE];
-  logic[NUM_INTERRUPTS - 1:0] interrupt_edge_latched[`THREADS_PER_CORE];
-  logic[NUM_INTERRUPTS - 1:0] int_trigger_type;
-  logic[NUM_INTERRUPTS - 1:0] interrupt_req_prev;
-  logic[NUM_INTERRUPTS - 1:0] interrupt_edge;
+  logic[NUM_INTERRUPTS-1:0] interrupt_mask[`THREADS_PER_CORE];
+  logic[NUM_INTERRUPTS-1:0] interrupt_pending[`THREADS_PER_CORE];
+  logic[NUM_INTERRUPTS-1:0] interrupt_edge_latched[`THREADS_PER_CORE];
+  logic[NUM_INTERRUPTS-1:0] int_trigger_type;
+  logic[NUM_INTERRUPTS-1:0] interrupt_req_prev;
+  logic[NUM_INTERRUPTS-1:0] interrupt_edge;
   scalar_t jtag_data;
 
   assign cr_data_to_host = jtag_data;
@@ -151,7 +151,7 @@ module control_registers
         // Dispatch fault
         trap_state[wb_rollback_thread_idx][0].trap_cause <= wb_trap_cause;
         trap_state[wb_rollback_thread_idx][0].trap_pc <= wb_trap_pc;
-        trap_state[wb_rollback_thread_idx][0].trap_access_addr <= wb_trap_access_vaddr;
+        trap_state[wb_rollback_thread_idx][0].trap_access_adr <= wb_trap_access_vadr;
         trap_state[wb_rollback_thread_idx][0].syscall_index <= wb_syscall_index;
         trap_state[wb_rollback_thread_idx][0].trap_subcycle <= wb_trap_subcycle;
         trap_state[wb_rollback_thread_idx][0].flags.interrupt_en <= 0;  // Disable interrupts for this thread
@@ -184,15 +184,15 @@ module control_registers
           CR_SCRATCHPAD0:     trap_state[dt_thread_idx][0].scratchpad0 <= dd_creg_write_val;
           CR_SCRATCHPAD1:     trap_state[dt_thread_idx][0].scratchpad1 <= dd_creg_write_val;
           CR_SUBCYCLE:      trap_state[dt_thread_idx][0].trap_subcycle <= subcycle_t'(dd_creg_write_val);
-          CR_CURRENT_ASID:    cr_current_asid[dt_thread_idx] <= dd_creg_write_val[ASID_WIDTH - 1:0];
+          CR_CURRENT_ASID:    cr_current_asid[dt_thread_idx] <= dd_creg_write_val[ASID_WIDTH-1:0];
           CR_PAGE_DIR:      page_dir_base[dt_thread_idx] <= dd_creg_write_val;
-          CR_INTERRUPT_ENABLE:  interrupt_mask[dt_thread_idx] <= dd_creg_write_val[NUM_INTERRUPTS - 1:0];
-          CR_INTERRUPT_TRIGGER: int_trigger_type <= dd_creg_write_val[NUM_INTERRUPTS - 1:0];
+          CR_INTERRUPT_ENABLE:  interrupt_mask[dt_thread_idx] <= dd_creg_write_val[NUM_INTERRUPTS-1:0];
+          CR_INTERRUPT_TRIGGER: int_trigger_type <= dd_creg_write_val[NUM_INTERRUPTS-1:0];
           CR_JTAG_DATA:     jtag_data <= dd_creg_write_val;
-          CR_SUSPEND_THREAD:  cr_suspend_thread <= dd_creg_write_val[TOTAL_THREADS - 1:0];
-          CR_RESUME_THREAD:   cr_resume_thread <= dd_creg_write_val[TOTAL_THREADS - 1:0];
-          CR_PERF_EVENT_SELECT0: cr_perf_event_select0 <= dd_creg_write_val[EVENT_IDX_WIDTH - 1:0];
-          CR_PERF_EVENT_SELECT1: cr_perf_event_select1 <= dd_creg_write_val[EVENT_IDX_WIDTH - 1:0];
+          CR_SUSPEND_THREAD:  cr_suspend_thread <= dd_creg_write_val[TOTAL_THREADS-1:0];
+          CR_RESUME_THREAD:   cr_resume_thread <= dd_creg_write_val[TOTAL_THREADS-1:0];
+          CR_PERF_EVENT_SELECT0: cr_perf_event_select0 <= dd_creg_write_val[EVENT_IDX_WIDTH-1:0];
+          CR_PERF_EVENT_SELECT1: cr_perf_event_select1 <= dd_creg_write_val[EVENT_IDX_WIDTH-1:0];
           default:
             ;
         endcase
@@ -216,19 +216,19 @@ module control_registers
   generate
     for (thread_idx = 0; thread_idx < `THREADS_PER_CORE; thread_idx++)
     begin : interrupt_gen
-      logic[NUM_INTERRUPTS - 1:0] interrupt_ack;
+      logic[NUM_INTERRUPTS-1:0] interrupt_ack;
       logic do_interrupt_ack;
 
       assign do_interrupt_ack = dt_thread_idx == thread_idx
         && dd_creg_write_en
         && dd_creg_index == CR_INTERRUPT_ACK;
       assign interrupt_ack = {NUM_INTERRUPTS{do_interrupt_ack}}
-        & dd_creg_write_val[NUM_INTERRUPTS - 1:0];
+        & dd_creg_write_val[NUM_INTERRUPTS-1:0];
       assign cr_interrupt_en[thread_idx] = trap_state[thread_idx][0].flags.interrupt_en;
       assign cr_supervisor_en[thread_idx] = trap_state[thread_idx][0].flags.supervisor_en;
       assign cr_mmu_en[thread_idx] = trap_state[thread_idx][0].flags.mmu_en;
       assign cr_eret_subcycle[thread_idx] = trap_state[thread_idx][0].trap_subcycle;
-      assign cr_eret_address[thread_idx] = trap_state[thread_idx][0].trap_pc;
+      assign cr_eret_adress[thread_idx] = trap_state[thread_idx][0].trap_pc;
 
       // interrupt_edge_latched is set when a [positive] edge triggered
       // interrupt occurs.
@@ -271,7 +271,7 @@ module control_registers
         CR_TRAP_PC:       cr_creg_read_val <= trap_state[dt_thread_idx][0].trap_pc;
         CR_TRAP_CAUSE:    cr_creg_read_val <= scalar_t'(trap_state[dt_thread_idx][0].trap_cause);
         CR_TRAP_HANDLER:    cr_creg_read_val <= cr_trap_handler;
-        CR_TRAP_ADDRESS:    cr_creg_read_val <= trap_state[dt_thread_idx][0].trap_access_addr;
+        CR_TRAP_ADDRESS:    cr_creg_read_val <= trap_state[dt_thread_idx][0].trap_access_adr;
         CR_TLB_MISS_HANDLER:  cr_creg_read_val <= cr_tlb_miss_handler;
         CR_CYCLE_COUNT:     cr_creg_read_val <= cycle_count;
         CR_SCRATCHPAD0:     cr_creg_read_val <= trap_state[dt_thread_idx][0].scratchpad0;

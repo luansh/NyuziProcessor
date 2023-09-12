@@ -41,7 +41,7 @@ module int_execute_stage(
     output logic ix_privileged_op_fault,
 
     // From control_registers
-  input scalar_t cr_eret_address[`THREADS_PER_CORE],
+  input scalar_t cr_eret_adress[`THREADS_PER_CORE],
   input cr_supervisor_en[`THREADS_PER_CORE],
 
     // To performance_counters
@@ -294,7 +294,7 @@ module int_execute_stage(
         unique case (of_instruction.branch_type)
             BRANCH_CALL_REGISTER,
             BRANCH_REGISTER: ix_rollback_pc <= of_operand1[0];
-            BRANCH_ERET: ix_rollback_pc <= cr_eret_address[of_thread_idx];
+            BRANCH_ERET: ix_rollback_pc <= cr_eret_adress[of_thread_idx];
             default:
                 ix_rollback_pc <= of_instruction.pc + of_instruction.immediate_value;
         endcase

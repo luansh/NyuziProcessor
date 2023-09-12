@@ -10,7 +10,7 @@ import defines::*;
 // - Reads instruction cache tag memory to determine if the cache line is
 //   resident.
 // - Reads translation lookaside buffer to translate from virtual to physical
-//   address.
+//   adress.
 //
 
 module ifetch_tag_stage
@@ -28,8 +28,8 @@ module ifetch_tag_stage
 
   // To ifetch_data_stage
   output logic ift_instruction_requested,
-  output l1i_addr_t ift_pc_paddr,
-  output scalar_t ift_pc_vaddr,
+  output l1i_adr_t ift_pc_padr,
+  output scalar_t ift_pc_vadr,
   output local_thread_idx_t ift_thread_idx,
   output logic ift_tlb_hit,
   output logic ift_tlb_present,
@@ -41,7 +41,7 @@ module ifetch_tag_stage
   // From l1_l2_interface
   input l2i_icache_lru_fill_en,
   input l1i_set_idx_t l2i_icache_lru_fill_set,
-  input [`L1I_WAYS - 1:0]       l2i_itag_update_en,
+  input [`L1I_WAYS-1:0] l2i_itag_update_en,
   input l1i_set_idx_t l2i_itag_update_set,
   input l1i_tag_t l2i_itag_update_tag,
   input l2i_itag_update_valid,
@@ -50,12 +50,12 @@ module ifetch_tag_stage
 
   // From control_registers
   input cr_mmu_en[`THREADS_PER_CORE],
-  input [ASID_WIDTH - 1:0]      cr_current_asid[`THREADS_PER_CORE],
+  input [ASID_WIDTH-1:0] cr_current_asid[`THREADS_PER_CORE],
 
   // From dcache_tag_stage
   input dt_invalidate_tlb_en,
   input dt_invalidate_tlb_all_en,
-  input [ASID_WIDTH - 1:0]      dt_update_itlb_asid,
+  input [ASID_WIDTH-1:0] dt_update_itlb_asid,
   input page_index_t dt_update_itlb_vpage_idx,
   input dt_update_itlb_en,
   input dt_update_itlb_supervisor,
@@ -79,7 +79,7 @@ module ifetch_tag_stage
   scalar_t next_program_counter[`THREADS_PER_CORE];
   local_thread_idx_t selected_thread_idx;
   scalar_t last_selected_pc;
-  l1i_addr_t pc_to_fetch;
+  l1i_adr_t pc_to_fetch;
   local_thread_bitmap_t can_fetch_thread_bitmap;
   local_thread_bitmap_t selected_thread_oh;
   local_thread_bitmap_t last_selected_thread_oh;
@@ -95,7 +95,7 @@ module ifetch_tag_stage
   logic tlb_present;
   logic tlb_executable;
   page_index_t request_vpage_idx;
-  logic[ASID_WIDTH - 1:0] request_asid;
+  logic[ASID_WIDTH-1:0] request_asid;
 
   initial
   begin
@@ -114,7 +114,7 @@ module ifetch_tag_stage
   assign can_fetch_thread_bitmap = ts_fetch_en & ~icache_wait_threads;
 
   // If an instruction is updating the TLB, can't access it to translate the next
-  // address, so skip instruction fetch this cycle.
+  // adress, so skip instruction fetch this cycle.
   assign cache_fetch_en = |can_fetch_thread_bitmap && !dt_update_itlb_en
     && !dt_invalidate_tlb_en && !dt_invalidate_tlb_all_en
     && !ocd_halt;
@@ -169,10 +169,10 @@ module ifetch_tag_stage
         .READ_DURING_WRITE("NEW_DATA")
       ) sram_tags(
         .read_en(cache_fetch_en),
-        .read_addr(pc_to_fetch.set_idx),
+        .read_adr(pc_to_fetch.set_idx),
         .read_data(ift_tag[way_idx]),
         .write_en(l2i_itag_update_en[way_idx]),
-        .write_addr(l2i_itag_update_set),
+        .write_adr(l2i_itag_update_set),
         .write_data(l2i_itag_update_tag),
         .*);
 
@@ -312,6 +312,6 @@ module ifetch_tag_stage
     last_selected_thread_oh <= selected_thread_oh;
   end
 
-  assign ift_pc_paddr = {ppage_idx, last_selected_pc[31 - PAGE_NUM_BITS:0]};
-  assign ift_pc_vaddr = last_selected_pc;
+  assign ift_pc_padr = {ppage_idx, last_selected_pc[31 - PAGE_NUM_BITS:0]};
+  assign ift_pc_vadr = last_selected_pc;
 endmodule
